@@ -37,17 +37,33 @@ const E_LINE  = '#8B949E'
 // Texte sur fonds colorés (orange, bleu, etc.)
 const ON_ACCENT = '#FFFFFF'
 
-// ─── Syntax highlight ─────────────────────────────────────────────────────
+// ─── Syntax highlight (classes CSS — jamais de codes couleur en texte brut) ─
 function hi(code: string): string {
-  return code
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/\b(public|private|protected|static|void|class|new|return|this|import|package|final|extends|if|else|for|while|true|false|null|abstract|interface|implements)\b/g,
-      `<span style="color:#CC99CD">$1</span>`)
-    .replace(/\b(String|int|long|short|byte|char|float|double|boolean|Object|StringBuilder|Arrays|System|Point|Etudiant)\b/g,
-      `<span style="color:#DCDCAA">$1</span>`)
-    .replace(/"([^"]*)"/g,`<span style="color:#CE9178">"$1"</span>`)
-    .replace(/\/\/.*$/gm,`<span style="color:#6A9955;font-style:italic">$&</span>`)
-    .replace(/\b(\d+\.?\d*[fldFL]?)\b/g,`<span style="color:#B5CEA8">$1</span>`)
+  const strings: string[] = []
+  let s = code
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"([^"]*)"/g, (_, inner: string) => {
+      const i = strings.length
+      strings.push(`<span class="str">"${inner}"</span>`)
+      return `\u0000S${i}\u0000`
+    })
+    .replace(/\/\/.*$/gm, '<span class="cmt">$&</span>')
+    .replace(
+      /\b(public|private|protected|static|void|class|new|return|this|import|package|final|extends|if|else|for|while|true|false|null|abstract|interface|implements)\b/g,
+      '<span class="kw">$1</span>',
+    )
+    .replace(
+      /\b(String|int|long|short|byte|char|float|double|boolean|Object|StringBuilder|Arrays|System|Point|Etudiant|Main)\b/g,
+      '<span class="cls">$1</span>',
+    )
+    .replace(/\b(\d+\.?\d*[fldFL]?)\b/g, '<span class="num">$1</span>')
+
+  strings.forEach((html, i) => {
+    s = s.replace(`\u0000S${i}\u0000`, html)
+  })
+  return s
 }
 
 // ─── Backgrounds ──────────────────────────────────────────────────────────
@@ -180,13 +196,16 @@ function SlideChrome({ children }: { children: React.ReactNode }) {
 function Editor({
   code, filename = 'Main.java', highlight = [], activeLine = 0,
   showTerminal = false, terminalOutput = '', large = false,
+  terminalTitle = 'Terminal', runLabel,
 }: {
   code: string; filename?: string; highlight?: number[]; activeLine?: number;
   showTerminal?: boolean; terminalOutput?: string; large?: boolean
+  terminalTitle?: string; runLabel?: string
 }) {
   const lines = code.split('\n')
-  const fs = large ? 26 : 20
-  const lh = large ? '2.35rem' : '2.1rem'
+  const fs = large ? 24 : 20
+  const lh = large ? '2.2rem' : '2.05rem'
+  const outLines = terminalOutput ? terminalOutput.split('\n') : []
   return (
     <div className="flex flex-col rounded-xl overflow-hidden shadow-2xl h-full"
       style={{ border: `1px solid ${E_BORD}` }}>
@@ -204,21 +223,21 @@ function Editor({
         </div>
       </div>
       {/* Editor body */}
-      <div className="flex flex-1 overflow-hidden" style={{ background: E_BG }}>
+      <div className="flex flex-1 overflow-hidden min-h-0" style={{ background: E_BG }}>
         {/* Gutter */}
         <div className="shrink-0 pt-3 pb-2 pr-3 select-none text-right"
-          style={{ width: 52, background: E_GUTTER, borderRight: `1px solid ${E_BORD}` }}>
-          {lines.map((_,i) => (
-            <div key={i} style={{ lineHeight: lh, fontSize: fs - 1, color: highlight.includes(i+1) || activeLine === i+1 ? ORANGE + 'cc' : '#3B4252' }}
+          style={{ width: 48, background: E_GUTTER, borderRight: `1px solid ${E_BORD}` }}>
+          {lines.map((_, i) => (
+            <div key={i} style={{ lineHeight: lh, fontSize: fs - 2, color: highlight.includes(i + 1) || activeLine === i + 1 ? ORANGE + 'cc' : '#3B4252' }}
               className="mono pr-1">
               {i + 1}
             </div>
           ))}
         </div>
         {/* Code */}
-        <div className="flex-1 overflow-x-auto py-3 pl-4">
-          {lines.map((line,i) => {
-            const n = i+1
+        <div className="flex-1 overflow-x-auto overflow-y-auto py-3 pl-3">
+          {lines.map((line, i) => {
+            const n = i + 1
             const isActive = activeLine === n || highlight.includes(n)
             return (
               <div key={i} className="relative"
@@ -238,14 +257,24 @@ function Editor({
       {showTerminal && (
         <div className="shrink-0" style={{ background: '#0A0F1A', borderTop: `1px solid ${E_BORD}`, minHeight: 72 }}>
           <div className="flex items-center gap-2 px-3 py-1.5 text-sm mono" style={{ borderBottom: `1px solid ${E_BORD}`, color: '#3B4252' }}>
-            <span style={{ color: EMERALD }}>▶</span> Terminal
+            <span style={{ color: EMERALD }}>▶</span> {terminalTitle}
           </div>
-          <div className="px-3 py-2 mono" style={{ fontSize: 25 }}>
-            <span style={{ color: EMERALD }}>$ </span>
-            <span style={{ color: '#D4D4D4' }}>java Main</span>
-            {terminalOutput && (
-              <div style={{ color: EMERALD, marginTop: 2 }}>{terminalOutput}</div>
+          <div className="px-3 py-2 mono" style={{ fontSize: large ? 22 : 20, lineHeight: 1.45 }}>
+            {runLabel && (
+              <div>
+                <span style={{ color: EMERALD }}>&gt; </span>
+                <span style={{ color: '#D4D4D4' }}>{runLabel}</span>
+              </div>
             )}
+            {!runLabel && (
+              <div>
+                <span style={{ color: EMERALD }}>$ </span>
+                <span style={{ color: '#D4D4D4' }}>java Main</span>
+              </div>
+            )}
+            {outLines.map((l, i) => (
+              <div key={i} style={{ color: EMERALD, marginTop: i === 0 ? 4 : 0 }}>{l}</div>
+            ))}
           </div>
         </div>
       )}
@@ -950,14 +979,14 @@ function SlideTitle() {
         </div>
       </div>
 
-      {/* RIGHT — code editor on light panel */}
+      {/* RIGHT — grand éditeur Main.java (lisible en amphithéâtre) */}
       <div className="absolute inset-y-0 right-0 flex items-center justify-center"
-        style={{ width: '45%', paddingRight: 52, paddingTop: 36 }}>
+        style={{ width: '46%', paddingRight: 40, paddingTop: 64, paddingBottom: 48 }}>
         {keywords.map((k) => (
           <span key={k.t} className="absolute mono select-none pointer-events-none"
             style={{
               left: k.x, top: k.y, transform: 'translate(-50%, -50%)',
-              fontSize: 21, color: BLUE, opacity: phase >= 4 ? 0.35 : 0,
+              fontSize: 21, color: BLUE, opacity: phase >= 4 ? 0.28 : 0,
               transition: isPrint ? 'none' : 'opacity 1s ease', letterSpacing: '0.05em',
               fontWeight: 600,
             }}>
@@ -967,26 +996,49 @@ function SlideTitle() {
 
         <div style={{
           ...fade(4),
-          width: '100%', maxWidth: 440,
+          width: '100%',
+          maxWidth: 740,
+          height: '82%',
+          minHeight: 560,
+          display: 'flex',
+          flexDirection: 'column',
           transform: phase >= 4
-            ? 'perspective(1200px) rotateY(-5deg) rotateX(2deg) translateY(0)'
-            : 'perspective(1200px) rotateY(-5deg) rotateX(2deg) translateX(36px)',
+            ? 'perspective(1400px) rotateY(-3deg) rotateX(1deg) translateY(0)'
+            : 'perspective(1400px) rotateY(-3deg) rotateX(1deg) translateX(28px)',
           transition: isPrint ? 'none' : 'opacity 0.9s ease, transform 0.9s ease',
-          boxShadow: '0 24px 64px rgba(15,23,42,0.18), 0 0 0 1px rgba(148,163,184,0.35)',
-          borderRadius: 14,
+          boxShadow: '0 28px 72px rgba(15,23,42,0.22), 0 0 0 1px rgba(148,163,184,0.4)',
+          borderRadius: 16,
           overflow: 'hidden',
         }}>
-          <Editor
-            large
-            filename="Main.java"
-            code={`public class Main {
-
+          <div className="flex-1 min-h-0 h-full">
+            <Editor
+              large
+              filename="Main.java"
+              highlight={[3]}
+              activeLine={3}
+              code={`public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello Java");
+        Etudiant e1 = new Etudiant("Sarra", 14.5);
+        e1.afficherProfil();
+    }
+}
+
+class Etudiant {
+    String nom;
+    double moyenne;
+
+    Etudiant(String nom, double moyenne) {
+        this.nom = nom;
+        this.moyenne = moyenne;
     }
 
+    void afficherProfil() {
+        System.out.println("Etudiant : " + nom);
+        System.out.println("Moyenne : " + moyenne);
+    }
 }`}
-          />
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -1394,12 +1446,28 @@ function SlideDevEnvironment() {
               large
               filename="Main.java"
               code={`public class Main {
-
     public static void main(String[] args) {
-        System.out.println("Hello Java");
+        Etudiant e1 = new Etudiant("Sarra", 14.5);
+        e1.afficherProfil();
+    }
+}
+
+class Etudiant {
+    String nom;
+    double moyenne;
+
+    Etudiant(String nom, double moyenne) {
+        this.nom = nom;
+        this.moyenne = moyenne;
     }
 
+    void afficherProfil() {
+        System.out.println("Etudiant : " + nom);
+        System.out.println("Moyenne : " + moyenne);
+    }
 }`}
+              highlight={[3]}
+              activeLine={3}
             />
           </div>
         </div>
@@ -1528,49 +1596,300 @@ function SlideLetsCode() {
   )
 }
 
-// SLIDE 10 — Code Cinema (First Program)
+// SLIDE — Premier programme OOP (classe → objet → constructeur → méthode)
 function SlideFirstProgram() {
   const [step, setStep] = useState(0)
-  const code = `public class Salem {\n\n    public static void main(\n            String[] args) {\n\n        System.out.println(\n                "Salem");\n    }\n\n}`
-  const configs = [
-    { highlight:[1], note:'La classe Salem — le fichier s\'appelle Salem.java', terminal:false, out:'' },
-    { highlight:[3,4], note:'main() est le point d\'entrée — la JVM l\'appelle en premier', terminal:false, out:'' },
-    { highlight:[6,7], note:'System.out.println affiche une ligne dans le terminal', terminal:false, out:'' },
-    { highlight:[6,7], note:'Exécution : la JVM appelle main() → println → sortie terminal', terminal:true, out:'Salem' },
+  const printing =
+    typeof document !== 'undefined' && document.documentElement.dataset.printing === '1'
+  const view = printing ? 4 : step
+
+  const FULL = `public class Main {
+    public static void main(String[] args) {
+
+        Etudiant e1 = new Etudiant("Sarra", 14.5);
+
+        e1.afficherProfil();
+    }
+}
+
+class Etudiant {
+
+    String nom;
+    double moyenne;
+
+    Etudiant(String nom, double moyenne) {
+        this.nom = nom;
+        this.moyenne = moyenne;
+    }
+
+    void afficherProfil() {
+        System.out.println("Etudiant : " + nom);
+        System.out.println("Moyenne : " + moyenne);
+    }
+}`
+
+  const codeForStep = (() => {
+    if (view === 0) {
+      return `class Etudiant {
+
+}`
+    }
+    if (view === 1) {
+      return `class Etudiant {
+
+    String nom;
+    double moyenne;
+
+}`
+    }
+    if (view === 2) {
+      return `class Etudiant {
+
+    String nom;
+    double moyenne;
+
+    Etudiant(String nom, double moyenne) {
+        this.nom = nom;
+        this.moyenne = moyenne;
+    }
+
+}`
+    }
+    return FULL
+  })()
+
+  const hl =
+    view === 0 ? [1] :
+    view === 1 ? [3, 4] :
+    view === 2 ? [6, 7, 8] :
+    view === 3 ? [4] :
+    [6]
+
+  const notes = [
+    { kicker: 'CLASS', note: 'La classe Etudiant — le modèle', color: BLUE },
+    { kicker: 'ÉTAT', note: 'Les attributs décrivent l’état', color: BLUE },
+    { kicker: 'CONSTRUCTION', note: 'Le constructeur initialise l’objet', color: VIOLET },
+    { kicker: 'OBJECT', note: 'new crée une instance', color: ORANGE },
+    { kicker: 'COMPORTEMENT', note: 'L’objet exécute un comportement', color: EMERALD },
   ]
-  const c = configs[step]
+  const n = notes[view]
+  const showObject = view >= 3
+  const showTerminal = view >= 4
+  const showNewHint = view === 3
+
+  const callouts = [
+    { id: 'CLASS', show: view >= 0, title: 'CLASS', cap: 'Le modèle', color: BLUE },
+    { id: 'OBJECT', show: view >= 3, title: 'OBJECT', cap: 'Une instance de la classe', color: ORANGE },
+    { id: 'CTOR', show: view >= 2, title: 'CONSTRUCTOR', cap: "Initialise l'objet", color: VIOLET },
+    { id: 'METHOD', show: view >= 4, title: 'METHOD', cap: "L'objet exécute un comportement", color: EMERALD },
+  ]
+
   return (
-    <div className="w-full h-full flex flex-col" style={DARK_GRID}>
+    <div className="w-full h-full flex flex-col px-8 pt-3 pb-3" style={DARK_GRID}>
       <FsmCorner />
-      {/* Top bar */}
-      <div className="flex items-center justify-between px-8 pt-5 pb-3 shrink-0">
+
+      <div className="flex items-center justify-between shrink-0 mb-3">
         <div>
-          <p className="mono text-xs font-black tracking-widest mb-1" style={{ fontSize: 16, letterSpacing: '0.16em',  color:EMERALD }}>CODE CINEMA</p>
-          <p className="text-sm" style={{ color:SUB }}>{c.note}</p>
+          <p className="mono font-black tracking-widest mb-1" style={{ fontSize: 15, letterSpacing: '0.16em', color: EMERALD }}>
+            PREMIER PROGRAMME · OOP
+          </p>
+          <p className="font-semibold" style={{ color: SUB, fontSize: 18 }}>
+            <span className="mono font-black" style={{ color: n.color }}>{n.kicker}</span>
+            <span style={{ color: MUTED }}> — </span>
+            {n.note}
+          </p>
         </div>
         <div className="flex items-center gap-2">
-          {configs.map((_,i)=>(
-            <button key={i} onClick={()=>setStep(i)}
-              className="rounded-full h-2 transition-all"
-              style={{ width:i===step?28:14, background:i<=step?ORANGE:D4 }} />
+          {[0, 1, 2, 3, 4].map(i => (
+            <button key={i} type="button" onClick={() => setStep(i)}
+              className="rounded-full h-2.5 transition-all"
+              style={{ width: i === view ? 28 : 12, background: i <= view ? ORANGE : D4 }} />
           ))}
         </div>
       </div>
-      {/* Editor full */}
-      <div className="flex-1 px-8 pb-5">
-        <Editor code={code} filename="Salem.java"
-          highlight={c.highlight} activeLine={c.highlight[0]}
-          showTerminal={c.terminal} terminalOutput={c.out} large />
+
+      <div className="flex-1 flex gap-4 min-h-0">
+        <div className="flex flex-col justify-center gap-3 shrink-0" style={{ width: 168 }}>
+          {callouts.map(c => (
+            <div key={c.id}
+              className="rounded-xl px-3 py-2.5 transition-all"
+              style={{
+                opacity: c.show ? 1 : 0.22,
+                background: c.show ? c.color + '12' : D3,
+                border: `1.5px solid ${c.show ? c.color : D4}`,
+              }}>
+              <p className="mono font-black tracking-wider"
+                style={{ color: c.show ? c.color : MUTED, fontSize: 13, letterSpacing: '0.08em' }}>
+                {c.title}
+              </p>
+              <p style={{ color: c.show ? SUB : MUTED, fontSize: 14, lineHeight: 1.3, marginTop: 2 }}>{c.cap}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex-1 min-w-0 min-h-0 relative flex flex-col">
+          <div className="flex-1 min-h-0">
+            <OopEditor
+              code={codeForStep}
+              highlight={hl}
+              activeLine={hl[0]}
+              emphasizeNew={showNewHint}
+              showTerminal={showTerminal}
+              terminalOutput={showTerminal ? 'Etudiant : Sarra\nMoyenne : 14.5' : ''}
+            />
+          </div>
+          {showNewHint && (
+            <div className="absolute z-10 pointer-events-none"
+              style={{ right: 24, top: 96, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div className="mono font-black px-2.5 py-1 rounded"
+                style={{ background: ORANGE + '28', border: `2px solid ${ORANGE}`, color: ORANGE, fontSize: 15 }}>
+                new
+              </div>
+              <div style={{ width: 2, height: 16, background: ORANGE }} />
+              <p className="mono font-bold text-center leading-tight"
+                style={{ color: ORANGE, fontSize: 12 }}>
+                ↓<br />création<br />de l&apos;objet
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col items-center justify-center shrink-0" style={{ width: 220 }}>
+          {showObject ? (
+            <div className="flex flex-col items-center w-full">
+              <div className="flex items-center gap-2 mb-3 w-full">
+                <div className="flex-1 h-px" style={{ background: `linear-gradient(90deg, transparent, ${ORANGE})` }} />
+                <span className="mono font-black" style={{ color: ORANGE, fontSize: 14 }}>→ e1</span>
+              </div>
+              <p className="mono font-black mb-2 self-start" style={{ color: ORANGE, fontSize: 22 }}>e1</p>
+              <div className="w-full rounded-xl overflow-hidden"
+                style={{ border: `2px solid ${ORANGE}`, boxShadow: `0 0 28px ${ORANGE}33`, background: D2 }}>
+                <div className="px-4 py-2 mono font-black text-white" style={{ background: ORANGE, fontSize: 18 }}>
+                  Etudiant
+                </div>
+                <div className="flex justify-between px-4 py-3" style={{ borderBottom: `1px solid ${D4}` }}>
+                  <span className="mono" style={{ color: BLUE, fontSize: 16 }}>nom</span>
+                  <span className="mono font-bold" style={{ color: OW, fontSize: 16 }}>&quot;Sarra&quot;</span>
+                </div>
+                <div className="flex justify-between px-4 py-3">
+                  <span className="mono" style={{ color: BLUE, fontSize: 16 }}>moyenne</span>
+                  <span className="mono font-bold" style={{ color: OW, fontSize: 16 }}>14.5</span>
+                </div>
+              </div>
+              <p className="mono mt-3 text-center" style={{ color: MUTED, fontSize: 13 }}>CODE → OBJET</p>
+            </div>
+          ) : (
+            <div className="w-full h-44 rounded-xl flex items-center justify-center"
+              style={{ border: `1.5px dashed ${D4}`, background: D3 }}>
+              <p className="mono text-center" style={{ color: MUTED, fontSize: 14 }}>objet<br />à venir</p>
+            </div>
+          )}
+        </div>
       </div>
-      {/* Step nav */}
-      <div className="flex items-center justify-end gap-3 px-8 pb-4 shrink-0">
-        <button onClick={()=>setStep(s=>Math.max(s-1,0))} disabled={step===0}
-          className="px-5 py-2 rounded-xl mono font-bold text-sm"
-          style={{ background:step===0?'transparent':D3, color:step===0?MUTED:OW, border:`1px solid ${D4}` }}>←</button>
-        <button onClick={()=>setStep(s=>Math.min(s+1,configs.length-1))} disabled={step===configs.length-1}
-          className="px-5 py-2 rounded-xl mono font-bold text-sm"
-          style={{ background:step===configs.length-1?'transparent':ORANGE, color:'#fff', border:`1px solid ${ORANGE}` }}>→</button>
+
+      <div className="shrink-0 flex items-center justify-between mt-3 gap-4">
+        <p className="font-black tracking-tight"
+          style={{ fontFamily: "'Syne', system-ui, sans-serif", fontSize: 26, color: OW }}>
+          UNE <span style={{ color: BLUE }}>CLASSE</span> DÉCRIT.
+          {' '}UN <span style={{ color: ORANGE }}>OBJET</span> EXISTE ET AGIT.
+        </p>
+        <div className="flex items-center gap-2 shrink-0">
+          <button type="button" onClick={() => setStep(s => Math.max(s - 1, 0))} disabled={view === 0}
+            className="px-4 py-2 rounded-xl mono font-bold text-sm"
+            style={{ background: view === 0 ? 'transparent' : D3, color: view === 0 ? MUTED : OW, border: `1px solid ${D4}` }}>←</button>
+          <button type="button" onClick={() => setStep(s => Math.min(s + 1, 4))} disabled={view === 4}
+            className="px-4 py-2 rounded-xl mono font-bold text-sm"
+            style={{ background: view === 4 ? 'transparent' : ORANGE, color: view === 4 ? MUTED : '#fff', border: `1px solid ${view === 4 ? D4 : ORANGE}` }}>→</button>
+        </div>
       </div>
+    </div>
+  )
+}
+
+/** Éditeur OOP : même shell IntelliJ + emphase visuelle sur « new » */
+function OopEditor({
+  code, highlight, activeLine, emphasizeNew, showTerminal, terminalOutput,
+}: {
+  code: string
+  highlight: number[]
+  activeLine: number
+  emphasizeNew?: boolean
+  showTerminal?: boolean
+  terminalOutput?: string
+}) {
+  const lines = code.split('\n')
+  const fs = 22
+  const lh = '2.05rem'
+  const outLines = terminalOutput ? terminalOutput.split('\n').filter(Boolean) : []
+
+  return (
+    <div className="flex flex-col rounded-xl overflow-hidden shadow-2xl h-full"
+      style={{ border: `1px solid ${E_BORD}` }}>
+      <div className="flex items-center gap-0 shrink-0" style={{ background: '#161B22', borderBottom: `1px solid ${E_BORD}`, height: 40 }}>
+        <div className="flex items-center gap-1.5 px-4">
+          <span style={{ color: '#FF5F57', fontSize: 12 }}>●</span>
+          <span style={{ color: '#FFBD2E', fontSize: 12 }}>●</span>
+          <span style={{ color: '#28CA41', fontSize: 12 }}>●</span>
+        </div>
+        <div className="px-3 py-1 text-sm mono flex items-center gap-2"
+          style={{ background: E_BG, borderRight: `1px solid ${E_BORD}`, color: '#8B949E', borderBottom: `2px solid ${ORANGE}` }}>
+          <span style={{ color: ORANGE, fontWeight: 700 }}>Java</span>
+          Main.java
+        </div>
+      </div>
+
+      <div className="flex flex-1 overflow-hidden min-h-0" style={{ background: E_BG }}>
+        <div className="shrink-0 pt-3 pb-2 pr-3 select-none text-right"
+          style={{ width: 44, background: E_GUTTER, borderRight: `1px solid ${E_BORD}` }}>
+          {lines.map((_, i) => (
+            <div key={i} className="mono pr-1"
+              style={{ lineHeight: lh, fontSize: fs - 2, color: highlight.includes(i + 1) || activeLine === i + 1 ? ORANGE + 'cc' : '#3B4252' }}>
+              {i + 1}
+            </div>
+          ))}
+        </div>
+        <div className="flex-1 overflow-auto py-3 pl-3">
+          {lines.map((line, i) => {
+            const n = i + 1
+            const isActive = activeLine === n || highlight.includes(n)
+            const hasNew = emphasizeNew && /\bnew\b/.test(line)
+            let html = hi(line)
+            if (hasNew) {
+              html = html.replace(
+                /<span class="kw">new<\/span>/,
+                `<span class="kw" style="background:${ORANGE}44;border-radius:4px;padding:1px 5px;box-shadow:0 0 0 1.5px ${ORANGE}">new</span>`,
+              )
+            }
+            return (
+              <div key={i} className="relative"
+                style={{ lineHeight: lh, background: isActive ? E_ACTIVE : 'transparent', paddingLeft: 8 }}>
+                {isActive && <div className="absolute left-0 top-0 bottom-0 w-0.5" style={{ background: ORANGE }} />}
+                <span className="mono whitespace-pre" style={{ fontSize: fs, color: '#D4D4D4' }}
+                  dangerouslySetInnerHTML={{ __html: html }} />
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {showTerminal && (
+        <div className="shrink-0" style={{ background: '#0A0F1A', borderTop: `1px solid ${E_BORD}` }}>
+          <div className="flex items-center gap-2 px-3 py-1.5 text-sm mono"
+            style={{ borderBottom: `1px solid ${E_BORD}`, color: '#3B4252' }}>
+            <span style={{ color: EMERALD }}>▶</span> Terminal
+            <span className="ml-auto mono font-bold" style={{ color: EMERALD, fontSize: 12 }}>✓ OK</span>
+          </div>
+          <div className="px-4 py-2.5 mono" style={{ fontSize: 20, lineHeight: 1.5 }}>
+            <div>
+              <span style={{ color: EMERALD }}>&gt; </span>
+              <span style={{ color: '#D4D4D4' }}>Run Main</span>
+            </div>
+            {outLines.map((l, i) => (
+              <div key={i} style={{ color: EMERALD }}>{l}</div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

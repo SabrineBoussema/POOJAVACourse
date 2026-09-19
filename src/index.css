@@ -187,15 +187,15 @@ body {
   }
 }
 
-/* Syntax highlight colors */
-.kw { color: #c792ea; }
-.cls { color: #82aaff; }
-.fn { color: #82aaff; }
-.str { color: #c3e88d; }
-.cmt { color: #546e7a; font-style: italic; }
-.num { color: #f78c6c; }
-.ann { color: #ffcb6b; }
-.typ { color: #ffcb6b; }
+/* Syntax highlight colors — JetBrains Dark / amphithéâtre */
+.kw { color: #C792EA; font-weight: 600; }
+.cls { color: #FFCB6B; }
+.fn { color: #82AAFF; }
+.str { color: #C3E88D; }
+.cmt { color: #546E7A; font-style: italic; }
+.num { color: #F78C6C; }
+.ann { color: #FFCB6B; }
+.typ { color: #FFCB6B; }
 
 /* Scrollbar hiding */
 ::-webkit-scrollbar { display: none; }
