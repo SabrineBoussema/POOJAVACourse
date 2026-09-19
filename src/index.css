@@ -136,6 +136,34 @@ body {
   font-size: 56px !important;
 }
 
+/* Cards / panels — elevation légère sur fond clair */
+.presentation-stage-inner .rounded-2xl,
+.presentation-stage-inner .rounded-xl,
+.print-slide .rounded-2xl,
+.print-slide .rounded-xl {
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+}
+
+.slide-chrome {
+  width: 100%;
+  height: 100%;
+}
+
+/* Plein écran — maximiser la scène */
+.presentation-shell.is-fullscreen {
+  padding: 0;
+  background: #0B1220;
+}
+.presentation-shell.is-fullscreen .presentation-stage-outer {
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+}
+.presentation-shell.is-fullscreen .presentation-nav {
+  background: rgba(8, 13, 24, 0.92) !important;
+  border-top-color: #243044 !important;
+}
+
 .presentation-nav {
   flex-shrink: 0;
   padding-bottom: max(6px, env(safe-area-inset-bottom));
