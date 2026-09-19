@@ -1,0 +1,1423 @@
+Create a complete, highly professional, modern and visually engaging
+university course presentation about JAVA programming.
+
+SOURCE MATERIAL
+Use the attached course documents as the primary source of truth:
+
+- CHAPITRE1-1.pdf
+- CHAPITRE2-1.pdf
+- Chap2.pptx
+
+The presentation is intended for university-level computer science students.
+
+IMPORTANT:
+Do not merely reproduce or convert the original PDF pages.
+Redesign the pedagogical experience completely while preserving the concepts,
+examples, terminology and learning progression contained in the provided course.
+
+Correct obvious typographical mistakes and obvious Java syntax formatting
+problems when necessary, but do not invent new advanced concepts that are not
+needed for the course.
+
+==================================================
+MAIN OBJECTIVE
+==================================================
+
+Transform the existing Java course into a premium interactive university
+presentation that is:
+
+- professional;
+- modern;
+- visually impressive;
+- easy to understand;
+- dynamic during classroom teaching;
+- suitable for a video projector;
+- useful for students after the course;
+- exportable to PDF;
+- readable when printed;
+- pedagogically progressive;
+- not overloaded with text.
+
+The style must feel like:
+
+modern software engineering
++
+university lecture
++
+developer documentation
++
+interactive learning experience.
+
+Do NOT make it look like a children's presentation.
+
+==================================================
+FORMAT
+==================================================
+
+Create the presentation as individual 16:9 frames.
+
+Frame size:
+1920 × 1080 px.
+
+Each main screen must correspond to ONE presentation slide/frame.
+
+All slides must also work independently when exported to PDF.
+
+Critical information must NEVER depend exclusively on:
+- hover states;
+- animations;
+- hidden overlays;
+- click interactions.
+
+Interactive elements may enrich presentation mode,
+but the static state must contain enough information to remain meaningful
+after PDF export.
+
+Create:
+1. Presentation mode
+2. PDF / Print-friendly mode
+
+Keep consistent safe margins on every slide.
+
+==================================================
+VISUAL IDENTITY
+==================================================
+
+Use a sophisticated JAVA / software engineering visual language.
+
+Primary visual inspiration:
+- modern IDE interfaces;
+- developer tools;
+- clean SaaS dashboards;
+- software architecture diagrams;
+- code editors;
+- technical documentation.
+
+Use a light professional background with occasional dark code sections.
+
+Suggested palette:
+
+Java red/orange as accent
+#E76F00
+
+Deep navy
+#14213D
+
+Dark code background
+#111827
+
+White
+#FFFFFF
+
+Light gray
+#F5F7FA
+
+Secondary blue
+#2563EB
+
+Green only for successful execution/results.
+
+Red only for errors, warnings or key Java branding.
+
+Do not overuse gradients.
+
+==================================================
+TYPOGRAPHY
+==================================================
+
+Use a contemporary sans-serif typeface for the course:
+Inter, Manrope or similar.
+
+Use a monospace programming font for Java:
+JetBrains Mono or similar.
+
+Very clear hierarchy:
+
+Chapter number
+Section title
+Main concept
+Explanation
+Code
+Takeaway
+
+Large enough typography for projection in a university classroom.
+
+==================================================
+GLOBAL NAVIGATION
+==================================================
+
+Add a discreet progress navigation at the bottom or top:
+
+JAVA
+01 Introduction
+02 Classes & Objects
+03 Practice
+
+Show the current chapter clearly.
+
+Add slide numbers.
+
+==================================================
+TITLE SLIDE
+==================================================
+
+Create a striking opening slide:
+
+JAVA
+Programmation Orientée Objet
+
+Subtitle:
+Des premières instructions aux objets
+
+Visual:
+a central Java code editor or abstract Java architecture.
+
+Use subtle floating code fragments such as:
+
+public class Main
+public static void main
+System.out.println()
+new Object()
+
+Add:
+Cours universitaire
+Programmation Java
+
+Do NOT clutter the title slide.
+
+==================================================
+PEDAGOGICAL SYSTEM
+==================================================
+
+Use recurring visual elements:
+
+CONCEPT
+for definitions.
+
+CODE LAB
+for Java examples.
+
+UNDER THE HOOD
+for JVM, memory, references, compilation.
+
+COMMON MISTAKE
+for frequent errors.
+
+REMEMBER
+for essential rules.
+
+CHALLENGE
+for student questions.
+
+LIVE CODING
+for code demonstrations.
+
+CHECKPOINT
+for mini quizzes.
+
+Use these consistently throughout the course.
+
+==================================================
+CHAPTER 1
+INTRODUCTION AU LANGAGE JAVA
+==================================================
+
+Build Chapter 1 as approximately 18–22 slides.
+
+-----------------------------------
+CHAPTER OPENING
+-----------------------------------
+
+Slide:
+01
+Introduction au langage Java
+
+Subtitle:
+Comprendre l'écosystème avant d'écrire du code.
+
+Use a simple Java ecosystem visual.
+
+-----------------------------------
+WHY JAVA?
+-----------------------------------
+
+Create an engaging introduction instead of immediately showing definitions.
+
+Question:
+
+Pourquoi Java existe-t-il ?
+
+Then visually introduce:
+- portability;
+- object orientation;
+- JVM;
+- strong typing;
+- concurrency.
+
+Use icons + short explanations.
+
+-----------------------------------
+JAVA HISTORY
+-----------------------------------
+
+Create a visual horizontal timeline.
+
+1991
+James Gosling / Sun Microsystems
+
+1993
+Internet gives Java new opportunities.
+
+Then:
+cross-platform execution.
+
+Avoid a long paragraph.
+
+-----------------------------------
+JAVA DNA
+-----------------------------------
+
+Create a slide titled:
+
+L'ADN DE JAVA
+
+Five visual cards:
+
+Orienté objet
+Multiplateforme
+Fortement typé
+Concurrent
+Sécurisé
+
+Use minimal descriptions.
+
+-----------------------------------
+WRITE ONCE, RUN ANYWHERE
+-----------------------------------
+
+Make this a hero slide.
+
+Center:
+
+WRITE ONCE
+RUN EVERYWHERE
+
+Show:
+
+Source Java
+    ↓
+Compilation
+    ↓
+Bytecode
+    ↓
+JVM
+    ↓
+
+Windows
+Linux
+macOS
+
+Use a clean architecture diagram.
+
+-----------------------------------
+JAVA ECOSYSTEM
+-----------------------------------
+
+Explain visually:
+
+JAVA =
+Language
++
+JVM
++
+API
+
+Represent them as three interconnected layers.
+
+Then architecture:
+
+Application Java
+API
+JVM
+Operating System / Hardware
+
+Use a modern layered diagram instead of the original old table.
+
+-----------------------------------
+JAVA EDITIONS
+-----------------------------------
+
+Create 3 clean cards based on the source material:
+
+Java SE
+Java EE
+Java ME
+
+Include the uses stated in the original course.
+
+Keep this concise.
+
+-----------------------------------
+FIRST JAVA PROGRAM
+-----------------------------------
+
+Create a cinematic transition slide:
+
+LET'S CODE.
+
+Then show the first program.
+
+Use a professional code editor mockup.
+
+Correct obvious Java formatting errors while retaining the pedagogical example.
+
+Example structure:
+
+public class Salem {
+
+    public static void main(String[] args) {
+        System.out.println("Salem");
+    }
+
+}
+
+Syntax highlight the code.
+
+Annotate:
+class
+main()
+println()
+
+-----------------------------------
+FROM SOURCE TO EXECUTION
+-----------------------------------
+
+Create an animated-looking pipeline that also works statically:
+
+Salem.java
+    ↓ javac
+Salem.class
+    ↓ java Salem
+JVM
+    ↓
+Output
+
+Terminal:
+
+$ javac Salem.java
+$ java Salem
+Salem
+
+Make the terminal realistic and modern.
+
+-----------------------------------
+JAVA APPLICATION ARCHITECTURE
+-----------------------------------
+
+Explain:
+
+.java
+→ classes
+→ .class
+
+Key rule:
+
+Une classe publique
+=
+nom du fichier correspondant.
+
+Use a folder/code visual.
+
+-----------------------------------
+POINT EXAMPLE
+-----------------------------------
+
+Redesign the Point example.
+
+Use split screen:
+
+LEFT:
+class Point
+
+RIGHT:
+memory / graphical coordinate plane
+
+p1 = Point(1,2)
+p2 = Point(5,1)
+
+Then show visually that:
+
+p1.distance(p2)
+
+calculates the distance.
+
+Do not show huge blocks of code all at once.
+
+Reveal the concept progressively across 2 or 3 slides.
+
+-----------------------------------
+IDENTIFIERS
+-----------------------------------
+
+Create a slide:
+
+Comment bien nommer en Java ?
+
+Use GOOD / BAD examples.
+
+Good:
+UneClasse
+uneMethode
+uneVariable
+UNE_CONSTANTE
+
+Show conventions visually.
+
+-----------------------------------
+COMMENTS
+-----------------------------------
+
+Show three code cards:
+
+//
+
+/* ... */
+
+/** ... */
+
+Explain:
+single-line
+multi-line
+Javadoc
+
+Use code instead of a table.
+
+-----------------------------------
+JAVA PRIMITIVE TYPES
+-----------------------------------
+
+Replace the existing table with a modern infographic.
+
+Group:
+
+INTEGER
+byte
+short
+int
+long
+
+FLOATING POINT
+float
+double
+
+OTHER
+boolean
+char
+
+Show size in bits where provided by the course.
+
+Use a scale / memory visualization.
+
+-----------------------------------
+CASTING
+-----------------------------------
+
+Create a strong conceptual slide:
+
+SMALL TYPE → LARGE TYPE
+Implicit conversion
+
+LARGE TYPE → SMALL TYPE
+Explicit conversion
+
+Use arrows.
+
+Then code:
+
+int i = 60;
+short b = (short) (i + 5);
+
+And:
+
+int i = (int) 1.99;
+
+Show:
+
+1.99
+↓ cast
+1
+
+Add warning:
+Possible data loss.
+
+-----------------------------------
+CAST CHALLENGE
+-----------------------------------
+
+Interactive classroom question:
+
+Que se passe-t-il ?
+
+byte b1 = 20;
+byte b2 = 15;
+byte b3 = b1 + b2;
+
+Options:
+
+A. 35
+B. Compilation error
+C. Runtime error
+
+Create a separate answer state/frame.
+
+Explain that arithmetic promotes operands to int.
+
+The PDF version must still include the explanation on the following slide.
+
+-----------------------------------
+CHAPTER 1 RECAP
+-----------------------------------
+
+Create a visual mind map:
+
+Java
+├ Language
+├ JVM
+├ Bytecode
+├ Types
+├ Compilation
+└ Cast
+
+Then:
+
+5 things to remember.
+
+-----------------------------------
+CHAPTER 1 MINI QUIZ
+-----------------------------------
+
+Create 4 visual questions.
+
+Examples based strictly on the chapter:
+
+.java or .class?
+Role of javac?
+Role of JVM?
+Implicit vs explicit conversion?
+
+Create answer frames separately so the PDF remains usable.
+
+==================================================
+TRANSITION
+==================================================
+
+Create a dramatic transition:
+
+Jusqu'ici, nous avons écrit du Java.
+
+Maintenant, nous allons modéliser le monde avec des objets.
+
+CHAPTER 02
+CLASSES & OBJECTS
+
+==================================================
+CHAPTER 2
+CLASSES ET OBJETS EN JAVA
+==================================================
+
+Build approximately 28–35 slides.
+
+-----------------------------------
+OPENING
+-----------------------------------
+
+Title:
+
+02
+Classes & Objects
+
+Subtitle:
+Passer du code à la modélisation.
+
+Use a visual transforming:
+
+real-world object
+→ model
+→ Java class
+→ Java object.
+
+-----------------------------------
+OBJECT ORIENTED PROGRAMMING
+-----------------------------------
+
+Introduce the four concepts from the source material:
+
+Abstraction
+Encapsulation
+Inheritance
+Polymorphism
+
+Do not explain inheritance and polymorphism in depth yet
+if they are not developed in these chapters.
+
+Visually indicate:
+
+CURRENT FOCUS
+Abstraction + Encapsulation + Objects
+
+-----------------------------------
+CLASS VS OBJECT
+-----------------------------------
+
+Create one of the most important slides.
+
+Large visual analogy:
+
+CLASS
+Blueprint / model
+
+OBJECT
+Instance created from the model
+
+Then use the course Point example.
+
+Class:
+
+Point
+
+Attributes:
+x
+y
+
+Methods:
+afficher()
+deplacer()
+
+Then objects:
+
+p1
+x = 3
+y = 4
+
+p2
+x = 9
+y = -5
+
+Make this highly visual.
+
+-----------------------------------
+ANATOMY OF A CLASS
+-----------------------------------
+
+Show a Java code editor:
+
+class Point {
+
+    int x;
+    int y;
+
+    void afficher() { ... }
+
+    void deplacer(int dx, int dy) { ... }
+
+}
+
+Overlay labels:
+
+CLASS NAME
+ATTRIBUTES
+METHODS
+PARAMETERS
+
+Use callout arrows.
+
+-----------------------------------
+FROM UML TO JAVA
+-----------------------------------
+
+Create:
+
+Point
+----------------
+x : int
+y : int
+----------------
+afficher()
+deplacer(dx,dy)
+
+→
+
+Java source code.
+
+This should visually teach the mapping.
+
+-----------------------------------
+OBJECT CREATION
+-----------------------------------
+
+Create a two-step animation represented in static sequence.
+
+STEP 1
+
+Point p1;
+
+Visual:
+p1 → null
+
+STEP 2
+
+p1 = new Point();
+
+Visual:
+p1 → Object in heap memory
+
+Object card:
+
+Point
+x = 0
+y = 0
+
+Use a simplified memory diagram.
+
+-----------------------------------
+REFERENCES
+-----------------------------------
+
+Create a highly visual memory diagram.
+
+Point p1 = new Point(2,3);
+Point p2 = p1;
+
+Show:
+
+p1 ───┐
+      ├──> Point object
+p2 ───┘     x=2
+             y=3
+
+Highlight:
+
+p1 and p2 are references to the SAME object.
+
+This concept should have its own slide.
+
+-----------------------------------
+DOT OPERATOR
+-----------------------------------
+
+Point p = new Point();
+
+p.x = 2;
+p.y = 3;
+
+p.afficher();
+
+Visualize the dot as:
+
+object
+.
+member
+
+Show:
+
+p.x
+p.y
+p.afficher()
+
+-----------------------------------
+CONSTRUCTORS
+-----------------------------------
+
+Create hero question:
+
+How does an object come to life?
+
+Answer:
+CONSTRUCTOR
+
+Explain visually:
+
+new Point(3,4)
+
+↓
+
+constructor
+
+↓
+
+initialized object
+
+Rules:
+
+same name as class
+no return type
+initializes state
+
+-----------------------------------
+MULTIPLE CONSTRUCTORS
+-----------------------------------
+
+Use cards:
+
+new Point()
+new Point(3,4)
+new Point(otherPoint)
+
+Show that Java selects the matching constructor
+based on parameters.
+
+Connect this later to overloading.
+
+-----------------------------------
+THIS
+-----------------------------------
+
+Create a before/after slide.
+
+Problem:
+
+Point(int x, int y) {
+    x = x;
+    y = y;
+}
+
+Then:
+
+Point(int x, int y) {
+    this.x = x;
+    this.y = y;
+}
+
+Visually distinguish:
+
+x
+parameter
+
+this.x
+attribute of current object
+
+Add a small object badge:
+
+this = current object.
+
+-----------------------------------
+ARRAYS
+-----------------------------------
+
+Visual representation:
+
+int[] values = new int[3];
+
+Memory cells:
+
+[0] [0] [0]
+
+Then initialization:
+
+int[] values = {8, 6, 1};
+
+Memory:
+
+[8] [6] [1]
+
+Also show:
+arraycopy
+equals
+deepEquals
+sort
+binarySearch
+fill
+
+Do not put them in an old-fashioned table.
+Use compact command chips.
+
+-----------------------------------
+STRING
+-----------------------------------
+
+Explain visually:
+
+String s1 = "Bonjour";
+String s2 = "Bonjour";
+
+Then:
+
+String s3 = new String("Bonjour");
+
+Use reference diagrams.
+
+-----------------------------------
+STRING IMMUTABILITY
+-----------------------------------
+
+Hero concept:
+
+String is immutable.
+
+Illustrate:
+
+s = "Java"
+
+then
+
+s = "Java SE"
+
+Do not modify the old object.
+Create/reference another value.
+
+Use simple memory bubbles.
+
+-----------------------------------
+== VS EQUALS
+-----------------------------------
+
+Make this an important warning slide.
+
+==
+
+same reference?
+
+equals()
+
+same content?
+
+Show two String objects containing "Bonjour".
+
+Use a visual comparison.
+
+-----------------------------------
+STRINGBUILDER
+-----------------------------------
+
+Compare:
+
+String
+immutable
+
+StringBuilder
+modifiable
+
+Show:
+append()
+insert()
+replace()
+delete()
+
+-----------------------------------
+METHOD OVERLOADING
+-----------------------------------
+
+Show:
+
+translate(int dx, int dy)
+
+translate(Point p)
+
+Same name
+Different signature.
+
+Highlight:
+
+OVERLOADING
+
+Also include the rule from the course:
+changing only the return type is not sufficient.
+
+-----------------------------------
+STATIC
+-----------------------------------
+
+Create a visual:
+
+INSTANCE MEMBERS
+
+p1.x
+p2.x
+
+each object owns a value.
+
+versus
+
+STATIC MEMBER
+
+Point.nbPoints
+
+shared by every object.
+
+Use three Point objects connected to a single
+shared counter.
+
+-----------------------------------
+STATIC COUNTER DEMO
+-----------------------------------
+
+Based on the course example:
+
+Point.nbPoint = 0
+
+Create p1
+→ 1
+
+Create p2
+→ 2
+
+Show this as an animated counter-like sequence.
+
+-----------------------------------
+PASSAGE DE PARAMÈTRES
+-----------------------------------
+
+Use diagrams rather than paragraphs.
+
+Primitive:
+copy of value.
+
+Object:
+copy of reference.
+
+Explain the example from the course visually.
+
+Show what changes and what does not.
+
+-----------------------------------
+PACKAGES
+-----------------------------------
+
+Create a project tree:
+
+src
+└── vehicule
+    ├── Voiture.java
+    ├── Moto.java
+    └── voiture
+        └── VoitureEssence.java
+
+Explain:
+
+package vehicule;
+
+and:
+
+import java.util.ArrayList;
+import java.util.*;
+
+Use IDE-style project explorer.
+
+-----------------------------------
+ENCAPSULATION
+-----------------------------------
+
+Make this a major conceptual slide.
+
+BAD:
+
+class Point {
+    public double rho;
+}
+
+External class:
+
+p.rho = -1;
+
+Then:
+
+GOOD:
+
+private double rho;
+
+public void setRho(double value) {
+    ...
+}
+
+Use lock/shield imagery lightly.
+
+Central statement:
+
+Protect the object's internal state.
+
+-----------------------------------
+VISIBILITY
+-----------------------------------
+
+Create a modern matrix for:
+
+public
+private
+protected
+default
+
+Make it simple and readable.
+
+Avoid excessive detail.
+
+-----------------------------------
+GETTERS AND SETTERS
+-----------------------------------
+
+Use the source Point example:
+
+private int x;
+private int y;
+
+getX()
+getY()
+setX()
+setY()
+
+Create a data flow:
+
+External code
+→ setter
+→ validation
+→ private state
+
+Private state
+→ getter
+→ external code
+
+-----------------------------------
+ENCAPSULATION BENEFIT
+-----------------------------------
+
+Use the Segment example conceptually.
+
+Implementation A:
+
+private Point p1, p2;
+
+Implementation B:
+
+private Point[] tab;
+
+Show:
+
+PUBLIC INTERFACE
+remains stable.
+
+INTERNAL IMPLEMENTATION
+can change.
+
+Key message:
+
+Encapsulation reduces coupling.
+
+-----------------------------------
+CHAPTER 2 RECAP
+-----------------------------------
+
+Create a concept map:
+
+CLASS
+↓ creates
+OBJECT
+
+OBJECT
+↓ contains
+STATE + BEHAVIOR
+
+new
+↓ invokes
+CONSTRUCTOR
+
+this
+↓ current object
+
+private
+↓ protects
+STATE
+
+static
+↓ belongs to
+CLASS
+
+-----------------------------------
+FINAL CHALLENGE
+-----------------------------------
+
+Create a mini Java scenario.
+
+Class:
+
+Student
+
+attributes:
+name
+grade
+
+Ask students to identify:
+- class;
+- attributes;
+- constructor;
+- object;
+- reference;
+- getter;
+- setter;
+- static variable.
+
+Then create a correction slide.
+
+==================================================
+CODE DESIGN
+==================================================
+
+Every code example must look like a professional IDE.
+
+Use:
+- line numbers when useful;
+- syntax highlighting;
+- correct indentation;
+- dark background;
+- Java file tab;
+- small filename.
+
+Never place huge paragraphs next to huge blocks of code.
+
+Highlight only the lines currently being explained.
+
+Use annotations outside the code block.
+
+==================================================
+DIAGRAM STYLE
+==================================================
+
+Use clear diagrams for:
+
+Source → Bytecode → JVM
+
+Class → Object
+
+Reference → Heap object
+
+new → Constructor → Object
+
+this → Current object
+
+Object → Attributes + Methods
+
+private → Getter/Setter → Outside world
+
+Instance vs static
+
+Package hierarchy
+
+Use arrows and simple cards.
+
+Avoid overly decorative illustrations.
+
+==================================================
+STUDENT ENGAGEMENT
+==================================================
+
+Every 5–7 slides add one short interaction:
+
+Predict the output
+
+Find the error
+
+What happens in memory?
+
+Choose the correct declaration
+
+Implicit or explicit cast?
+
+== or equals()?
+
+Class or object?
+
+Instance or static?
+
+Keep each activity under 2 minutes.
+
+Provide a separate correction frame.
+
+==================================================
+PRESENTATION RHYTHM
+==================================================
+
+Alternate slide types:
+
+1. visual concept
+2. explanation
+3. code example
+4. diagram
+5. student challenge
+6. correction
+7. recap
+
+Avoid having several consecutive text-heavy slides.
+
+==================================================
+PDF EXPORT REQUIREMENTS
+==================================================
+
+This is essential.
+
+All slides must export cleanly to PDF.
+
+Therefore:
+
+- one 16:9 frame per slide;
+- no content outside frame bounds;
+- no essential information hidden inside interactions;
+- all fonts large enough for PDF;
+- no scroll areas inside slides;
+- no embedded webpage required to understand a concept;
+- maintain strong contrast;
+- maintain page numbering;
+- maintain chapter indicators;
+- preserve code readability.
+
+Create interaction states as separate frames when necessary.
+
+Example:
+
+Slide 15 — Challenge
+Slide 16 — Solution
+
+not only a hidden popup.
+
+==================================================
+END SLIDE
+==================================================
+
+Create a premium closing slide:
+
+JAVA
+From syntax to objects.
+
+Then:
+
+Next:
+Héritage
+Polymorphisme
+Interfaces
+Exceptions
+
+Only present them as a preview, not as content of these chapters.
+
+Add:
+
+Questions ?
+
+Use minimal visual design.
+
+==================================================
+FINAL QUALITY CONTROL
+==================================================
+
+Before finalizing:
+
+Verify that:
+- the course is understandable without animations;
+- all important original concepts are preserved;
+- repeated content has been consolidated;
+- code formatting is consistent;
+- slides are suitable for a university projector;
+- no slide contains an excessive paragraph;
+- diagrams explain difficult concepts visually;
+- every chapter contains recap and practice;
+- the PDF version remains fully understandable;
+- visual consistency is maintained throughout the entire presentation.
+
+The final result should feel like a premium computer science course designed
+in 2026, not like a redesigned Word document.
