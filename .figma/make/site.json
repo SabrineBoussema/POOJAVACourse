@@ -1,7 +1,10 @@
 {
-  "description": "Create and customize logos easily with a user-friendly interface designed for businesses and individuals seeking professional branding solutions.",
+  "description": "Cours de Programmation Orientée Objet en Java — Faculté des Sciences de Monastir, Licence GLSI 2.",
   "robots": {
     "index": false
+  },
+  "icons": {
+    "icon": "/favicon.png"
   },
   "accessibility": {
     "addBypassLinks": false,

@@ -1,5 +1,6 @@
 import { useState, useEffect, type CSSProperties, type ReactNode, type FC } from 'react'
 import { LogoStrip, ToolLogo } from './TechLogos'
+import { hi } from './syntaxHighlight'
 
 // ─── Tokens (clair / académique — aligné App) ─────────────────────────────
 const D1 = '#F4F7FB'
@@ -21,9 +22,18 @@ const ON_ACCENT = '#FFFFFF'
 const display: CSSProperties = { fontFamily: "'Syne', system-ui, sans-serif" }
 const mono: CSSProperties = { fontFamily: "'JetBrains Mono', monospace" }
 
+function isPrintMode() {
+  return typeof document !== 'undefined' && document.documentElement.dataset.printing === '1'
+}
+
 function usePhase(delays: number[]) {
-  const [phase, setPhase] = useState(0)
+  const printing = isPrintMode()
+  const [phase, setPhase] = useState(printing ? delays.length : 0)
   useEffect(() => {
+    if (isPrintMode()) {
+      setPhase(delays.length)
+      return
+    }
     const timers = delays.map((ms, i) =>
       setTimeout(() => setPhase(i + 1), ms)
     )
@@ -35,6 +45,8 @@ function usePhase(delays: number[]) {
 function Fade({ show, children, className = '', style }: {
   show: boolean; children: ReactNode; className?: string; style?: CSSProperties
 }) {
+  const printing = isPrintMode()
+  if (printing && !show) return null
   return (
     <div
       className={className}
@@ -42,7 +54,7 @@ function Fade({ show, children, className = '', style }: {
         ...style,
         opacity: show ? 1 : 0,
         transform: show ? 'translateY(0)' : 'translateY(12px)',
-        transition: 'opacity 0.9s ease, transform 0.9s ease',
+        transition: printing ? 'none' : 'opacity 0.9s ease, transform 0.9s ease',
         pointerEvents: show ? 'auto' : 'none',
       }}
     >
@@ -480,20 +492,20 @@ function Scene05ModelToJava() {
   const phase = usePhase([500, 1400, 2200, 3000, 3800, 4600, 5600])
 
   const codeLines = [
-    { show: 2, html: `<span style="color:#CC99CD">class</span> <span style="color:#DCDCAA">Etudiant</span> {` },
-    { show: 3, html: `    <span style="color:#DCDCAA">String</span> nom;` },
-    { show: 3, html: `    <span style="color:#DCDCAA">String</span> matricule;` },
-    { show: 4, html: `    <span style="color:#DCDCAA">double</span> moyenne;` },
-    { show: 4, html: `    <span style="color:#DCDCAA">int</span> niveau;` },
-    { show: 5, html: `` },
-    { show: 5, html: `    <span style="color:#CC99CD">void</span> <span style="color:#DCDCAA">afficherProfil</span>() {` },
-    { show: 5, html: `        <span style="color:#6A9955;font-style:italic">// ...</span>` },
-    { show: 5, html: `    }` },
-    { show: 5, html: `` },
-    { show: 5, html: `    <span style="color:#CC99CD">void</span> <span style="color:#DCDCAA">calculerMoyenne</span>() {` },
-    { show: 5, html: `        <span style="color:#6A9955;font-style:italic">// ...</span>` },
-    { show: 5, html: `    }` },
-    { show: 2, html: `}` },
+    { show: 2, code: 'class Etudiant {' },
+    { show: 3, code: '    String nom;' },
+    { show: 3, code: '    String matricule;' },
+    { show: 4, code: '    double moyenne;' },
+    { show: 4, code: '    int niveau;' },
+    { show: 5, code: '' },
+    { show: 5, code: '    void afficherProfil() {' },
+    { show: 5, code: '        // ...' },
+    { show: 5, code: '    }' },
+    { show: 5, code: '' },
+    { show: 5, code: '    void calculerMoyenne() {' },
+    { show: 5, code: '        // ...' },
+    { show: 5, code: '    }' },
+    { show: 2, code: '}' },
   ]
 
   return (
@@ -569,7 +581,7 @@ function Scene05ModelToJava() {
                       opacity: phase >= l.show ? 1 : 0,
                       transition: 'opacity 0.5s ease',
                     }}
-                    dangerouslySetInnerHTML={{ __html: l.html || '&nbsp;' }}
+                    dangerouslySetInnerHTML={{ __html: l.code ? hi(l.code) : '&nbsp;' }}
                   />
                 ))}
               </div>
@@ -1096,7 +1108,8 @@ function Scene10CarChallenge() {
               <div className="px-4 py-2 mono text-xs" style={{ ...mono, color: '#8B949E', borderBottom: `1px solid ${E_BORD}` }}>
                 Voiture.java
               </div>
-              <pre className="mono p-5 text-sm leading-relaxed" style={{ ...mono, color: '#D4D4D4', margin: 0 }}>{`class Voiture {
+              <div className="mono p-5" style={{ ...mono, margin: 0, fontSize: 20, lineHeight: 1.7, color: '#D4D4D4' }}>
+                {`class Voiture {
     String marque;
     String couleur;
     double vitesse;
@@ -1104,7 +1117,11 @@ function Scene10CarChallenge() {
     void demarrer() { }
     void accelerer() { }
     void freiner() { }
-}`}</pre>
+}`.split('\n').map((line, i) => (
+                  <div key={i} className="whitespace-pre"
+                    dangerouslySetInnerHTML={{ __html: hi(line) || '&nbsp;' }} />
+                ))}
+              </div>
             </div>
             <p
               className="font-bold leading-tight"

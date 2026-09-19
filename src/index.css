@@ -201,31 +201,96 @@ body {
 ::-webkit-scrollbar { display: none; }
 * { scrollbar-width: none; }
 
-/* Print / PDF */
+/* Aperçu empilé avant impression (écran) */
+.print-all-wrapper {
+  min-height: 100vh;
+  background: #F4F7FB;
+}
+.print-all-wrapper .print-slide {
+  width: 100vw;
+  height: 56.25vw;
+  max-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: #F4F7FB;
+  border-bottom: 1px solid #CBD5E1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.print-all-wrapper .print-slide-stage {
+  width: 1920px;
+  height: 1080px;
+  transform-origin: center center;
+  flex-shrink: 0;
+}
+
+/* Print / PDF — une slide = une page paysage, diapo centrée */
 @media print {
   @page {
-    size: 1920px 1080px landscape;
+    size: landscape;
     margin: 0;
   }
-  body {
+
+  html,
+  body,
+  #root {
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
     background: #F4F7FB !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
-  .print-hidden { display: none !important; }
+
+  .print-hidden {
+    display: none !important;
+  }
+
+  .presentation-mode {
+    display: none !important;
+  }
+
   .print-all-wrapper {
-    display: flex !important;
-    flex-direction: column;
-    gap: 0;
+    display: block !important;
+    width: 100% !important;
+    background: #F4F7FB !important;
   }
-  .print-slide {
-    width: 1920px;
-    height: 1080px;
+
+  .print-all-wrapper .print-slide {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
     page-break-after: always;
     break-after: page;
-    overflow: hidden;
-    position: relative;
-    flex-shrink: 0;
+    break-inside: avoid;
+    overflow: hidden !important;
+    position: relative !important;
+    border: none !important;
+    background: #F4F7FB !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
-  .presentation-mode { display: none !important; }
+
+  .print-all-wrapper .print-slide:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+
+  .print-slide-stage {
+    width: 1920px !important;
+    height: 1080px !important;
+    transform-origin: center center !important;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    flex-shrink: 0 !important;
+  }
+
+  .print-all-wrapper * {
+    animation: none !important;
+    transition: none !important;
+  }
 }

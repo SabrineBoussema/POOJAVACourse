@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import fsmLogo from './assets/attachment2.png'
 import { OPENING_SLIDES } from './OpeningSequence'
 import { ToolLogo, TechMark, LogoStrip } from './TechLogos'
+import { hi } from './syntaxHighlight'
 
 // ─── JAVA — Design Tokens (clair / académique) ────────────────
 const D1     = '#F4F7FB'   // page background
@@ -36,35 +37,6 @@ const E_LINE  = '#8B949E'
 
 // Texte sur fonds colorés (orange, bleu, etc.)
 const ON_ACCENT = '#FFFFFF'
-
-// ─── Syntax highlight (classes CSS — jamais de codes couleur en texte brut) ─
-function hi(code: string): string {
-  const strings: string[] = []
-  let s = code
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"([^"]*)"/g, (_, inner: string) => {
-      const i = strings.length
-      strings.push(`<span class="str">"${inner}"</span>`)
-      return `\u0000S${i}\u0000`
-    })
-    .replace(/\/\/.*$/gm, '<span class="cmt">$&</span>')
-    .replace(
-      /\b(public|private|protected|static|void|class|new|return|this|import|package|final|extends|if|else|for|while|true|false|null|abstract|interface|implements)\b/g,
-      '<span class="kw">$1</span>',
-    )
-    .replace(
-      /\b(String|int|long|short|byte|char|float|double|boolean|Object|StringBuilder|Arrays|System|Point|Etudiant|Main)\b/g,
-      '<span class="cls">$1</span>',
-    )
-    .replace(/\b(\d+\.?\d*[fldFL]?)\b/g, '<span class="num">$1</span>')
-
-  strings.forEach((html, i) => {
-    s = s.replace(`\u0000S${i}\u0000`, html)
-  })
-  return s
-}
 
 // ─── Backgrounds ──────────────────────────────────────────────────────────
 const DARK_GRID: React.CSSProperties = {
@@ -1530,13 +1502,15 @@ class Etudiant {
 
 // SLIDE — Ready to code (transition)
 function SlideReadyToCode() {
-  const [phase, setPhase] = useState(0)
+  const isPrint = typeof document !== 'undefined' && document.documentElement.dataset.printing === '1'
+  const [phase, setPhase] = useState(isPrint ? 5 : 0)
   useEffect(() => {
+    if (isPrint) return
     const timers = [500, 1400, 2400, 3600, 4800].map((ms, i) =>
       setTimeout(() => setPhase(i + 1), ms)
     )
     return () => timers.forEach(clearTimeout)
-  }, [])
+  }, [isPrint])
 
   const show = (n: number) => ({
     opacity: phase >= n ? 1 : 0,
@@ -2814,27 +2788,43 @@ function SlideStringChallenge() {
 // SLIDE 40 — StringBuilder
 function SlideStringBuilder() {
   return (
-    <div className="w-full h-full flex gap-10 px-12 py-10" style={DARK_GRID}>
+    <div className="w-full h-full flex gap-8 px-12 py-8" style={DARK_GRID}>
       <FsmCorner />
-      <div className="flex-1">
-        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:BLUE }}>STRINGBUILDER</p>
-        <h2 className="font-black mb-5" style={{ fontSize:58, color:OW }}>String vs StringBuilder</h2>
-        <div className="grid grid-cols-2 gap-4 mb-5">
-          <div className="rounded-xl p-4" style={{ background:RED+'0a', border:`1.5px solid ${RED}44` }}>
-            <p className="mono font-bold mb-1" style={{ color:RED }}>String — Immuable</p>
-            <p className="text-xs" style={{ color:OW }}>Chaque concat = nouvel objet en mémoire</p>
+      <div className="flex-1 flex flex-col min-w-0 min-h-0">
+        <p className="mono font-black tracking-widest mb-2 shrink-0" style={{ fontSize: 16, letterSpacing: '0.16em', color: BLUE }}>
+          STRINGBUILDER
+        </p>
+        <h2 className="font-black mb-4 shrink-0" style={{ fontSize: 48, color: OW, letterSpacing: '-1px' }}>
+          String vs StringBuilder
+        </h2>
+        <div className="grid grid-cols-2 gap-4 mb-5 shrink-0">
+          <div className="rounded-xl px-5 py-4" style={{ background: RED + '0a', border: `1.5px solid ${RED}44` }}>
+            <p className="mono font-bold mb-1" style={{ color: RED, fontSize: 18 }}>String — Immuable</p>
+            <p style={{ color: OW, fontSize: 18, lineHeight: 1.35 }}>Chaque concat = nouvel objet en mémoire</p>
           </div>
-          <div className="rounded-xl p-4" style={{ background:EMERALD+'0a', border:`1.5px solid ${EMERALD}44` }}>
-            <p className="mono font-bold mb-1" style={{ color:EMERALD }}>StringBuilder — Modifiable</p>
-            <p className="text-xs" style={{ color:OW }}>Modifie le même buffer — efficace</p>
+          <div className="rounded-xl px-5 py-4" style={{ background: EMERALD + '0a', border: `1.5px solid ${EMERALD}44` }}>
+            <p className="mono font-bold mb-1" style={{ color: EMERALD, fontSize: 18 }}>StringBuilder — Modifiable</p>
+            <p style={{ color: OW, fontSize: 18, lineHeight: 1.35 }}>Modifie le même buffer — efficace</p>
           </div>
         </div>
-        <Editor code={`StringBuilder sb = new StringBuilder("Java");\nsb.append(" SE");         // "Java SE"\nsb.insert(4, " 21");      // "Java 21 SE"\nsb.replace(5, 7, "23");   // "Java 23 SE"\nsb.delete(7, 10);         // "Java 23"\nString result = sb.toString();`} filename="Builder.java" highlight={[2,3,4,5]} large />
+        <div className="flex-1 min-h-0">
+          <Editor
+            code={`StringBuilder sb = new StringBuilder("Java");\nsb.append(" SE");         // "Java SE"\nsb.insert(4, " 21");      // "Java 21 SE"\nsb.replace(5, 7, "23");   // "Java 23 SE"\nsb.delete(7, 10);         // "Java 23"\nString result = sb.toString();`}
+            filename="Builder.java"
+            highlight={[2, 3, 4, 5]}
+            large
+          />
+        </div>
       </div>
-      <div className="w-48 pt-10">
-        {['append()','insert()','replace()','delete()','reverse()','toString()'].map(m=>(
-          <div key={m} className="mono text-sm px-3 py-2.5 rounded-xl mb-1.5"
-            style={{ background:D3, border:`1px solid ${D4}`, color:SUB }}>{m}</div>
+      <div className="w-52 shrink-0 flex flex-col justify-center gap-2">
+        <p className="mono font-black tracking-widest mb-2" style={{ color: MUTED, fontSize: 13, letterSpacing: '0.12em' }}>
+          MÉTHODES
+        </p>
+        {['append()', 'insert()', 'replace()', 'delete()', 'reverse()', 'toString()'].map(m => (
+          <div key={m} className="mono px-4 py-3 rounded-xl"
+            style={{ background: D2, border: `1.5px solid ${D4}`, color: SUB, fontSize: 18 }}>
+            {m}
+          </div>
         ))}
       </div>
     </div>
@@ -3652,26 +3642,50 @@ export default function App() {
   const handlePdf = useCallback(() => {
     setPrinting(true)
     document.documentElement.dataset.printing = '1'
-    setTimeout(() => {
-      window.print()
+
+    let done = false
+    const finish = () => {
+      if (done) return
+      done = true
+      window.removeEventListener('afterprint', finish)
+      setPrinting(false)
+      delete document.documentElement.dataset.printing
+    }
+
+    window.addEventListener('afterprint', finish)
+
+    requestAnimationFrame(() => {
       setTimeout(() => {
-        setPrinting(false)
-        delete document.documentElement.dataset.printing
-      }, 500)
-    }, 300)
+        document.querySelectorAll<HTMLElement>('.print-slide-stage').forEach((el) => {
+          const page = el.parentElement
+          if (!page) return
+          const pw = page.clientWidth || window.innerWidth
+          const ph = page.clientHeight || window.innerHeight
+          const s = Math.min(pw / 1920, ph / 1080)
+          el.style.transformOrigin = 'center center'
+          el.style.transform = `scale(${s})`
+        })
+        window.print()
+        setTimeout(finish, 2500)
+      }, 1000)
+    })
   }, [])
 
   if (printing) {
     return (
       <div className="print-all-wrapper" style={{ background: D1 }}>
         <div className="print-hidden fixed inset-0 flex items-center justify-center z-50" style={{ background: D1 }}>
-          <p className="mono text-xl font-bold" style={{ color: ORANGE }}>Préparation du PDF… {total} slides</p>
+          <p className="mono text-xl font-bold" style={{ color: ORANGE }}>
+            Préparation du PDF… {total} slides
+          </p>
         </div>
         {SLIDES.map(({ component: Slide }, i) => (
-          <div key={i} className="print-slide" style={{ width: '100vw', height: '56.25vw', position: 'relative', overflow: 'hidden' }}>
-            <SlideChrome>
-              <Slide />
-            </SlideChrome>
+          <div key={i} className="print-slide">
+            <div className="print-slide-stage">
+              <SlideChrome>
+                <Slide />
+              </SlideChrome>
+            </div>
           </div>
         ))}
       </div>
