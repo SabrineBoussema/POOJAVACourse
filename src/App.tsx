@@ -829,194 +829,19 @@ function SlideTitle() {
 
   const fade = (p: number, extra?: React.CSSProperties): React.CSSProperties => ({
     opacity: phase >= p ? 1 : 0,
-    transform: phase >= p ? 'translateY(0)' : 'translateY(14px)',
-    transition: isPrint ? 'none' : 'opacity 0.75s ease, transform 0.75s ease',
+    transform: phase >= p ? 'translateY(0)' : 'translateY(12px)',
+    transition: isPrint ? 'none' : 'opacity 0.7s ease, transform 0.7s ease',
     ...extra,
   })
 
   const keywords = [
-    { t: 'class', x: '18%', y: '16%' },
-    { t: 'new', x: '82%', y: '20%' },
-    { t: 'this', x: '12%', y: '78%' },
-    { t: 'private', x: '86%', y: '74%' },
-    { t: 'static', x: '28%', y: '88%' },
-    { t: 'Object', x: '90%', y: '48%' },
+    { t: 'class', x: '12%', y: '18%' },
+    { t: 'new', x: '78%', y: '14%' },
+    { t: 'this', x: '88%', y: '42%' },
+    { t: 'Object', x: '70%', y: '88%' },
   ]
 
-  return (
-    <div className="w-full h-full relative overflow-hidden" style={{ background: '#F4F7FB' }}>
-      {/* Clear technical grid */}
-      <div className="absolute inset-0" style={{
-        backgroundImage: `linear-gradient(rgba(37,99,235,0.06) 1px, transparent 1px),
-                          linear-gradient(90deg, rgba(37,99,235,0.06) 1px, transparent 1px)`,
-        backgroundSize: '48px 48px',
-      }} />
-      {/* Soft accent washes — light, not muddy */}
-      <div className="absolute pointer-events-none" style={{
-        top: '-10%', left: '-6%', width: '50%', height: '55%',
-        background: `radial-gradient(ellipse, ${ORANGE}14 0%, transparent 70%)`,
-      }} />
-      <div className="absolute pointer-events-none" style={{
-        bottom: '-8%', right: '0%', width: '48%', height: '55%',
-        background: `radial-gradient(ellipse, ${BLUE}10 0%, transparent 68%)`,
-      }} />
-      {/* Very faint code watermark — dark on light for structure, low opacity */}
-      <div className="absolute inset-0 overflow-hidden select-none pointer-events-none" style={{ opacity: 0.045 }}>
-        {[
-          'public class Etudiant {',
-          '  private String nom;',
-          '  public void afficher() {',
-          '    System.out.println(nom);',
-          '  }',
-          '}',
-          'Etudiant e = new Etudiant();',
-          'e.afficher();',
-        ].map((l, i) => (
-          <div key={i} className="mono font-bold whitespace-nowrap"
-            style={{
-              color: LTEXT, fontSize: 33, position: 'absolute',
-              top: 48 + i * 78, left: i % 2 === 0 ? 20 : 160,
-            }}>
-            {l}
-          </div>
-        ))}
-      </div>
-      {/* Clean architectural lines */}
-      <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.35 }}>
-        <line x1="0" y1="90%" x2="100%" y2="90%" stroke={LBORD} strokeWidth="1.5" />
-        <line x1="57%" y1="0" x2="57%" y2="100%" stroke={LBORD} strokeWidth="1" strokeDasharray="5 7" />
-        <line x1="0" y1="16%" x2="10%" y2="16%" stroke={ORANGE} strokeWidth="2.5" />
-      </svg>
-
-      {/* LEFT — institutional content */}
-      <div className="absolute inset-y-0 left-0 flex flex-col justify-between"
-        style={{ width: '57%', padding: '88px 36px 56px 64px' }}>
-        <div>
-          <div style={fade(1)} className="flex items-center gap-4 mb-7">
-            <img
-              src={fsmLogo}
-              alt="Faculté des Sciences de Monastir"
-              className="object-contain"
-              style={{ width: 72, height: 72 }}
-            />
-            <div>
-              <p className="uppercase"
-                style={{
-                  fontFamily: "'Syne', system-ui, sans-serif",
-                  fontSize: 18, fontWeight: 700, color: BLUE, letterSpacing: '0.16em',
-                }}>
-                FACULTÉ DES SCIENCES<br />DE MONASTIR
-              </p>
-            </div>
-          </div>
-
-          <div style={fade(2)}>
-            <h1 className="leading-[0.95] mb-2"
-              style={{
-                fontFamily: "'Syne', system-ui, sans-serif",
-                fontSize: 71,
-                fontWeight: 800,
-                color: LTEXT,
-                letterSpacing: '-0.03em',
-              }}>
-              PROGRAMMATION<br />ORIENTÉE OBJET
-            </h1>
-          </div>
-
-          <div style={fade(3)}>
-            <div className="w-14 h-1.5 mb-5 rounded-full" style={{ background: ORANGE }} />
-            <p className="leading-none"
-              style={{
-                fontFamily: "'Syne', system-ui, sans-serif",
-                fontSize: 170,
-                fontWeight: 800,
-                color: ORANGE,
-                letterSpacing: '-0.06em',
-                lineHeight: 0.88,
-              }}>
-              JAVA
-            </p>
-          </div>
-
-          <div style={fade(5)}>
-            <p className="mt-6 mb-5"
-              style={{
-                fontFamily: "'Syne', system-ui, sans-serif",
-                fontSize: 32, fontWeight: 600, color: LSUB, letterSpacing: '0.01em',
-              }}>
-              Comprendre • Modéliser • Coder
-            </p>
-            <LogoStrip
-              kinds={['java', 'jdk', 'jvm', 'intellij']}
-              size={48}
-              gap={12}
-              labels
-            />
-          </div>
-        </div>
-
-        <div style={fade(5)} className="flex items-end gap-8 flex-wrap">
-          <div>
-            <p className="mono text-xs tracking-widest uppercase mb-1.5" style={{ color: '#64748B' }}>Niveau</p>
-            <p style={{ fontFamily: "'Syne', system-ui, sans-serif", fontSize: 25, fontWeight: 700, color: LTEXT }}>
-              Licence GLSI 2
-            </p>
-          </div>
-          <div className="w-px h-11" style={{ background: LBORD }} />
-          <div>
-            <p className="mono text-xs tracking-widest uppercase mb-1.5" style={{ color: '#64748B' }}>Année universitaire</p>
-            <p style={{ fontFamily: "'Syne', system-ui, sans-serif", fontSize: 25, fontWeight: 700, color: LTEXT }}>
-              2026–2027
-            </p>
-          </div>
-          <div className="w-px h-11" style={{ background: LBORD }} />
-          <div>
-            <p className="mono text-xs tracking-widest uppercase mb-1.5" style={{ color: '#64748B' }}>Enseignante</p>
-            <p style={{ fontFamily: "'Syne', system-ui, sans-serif", fontSize: 25, fontWeight: 700, color: LTEXT }}>
-              Sabrine Boussema
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* RIGHT — grand éditeur Main.java (lisible en amphithéâtre) */}
-      <div className="absolute inset-y-0 right-0 flex items-center justify-center"
-        style={{ width: '46%', paddingRight: 40, paddingTop: 64, paddingBottom: 48 }}>
-        {keywords.map((k) => (
-          <span key={k.t} className="absolute mono select-none pointer-events-none"
-            style={{
-              left: k.x, top: k.y, transform: 'translate(-50%, -50%)',
-              fontSize: 21, color: BLUE, opacity: phase >= 4 ? 0.28 : 0,
-              transition: isPrint ? 'none' : 'opacity 1s ease', letterSpacing: '0.05em',
-              fontWeight: 600,
-            }}>
-            {k.t}
-          </span>
-        ))}
-
-        <div style={{
-          ...fade(4),
-          width: '100%',
-          maxWidth: 740,
-          height: '82%',
-          minHeight: 560,
-          display: 'flex',
-          flexDirection: 'column',
-          transform: phase >= 4
-            ? 'perspective(1400px) rotateY(-3deg) rotateX(1deg) translateY(0)'
-            : 'perspective(1400px) rotateY(-3deg) rotateX(1deg) translateX(28px)',
-          transition: isPrint ? 'none' : 'opacity 0.9s ease, transform 0.9s ease',
-          boxShadow: '0 28px 72px rgba(15,23,42,0.22), 0 0 0 1px rgba(148,163,184,0.4)',
-          borderRadius: 16,
-          overflow: 'hidden',
-        }}>
-          <div className="flex-1 min-h-0 h-full">
-            <Editor
-              large
-              filename="Main.java"
-              highlight={[3]}
-              activeLine={3}
-              code={`public class Main {
+  const coverCode = `public class Main {
     public static void main(String[] args) {
         Etudiant e1 = new Etudiant("Sarra", 14.5);
         e1.afficherProfil();
@@ -1036,9 +861,236 @@ class Etudiant {
         System.out.println("Etudiant : " + nom);
         System.out.println("Moyenne : " + moyenne);
     }
-}`}
+}`
+
+  return (
+    <div className="w-full h-full relative overflow-hidden" style={{ background: '#F4F7FB' }}>
+      {/* Grid léger */}
+      <div className="absolute inset-0" style={{
+        backgroundImage: `linear-gradient(rgba(37,99,235,0.05) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(37,99,235,0.05) 1px, transparent 1px)`,
+        backgroundSize: '48px 48px',
+      }} />
+      <div className="absolute pointer-events-none" style={{
+        top: '-8%', left: '-4%', width: '42%', height: '50%',
+        background: `radial-gradient(ellipse, ${ORANGE}12 0%, transparent 70%)`,
+      }} />
+      <div className="absolute pointer-events-none" style={{
+        bottom: '-6%', right: '0%', width: '50%', height: '48%',
+        background: `radial-gradient(ellipse, ${BLUE}0c 0%, transparent 68%)`,
+      }} />
+
+      {/* Filigrane UNIQUEMENT à droite — ne gêne pas les titres */}
+      <div className="absolute select-none pointer-events-none overflow-hidden"
+        style={{ left: '52%', right: 0, top: 0, bottom: 0, opacity: 0.04 }}>
+        {['class', 'new', 'this', 'Object', 'private', 'static'].map((w, i) => (
+          <span key={w} className="mono font-black absolute"
+            style={{
+              color: LTEXT,
+              fontSize: 42,
+              left: `${8 + (i % 3) * 28}%`,
+              top: `${12 + i * 14}%`,
+            }}>
+            {w}
+          </span>
+        ))}
+      </div>
+
+      <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.28 }}>
+        <line x1="0" y1="92%" x2="100%" y2="92%" stroke={LBORD} strokeWidth="1.5" />
+        <line x1="50%" y1="0" x2="50%" y2="100%" stroke={LBORD} strokeWidth="1" strokeDasharray="6 8" />
+        <line x1="0" y1="14%" x2="8%" y2="14%" stroke={ORANGE} strokeWidth="3" />
+      </svg>
+
+      {/* LEFT — titres (zone réservée, pas de chevauchement) */}
+      <div
+        className="absolute inset-y-0 left-0 flex flex-col justify-between z-20"
+        style={{ width: '48%', padding: '80px 40px 44px 56px', overflow: 'hidden' }}
+      >
+        <div style={{ maxWidth: 520 }}>
+          <div style={fade(1)} className="flex items-center gap-4 mb-8">
+            <img
+              src={fsmLogo}
+              alt="Faculté des Sciences de Monastir"
+              className="object-contain shrink-0"
+              style={{ width: 68, height: 68 }}
             />
+            <p className="uppercase leading-snug"
+              style={{
+                fontFamily: "'Syne', system-ui, sans-serif",
+                fontSize: 17,
+                fontWeight: 700,
+                color: BLUE,
+                letterSpacing: '0.14em',
+              }}>
+              FACULTÉ DES SCIENCES<br />DE MONASTIR
+            </p>
           </div>
+
+          <div style={fade(2)}>
+            <h1
+              style={{
+                fontFamily: "'Syne', system-ui, sans-serif",
+                fontSize: 54,
+                fontWeight: 800,
+                color: LTEXT,
+                letterSpacing: '-0.03em',
+                lineHeight: 1.08,
+                marginBottom: 16,
+              }}>
+              PROGRAMMATION<br />ORIENTÉE OBJET
+            </h1>
+          </div>
+
+          <div style={fade(3)}>
+            <div className="w-14 h-1.5 mb-4 rounded-full" style={{ background: ORANGE }} />
+            <p
+              style={{
+                fontFamily: "'Syne', system-ui, sans-serif",
+                fontSize: 118,
+                fontWeight: 800,
+                color: ORANGE,
+                letterSpacing: '-0.05em',
+                lineHeight: 0.92,
+              }}>
+              JAVA
+            </p>
+          </div>
+
+          <div style={fade(5)} className="mt-6">
+            <p
+              style={{
+                fontFamily: "'Syne', system-ui, sans-serif",
+                fontSize: 26,
+                fontWeight: 600,
+                color: LSUB,
+                marginBottom: 16,
+              }}>
+              Comprendre · Modéliser · Coder
+            </p>
+            <LogoStrip kinds={['java', 'jdk', 'jvm', 'intellij']} size={42} gap={10} labels />
+          </div>
+        </div>
+
+        <div
+          className="flex items-end gap-6 flex-wrap"
+          style={{
+            ...fade(5),
+            borderTop: `1px solid ${LBORD}`,
+            paddingTop: 18,
+            maxWidth: 520,
+          }}
+        >
+          {[
+            { k: 'NIVEAU', v: 'Licence GLSI 2' },
+            { k: 'ANNÉE', v: '2026–2027' },
+            { k: 'ENSEIGNANTE', v: 'Sabrine Boussema' },
+          ].map((m, i) => (
+            <div key={m.k} className="flex items-end gap-6">
+              {i > 0 && <div className="w-px h-10 self-center" style={{ background: LBORD }} />}
+              <div>
+                <p className="mono tracking-widest uppercase mb-1"
+                  style={{ color: MUTED, fontSize: 12, letterSpacing: '0.12em' }}>
+                  {m.k}
+                </p>
+                <p style={{
+                  fontFamily: "'Syne', system-ui, sans-serif",
+                  fontSize: 20,
+                  fontWeight: 700,
+                  color: LTEXT,
+                }}>
+                  {m.v}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* RIGHT — éditeur (séparé clairement du titre) */}
+      <div
+        className="absolute z-10 flex flex-col"
+        style={{
+          left: '52%',
+          right: 36,
+          top: 68,
+          bottom: 36,
+        }}
+      >
+        {keywords.map((k) => (
+          <span key={k.t} className="absolute mono select-none pointer-events-none"
+            style={{
+              left: k.x, top: k.y, transform: 'translate(-50%, -50%)',
+              fontSize: 18, color: BLUE, opacity: phase >= 4 ? 0.22 : 0,
+              transition: isPrint ? 'none' : 'opacity 1s ease',
+              fontWeight: 600,
+              zIndex: 0,
+            }}>
+            {k.t}
+          </span>
+        ))}
+
+        <div style={{
+          ...fade(4),
+          position: 'relative',
+          zIndex: 1,
+          flex: 1,
+          minHeight: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          borderRadius: 16,
+          overflow: 'hidden',
+          boxShadow: '0 24px 64px rgba(15,23,42,0.2), 0 0 0 1px rgba(148,163,184,0.45)',
+        }}>
+          <CoverEditor code={coverCode} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/** Éditeur couverture — police densifiée pour tout voir sans couper les mots */
+function CoverEditor({ code }: { code: string }) {
+  const lines = code.split('\n')
+  const fs = 20
+  const lh = '1.85rem'
+  return (
+    <div className="flex flex-col h-full w-full" style={{ border: `1px solid ${E_BORD}`, background: E_BG }}>
+      <div className="flex items-center shrink-0" style={{ background: '#161B22', borderBottom: `1px solid ${E_BORD}`, height: 42 }}>
+        <div className="flex items-center gap-1.5 px-4">
+          <span style={{ color: '#FF5F57', fontSize: 12 }}>●</span>
+          <span style={{ color: '#FFBD2E', fontSize: 12 }}>●</span>
+          <span style={{ color: '#28CA41', fontSize: 12 }}>●</span>
+        </div>
+        <div className="px-3 py-1 mono flex items-center gap-2"
+          style={{ background: E_BG, color: '#8B949E', borderBottom: `2px solid ${ORANGE}`, fontSize: 15 }}>
+          <span style={{ color: ORANGE, fontWeight: 700 }}>Java</span>
+          Main.java
+        </div>
+      </div>
+      <div className="flex flex-1 min-h-0 overflow-hidden">
+        <div className="shrink-0 pt-3 pb-2 pr-2 select-none text-right"
+          style={{ width: 42, background: E_GUTTER, borderRight: `1px solid ${E_BORD}` }}>
+          {lines.map((_, i) => (
+            <div key={i} className="mono"
+              style={{ lineHeight: lh, fontSize: fs - 2, color: i + 1 === 3 ? ORANGE + 'cc' : '#3B4252', paddingRight: 6 }}>
+              {i + 1}
+            </div>
+          ))}
+        </div>
+        <div className="flex-1 overflow-auto py-3 pl-3 pr-4">
+          {lines.map((line, i) => {
+            const n = i + 1
+            const active = n === 3
+            return (
+              <div key={i} className="relative"
+                style={{ lineHeight: lh, background: active ? E_ACTIVE : 'transparent', paddingLeft: 10 }}>
+                {active && <div className="absolute left-0 top-0 bottom-0 w-0.5" style={{ background: ORANGE }} />}
+                <span className="mono whitespace-pre" style={{ fontSize: fs, color: '#D4D4D4' }}
+                  dangerouslySetInnerHTML={{ __html: hi(line) }} />
+              </div>
+            )
+          })}
         </div>
       </div>
     </div>
