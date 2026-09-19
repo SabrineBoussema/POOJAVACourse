@@ -37,7 +37,7 @@ NEW CREATIVE DIRECTION
 
 Name the visual system:
 
-JAVA VISUAL LAB
+JAVA
 
 The presentation should feel like students are entering
 an interactive Java laboratory.

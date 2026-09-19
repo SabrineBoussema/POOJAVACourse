@@ -1170,7 +1170,7 @@ function Scene11WhyJava() {
           >
             JAVA
           </p>
-          <LogoStrip kinds={['jdk', 'jvm', 'intellij', 'maven']} size={48} gap={14} labels />
+          <LogoStrip kinds={['jdk', 'jvm', 'intellij']} size={48} gap={14} labels />
         </div>
       </Fade>
 
@@ -1292,7 +1292,7 @@ function Scene12Promise() {
           <p style={{ color: SUB, fontSize: 30, letterSpacing: '0.04em' }} className="mb-6">
             Comprendre. Modéliser. Coder.
           </p>
-          <LogoStrip kinds={['java', 'jdk', 'intellij', 'maven', 'git']} size={44} gap={12} labels />
+          <LogoStrip kinds={['java', 'jdk', 'jvm', 'intellij']} size={44} gap={12} labels />
           <p className="mono text-xs mt-10 tracking-widest" style={{ ...mono, color: MUTED, letterSpacing: '0.15em' }}>
             → CHAPITRE 01
           </p>

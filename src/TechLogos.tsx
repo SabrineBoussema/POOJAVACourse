@@ -1,4 +1,4 @@
-/** Logos officiels (Simple Icons + JetBrains brand) — toolchain Java */
+/** Logos officiels — toolchain Java */
 
 import javaLogo from './assets/logos/java.png'
 import jdkLogo from './assets/logos/jdk.jpg'
@@ -30,7 +30,6 @@ const LOGO_SRC: Record<string, string> = {
   oracle: oracleLogo,
 }
 
-/** Fonds discrets pour lisibilité amphithéâtre */
 const PLATE: Record<string, string> = {
   java: '#000000',
   jdk: '#FFFFFF',
@@ -43,12 +42,27 @@ const PLATE: Record<string, string> = {
   gradle: '#ECFDF5',
   git: '#FFF7ED',
   spring: '#F0FDF4',
-  jakarta: '#FFF7ED',
   oracle: '#FEF2F2',
 }
 
-/** Wordmarks horizontaux (pas carrés) */
+/** Wordmarks horizontaux */
 const WIDE = new Set(['jdk', 'jvm', 'openjdk'])
+
+const NAMES: Record<string, string> = {
+  java: 'Java',
+  jdk: 'JDK',
+  jvm: 'JVM',
+  openjdk: 'OpenJDK',
+  intellij: 'IntelliJ IDEA',
+  eclipse: 'Eclipse',
+  vscode: 'VS Code',
+  maven: 'Maven',
+  gradle: 'Gradle',
+  git: 'Git',
+  spring: 'Spring',
+  jakarta: 'Jakarta EE',
+  oracle: 'Oracle',
+}
 
 export function TechMark({ label, color, size = 48 }: { label: string; color: string; size?: number }) {
   return (
@@ -71,17 +85,26 @@ export function TechMark({ label, color, size = 48 }: { label: string; color: st
   )
 }
 
-export function ToolLogo({ kind, size = 52 }: { kind: string; size?: number }) {
+export function ToolLogo({
+  kind,
+  size = 52,
+  /** Mode compact : force un cadre carré (pipelines / cartes étroites) */
+  compact = false,
+}: {
+  kind: string
+  size?: number
+  compact?: boolean
+}) {
   const src = LOGO_SRC[kind]
   if (!src) {
     return <TechMark label={kind.slice(0, 2).toUpperCase()} color={ORANGE} size={size} />
   }
 
   const isBadge = kind === 'intellij' || kind === 'java'
-  const isWide = WIDE.has(kind)
-  const pad = isBadge ? 0 : Math.max(6, Math.round(size * 0.12))
-  const radius = Math.max(10, Math.round(size * 0.18))
-  const boxW = isWide ? Math.round(size * (kind === 'jvm' ? 1.55 : 2.4)) : size
+  const isWide = !compact && WIDE.has(kind)
+  const pad = isBadge ? 0 : Math.max(4, Math.round(size * (isWide ? 0.08 : 0.12)))
+  const radius = Math.max(8, Math.round(size * 0.18))
+  const boxW = isWide ? Math.round(size * (kind === 'jvm' ? 1.45 : 2.1)) : size
   const boxH = size
 
   return (
@@ -115,23 +138,7 @@ export function ToolLogo({ kind, size = 52 }: { kind: string; size?: number }) {
   )
 }
 
-const NAMES: Record<string, string> = {
-  java: 'Java',
-  jdk: 'JDK',
-  jvm: 'JVM',
-  openjdk: 'OpenJDK',
-  intellij: 'IntelliJ IDEA',
-  eclipse: 'Eclipse',
-  vscode: 'VS Code',
-  maven: 'Maven',
-  gradle: 'Gradle',
-  git: 'Git',
-  spring: 'Spring',
-  jakarta: 'Jakarta EE',
-  oracle: 'Oracle',
-}
-
-/** Rangée de logos significatifs pour l’en-tête / premières slides */
+/** Rangée de logos — wordmarks JDK/JVM en compact pour éviter le débordement */
 export function LogoStrip({
   kinds = ['java', 'jdk', 'jvm', 'intellij'],
   size = 40,
@@ -145,8 +152,9 @@ export function LogoStrip({
 }) {
   const labelText: Record<string, string> = {
     java: 'Java',
-    jdk: 'JDK 21',
+    jdk: 'JDK',
     jvm: 'JVM',
+    openjdk: 'OpenJDK',
     intellij: 'IntelliJ',
     eclipse: 'Eclipse',
     vscode: 'VS Code',
@@ -154,14 +162,13 @@ export function LogoStrip({
     gradle: 'Gradle',
     git: 'Git',
     spring: 'Spring',
-    jakarta: 'Jakarta EE',
     oracle: 'Oracle',
   }
   return (
     <div className="flex items-center flex-wrap" style={{ gap }} aria-label="Technologies Java">
       {kinds.map((k) => (
         <div key={k} className="flex flex-col items-center" style={{ gap: 4 }}>
-          <ToolLogo kind={k} size={size} />
+          <ToolLogo kind={k} size={size} compact={WIDE.has(k) && size <= 48} />
           {labels && (
             <span className="mono font-bold" style={{ fontSize: Math.max(10, size * 0.22), color: '#64748B' }}>
               {labelText[k] ?? k}

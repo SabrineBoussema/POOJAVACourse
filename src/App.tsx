@@ -3,7 +3,7 @@ import fsmLogo from './assets/attachment2.png'
 import { OPENING_SLIDES } from './OpeningSequence'
 import { ToolLogo, TechMark, LogoStrip } from './TechLogos'
 
-// ─── JAVA VISUAL LAB — Design Tokens (clair / académique) ────────────────
+// ─── JAVA — Design Tokens (clair / académique) ────────────────
 const D1     = '#F4F7FB'   // page background
 const D2     = '#FFFFFF'   // surface / cards
 const D3     = '#EEF2F7'   // muted panel
@@ -124,32 +124,39 @@ function SlideChrome({ children }: { children: React.ReactNode }) {
   return (
     <div className="w-full h-full relative slide-chrome">
       <div className="absolute top-0 left-0 right-0 z-40 pointer-events-none"
-        style={{ height: 5, background: `linear-gradient(90deg, ${ORANGE} 0%, ${BLUE} 55%, ${EMERALD} 100%)` }} />
+        style={{ height: 4, background: `linear-gradient(90deg, ${ORANGE} 0%, ${BLUE} 55%, ${EMERALD} 100%)` }} />
 
-      {/* Head bar */}
+      {/* Head bar — fond léger pour rester lisible aussi sur slides sombres */}
       <div
-        className="absolute top-3 left-4 right-4 z-40 flex items-center justify-between gap-4 pointer-events-none print-hidden"
-        style={{ height: 52 }}
+        className="absolute top-2 left-3 right-3 z-40 flex items-center justify-between gap-3 pointer-events-none print-hidden"
+        style={{
+          height: 48,
+          padding: '0 10px',
+          borderRadius: 12,
+          background: 'rgba(255,255,255,0.92)',
+          border: `1px solid ${D4}`,
+          boxShadow: '0 4px 18px rgba(15,23,42,0.08)',
+        }}
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <img
             src={fsmLogo}
             alt="Faculté des Sciences de Monastir"
             className="object-contain"
-            style={{ width: 44, height: 44 }}
+            style={{ width: 34, height: 34 }}
           />
           <div className="leading-tight">
-            <p className="mono font-black" style={{ color: ORANGE, fontSize: 11, letterSpacing: '0.12em' }}>
-              JAVA VISUAL LAB
+            <p className="mono font-black" style={{ color: ORANGE, fontSize: 13, letterSpacing: '0.12em' }}>
+              JAVA
             </p>
-            <p className="mono" style={{ color: MUTED, fontSize: 10 }}>
-              FSM · POO Java · GLSI 2
+            <p className="mono" style={{ color: MUTED, fontSize: 12 }}>
+              FSM · POO · GLSI 2
             </p>
           </div>
           <span
             className="mono font-bold px-2 py-1 rounded-md ml-1"
             style={{
-              fontSize: 10,
+              fontSize: 11,
               letterSpacing: '0.06em',
               background: 'rgba(245,158,11,0.14)',
               color: '#B45309',
@@ -159,10 +166,12 @@ function SlideChrome({ children }: { children: React.ReactNode }) {
             EN COURS
           </span>
         </div>
-        <LogoStrip kinds={['java', 'jdk', 'jvm', 'intellij']} size={36} gap={8} />
+        <LogoStrip kinds={['java', 'jdk', 'jvm', 'intellij']} size={30} gap={5} />
       </div>
 
-      {children}
+      <div className="w-full h-full" style={{ paddingTop: 56, boxSizing: 'border-box' }}>
+        {children}
+      </div>
     </div>
   )
 }
@@ -712,7 +721,7 @@ function Overview({ current, total, chapters, onClose, onGoto }: {
         <div className="flex items-center justify-between mb-5 sm:mb-6 gap-3">
           <div>
             <p className="mono text-[10px] sm:text-xs font-black tracking-widest mb-1" style={{ color: ORANGE }}>
-              JAVA VISUAL LAB
+              JAVA
             </p>
             <h2 className="font-black text-xl sm:text-2xl" style={{ color: OW, fontFamily: "'Syne', system-ui, sans-serif" }}>
               Plan du cours
@@ -909,7 +918,7 @@ function SlideTitle() {
               Comprendre • Modéliser • Coder
             </p>
             <LogoStrip
-              kinds={['java', 'jdk', 'jvm', 'intellij', 'maven', 'git']}
+              kinds={['java', 'jdk', 'jvm', 'intellij']}
               size={48}
               gap={12}
               labels
@@ -1047,9 +1056,9 @@ function SlideWhyJava() {
               return <line key={i} x1="190" y1="190" x2={x} y2={y} stroke={n.color} strokeWidth="2" opacity="0.45" />
             })}
           </svg>
-          <div className="absolute flex flex-col items-center justify-center rounded-full"
-            style={{ left: 190-52, top: 190-52, width:104, height:104, background: ORANGE, boxShadow:`0 0 40px ${ORANGE}55` }}>
-            <span className="mono font-black text-white leading-none" style={{ fontSize: 20 }}>JVM</span>
+          <div className="absolute flex flex-col items-center justify-center rounded-full overflow-hidden"
+            style={{ left: 190-52, top: 190-52, width:104, height:104, background: '#000', boxShadow:`0 0 40px ${ORANGE}55` }}>
+            <ToolLogo kind="java" size={96} />
           </div>
           {nodes.map((n,i) => {
             const rad = (n.angle * Math.PI) / 180
@@ -1276,7 +1285,7 @@ function SlideJavaToolchain() {
             >
               {s.dominant && (
                 <div className="mb-3">
-                  <ToolLogo kind={s.label === 'JDK' ? 'jdk' : 'jvm'} size={56} />
+                  <ToolLogo kind={s.label === 'JDK' ? 'jdk' : 'jvm'} size={52} compact />
                 </div>
               )}
               <p className="mono font-black tracking-wider mb-2"
@@ -1298,7 +1307,7 @@ function SlideJavaToolchain() {
       <div className="flex gap-6 shrink-0">
         <div className="flex-1 rounded-2xl px-8 py-6 flex items-center gap-5"
           style={{ background: ORANGE + '14', border: `2px solid ${ORANGE}` }}>
-          <ToolLogo kind="jdk" size={64} />
+          <ToolLogo kind="jdk" size={56} compact />
           <div>
             <p className="font-black leading-none mb-1" style={{ fontFamily: "'Syne', system-ui, sans-serif", fontSize: 36, color: ORANGE }}>JDK</p>
             <p className="font-bold" style={{ color: OW, fontSize: 22 }}>POUR DÉVELOPPER.</p>
@@ -1306,7 +1315,7 @@ function SlideJavaToolchain() {
         </div>
         <div className="flex-1 rounded-2xl px-8 py-6 flex items-center gap-5"
           style={{ background: EMERALD + '14', border: `2px solid ${EMERALD}` }}>
-          <ToolLogo kind="jvm" size={64} />
+          <ToolLogo kind="jvm" size={56} compact />
           <div>
             <p className="font-black leading-none mb-1" style={{ fontFamily: "'Syne', system-ui, sans-serif", fontSize: 36, color: EMERALD }}>JVM</p>
             <p className="font-bold" style={{ color: OW, fontSize: 22 }}>POUR EXÉCUTER.</p>
@@ -1434,21 +1443,21 @@ function SlideReadyToCode() {
               <span style={{ color: EMERALD }}>$ </span>
               <span style={{ color: '#D4D4D4' }}>java --version</span>
             </div>
-            <div style={{ ...show(2), color: EMERALD }}>✓ Java installed</div>
+            <div style={{ ...show(2), color: EMERALD }}>✓ Java installé</div>
             <div style={{ ...show(3), marginTop: 12 }}>
               <span style={{ color: EMERALD }}>$ </span>
               <span style={{ color: '#D4D4D4' }}>javac --version</span>
             </div>
-            <div style={{ ...show(4), color: EMERALD }}>✓ Compiler ready</div>
+            <div style={{ ...show(4), color: EMERALD }}>✓ Compilateur prêt</div>
           </div>
         </div>
 
         <div className="text-center" style={show(5)}>
-          <p className="mono font-black tracking-widest mb-4" style={{ color: MUTED, fontSize: 16, letterSpacing: '0.2em' }}>
-            ENVIRONMENT READY.
+          <p className="mono font-black tracking-widest mb-4" style={{ color: '#94A3B8', fontSize: 16, letterSpacing: '0.2em' }}>
+            ENVIRONNEMENT PRÊT.
           </p>
           <p className="font-black leading-none"
-            style={{ fontFamily: "'Syne', system-ui, sans-serif", fontSize: 96, color: OW, letterSpacing: '-0.05em' }}>
+            style={{ fontFamily: "'Syne', system-ui, sans-serif", fontSize: 96, color: '#F8FAFC', letterSpacing: '-0.05em' }}>
             LET&apos;S <span style={{ color: ORANGE }}>CODE.</span>
           </p>
         </div>
@@ -1483,7 +1492,7 @@ function SlideProProject() {
           <div key={s.label} className="contents">
             <div className="flex-1 rounded-2xl flex flex-col items-center justify-center py-10 px-4 text-center"
               style={{ background: D2, border: `2px solid ${s.c}55`, boxShadow: `0 8px 28px ${s.c}18` }}>
-              <ToolLogo kind={s.icon} size={64} />
+              <ToolLogo kind={s.icon} size={s.icon === 'jdk' || s.icon === 'jvm' ? 48 : 56} compact={s.icon === 'jdk' || s.icon === 'jvm'} />
               <p className="mono font-black mt-5 tracking-wider"
                 style={{ color: s.c, fontSize: 16, letterSpacing: '0.08em' }}>
                 {s.label}
@@ -1570,18 +1579,20 @@ function SlideFirstProgram() {
 function SlidePipeline() {
   const [step, setStep] = useState(0)
   const stages = [
-    { label:'SOURCE CODE', code:'.java', color:BLUE },
-    { label:'COMPILER', code:'javac', color:ORANGE },
+    { label:'SOURCE', code:'.java', color:BLUE },
+    { label:'COMPILATEUR', code:'javac', color:ORANGE },
     { label:'BYTECODE', code:'.class', color:VIOLET },
     { label:'JVM', code:'exec', color:RED },
-    { label:'OUTPUT', code:'✓', color:EMERALD },
+    { label:'SORTIE', code:'✓', color:EMERALD },
   ]
   return (
     <div className="w-full h-full flex flex-col px-12 py-8" style={glowBg(ORANGE,'50%','80%')}>
       <FsmCorner />
       <div className="text-center mb-6 shrink-0">
-        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:ORANGE }}>UNDER THE HOOD</p>
-        <h2 className="font-black" style={{ fontSize:69, color:OW, letterSpacing:'-3px' }}>INSIDE THE JVM</h2>
+        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:ORANGE }}>SOUS LE CAPOT</p>
+        <h2 className="font-black" style={{ fontSize:58, color:OW, letterSpacing:'-2px' }}>
+          Source → Bytecode → JVM
+        </h2>
       </div>
       {/* Machine visual */}
       <div className="flex items-center justify-center gap-0 mb-8 shrink-0">
@@ -1610,13 +1621,13 @@ function SlidePipeline() {
             <div className="h-full rounded-2xl flex flex-col justify-center p-6"
               style={{ background:D2, border:`1px solid ${D4}` }}>
               <div className="mono text-xl" style={{ color:EMERALD }}>$ javac Salem.java</div>
-              <div className="mono text-sm mt-3" style={{ color:SUB }}>Parsing… Semantic check… Bytecode generation…</div>
-              <div className="mono font-bold mt-3" style={{ color:EMERALD }}>✓ Salem.class generated</div>
+              <div className="mono text-sm mt-3" style={{ color:SUB }}>Analyse… Vérification… Génération du bytecode…</div>
+              <div className="mono font-bold mt-3" style={{ color:EMERALD }}>✓ Salem.class généré</div>
             </div>
           )}
           {step===2 && (
             <div className="h-full rounded-2xl p-6" style={{ background:VIOLET+'0c', border:`1.5px solid ${VIOLET}55` }}>
-              <p className="mono font-bold mb-3" style={{ color:VIOLET }}>Salem.class — BYTECODE (platform-independent)</p>
+              <p className="mono font-bold mb-3" style={{ color:VIOLET }}>Salem.class — BYTECODE (indépendant de la plateforme)</p>
               <div className="grid grid-cols-8 gap-1 mono text-sm">
                 {['ca','fe','ba','be','00','00','00','3d','00','1d','0a','00','02','00','03','07'].map((b,i)=>(
                   <span key={i} className="px-2 py-1 rounded text-center" style={{ background:i<4?VIOLET+'22':D3, color:i<4?VIOLET:SUB }}>{b}</span>
@@ -2968,7 +2979,6 @@ const SLIDES: { component: React.FC; chapter: string }[] = [
   { component: SlideJavaToolchain, chapter: '01 Introduction' },
   { component: SlideDevEnvironment, chapter: '01 Introduction' },
   { component: SlideReadyToCode, chapter: '01 Introduction' },
-  { component: SlideLetsCode, chapter: '01 Introduction' },
   { component: SlideFirstProgram, chapter: '01 Introduction' },
   { component: SlideIdentifiers, chapter: '01 Introduction' },
   { component: SlideComments, chapter: '01 Introduction' },
@@ -3046,7 +3056,7 @@ function NavBar({ current, total, chapter, isFullscreen, onPrev, onNext, onPdf, 
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <p className="mono text-[10px] font-black tracking-wider truncate" style={{ color: ORANGE }}>
-                JAVA VISUAL LAB
+                JAVA
               </p>
               <span
                 className="mono font-bold px-2 py-0.5 rounded-md shrink-0"
