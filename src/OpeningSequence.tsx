@@ -1,4 +1,5 @@
 import { useState, useEffect, type CSSProperties, type ReactNode, type FC } from 'react'
+import { LogoStrip, ToolLogo } from './TechLogos'
 
 // ─── Tokens (clair / académique — aligné App) ─────────────────────────────
 const D1 = '#F4F7FB'
@@ -98,6 +99,9 @@ function Scene01LookAround() {
       ))}
 
       <div className="absolute inset-0 flex flex-col items-center justify-center px-12 text-center">
+        <Fade show={phase >= 1} className="mb-8 flex justify-center">
+          <LogoStrip kinds={['java', 'jdk', 'jvm', 'intellij']} size={44} gap={12} />
+        </Fade>
         <h1
           className="font-bold leading-none tracking-tight"
           style={{
@@ -1152,18 +1156,22 @@ function Scene11WhyJava() {
       </Fade>
 
       <Fade show={phase >= 3}>
-        <p
-          className="font-bold leading-none relative z-10"
-          style={{
-            ...display,
-            fontSize: 'clamp(110px, 19.44vw, 227px)',
-            color: OW,
-            letterSpacing: '-0.06em',
-            textShadow: `0 0 80px ${ORANGE}55`,
-          }}
-        >
-          JAVA
-        </p>
+        <div className="flex flex-col items-center gap-6">
+          <ToolLogo kind="java" size={88} />
+          <p
+            className="font-bold leading-none relative z-10"
+            style={{
+              ...display,
+              fontSize: 'clamp(110px, 19.44vw, 227px)',
+              color: OW,
+              letterSpacing: '-0.06em',
+              textShadow: `0 0 80px ${ORANGE}55`,
+            }}
+          >
+            JAVA
+          </p>
+          <LogoStrip kinds={['jdk', 'jvm', 'intellij', 'maven']} size={48} gap={14} labels />
+        </div>
       </Fade>
 
       {keywords.map((k) => (
@@ -1281,9 +1289,10 @@ function Scene12Promise() {
           >
             JAVA
           </p>
-          <p style={{ color: SUB, fontSize: 30, letterSpacing: '0.04em' }}>
+          <p style={{ color: SUB, fontSize: 30, letterSpacing: '0.04em' }} className="mb-6">
             Comprendre. Modéliser. Coder.
           </p>
+          <LogoStrip kinds={['java', 'jdk', 'intellij', 'maven', 'git']} size={44} gap={12} labels />
           <p className="mono text-xs mt-10 tracking-widest" style={{ ...mono, color: MUTED, letterSpacing: '0.15em' }}>
             → CHAPITRE 01
           </p>
