@@ -1,0 +1,1845 @@
+# Notes enseignant — POO Java (Licence GLSI 2)
+
+Une fiche par slide · 80 fiches
+
+---
+
+## Slide 01 — Page de présentation
+
+- **ID :** `title`
+- **Chapitre :** Accueil
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Accrocher le public et présenter le cadre du cours POO Java (Licence GLSI 2).
+
+### Notes de présentation
+Saluer, présenter le semestre, rappeler que le cours est interactif (pas un PowerPoint). Annoncer le fil : IA → monde réel → abstraction → classe → objet.
+
+### Question orale
+Que savez-vous déjà de la POO ou de Java ?
+
+### Réponse attendue
+Réponses variées : certains ont vu du C, Python, notions de classe.
+
+### Transition
+Entrer dans le contexte 2026 : pourquoi apprendre à programmer à l’ère de l’IA.
+
+---
+
+## Slide 02 — Pourquoi apprendre à programmer en 2026 ?
+
+- **ID :** `why-2026`
+- **Chapitre :** Contexte IA
+- **Durée estimée :** ≈ 5 min
+
+### Objectif pédagogique
+Ancrer : générer ≠ comprendre ; l’humain porte la responsabilité.
+
+### Notes de présentation
+Faire voter. Phrase murale : GÉNÉRER DU CODE ≠ CRÉER UN LOGICIEL. Insister sur « À VÉRIFIER ».
+
+### Question orale
+Si l’IA écrit 100 % du TP, qu’avez-vous appris ?
+
+### Réponse attendue
+Rien de durable sans compréhension et vérification.
+
+### Transition
+Mini-jeu : qui porte la responsabilité ?
+
+---
+
+## Slide 03 — Qui porte la responsabilité ?
+
+- **ID :** `who-does-what`
+- **Chapitre :** Contexte IA
+- **Durée estimée :** ≈ 6 min
+
+### Objectif pédagogique
+Collaboration oui, délégation aveugle non. Compétence = comprendre + guider + vérifier.
+
+### Notes de présentation
+Laisser classer. Relancer : « l’IA peut » ≠ « l’IA décide ». Qui signe en production ?
+
+### Question orale
+Qui signe le code en production ?
+
+### Réponse attendue
+MOI / le développeur — jamais l’IA seule.
+
+### Transition
+Copilote + expérience Etudiant multi-modèles.
+
+---
+
+## Slide 04 — IA = copilote, pas pilote
+
+- **ID :** `ai-copilot`
+- **Chapitre :** Contexte IA
+- **Durée estimée :** ≈ 5 min
+
+### Objectif pédagogique
+PROMPT CORRECT ≠ SOLUTION CORRECTE ; une entité → plusieurs modèles.
+
+### Notes de présentation
+Vote confiance IA. Surprise A/B/C. Faire répéter : UNE ENTITÉ → PLUSIEURS MODÈLES.
+
+### Question orale
+Sans comprendre le problème, peut-on faire confiance à l’IA ?
+
+### Réponse attendue
+Non.
+
+### Transition
+Monde réel : regardez autour de vous.
+
+---
+
+## Slide 05 — Regardez autour de vous
+
+- **ID :** `open-01-look`
+- **Chapitre :** Ouverture
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Ancrer : entité = état + comportement ; tout attend d’être modélisé.
+
+### Notes de présentation
+Faire cliquer et nommer à voix haute. Phrase : ÉTAT + COMPORTEMENT.
+
+### Question orale
+Pour une Voiture : donnez 2 états et 2 comportements.
+
+### Réponse attendue
+Ex. couleur/vitesse ; démarrer/freiner.
+
+### Transition
+Comment représenter ce monde dans un programme ?
+
+---
+
+## Slide 06 — Comment représenter ce monde ?
+
+- **ID :** `open-02-represent`
+- **Chapitre :** Ouverture
+- **Durée estimée :** ≈ 4 min
+
+### Objectif pédagogique
+Ordinateur = données + instructions ; pas de modèle → pas de programme fiable.
+
+### Notes de présentation
+Révéler « EN CRÉANT UN MODÈLE ». Vote : sans modèle on tape au hasard.
+
+### Question orale
+Comment transformer une entité réelle en représentation programmable ?
+
+### Réponse attendue
+En créant un modèle.
+
+### Transition
+Abstraction : filtrer l’utile.
+
+---
+
+## Slide 07 — Abstraction
+
+- **ID :** `open-03-abstraction`
+- **Chapitre :** Ouverture
+- **Durée estimée :** ≈ 4 min
+
+### Objectif pédagogique
+Garder l’utile, jeter le reste ; une entité ≠ un seul modèle.
+
+### Notes de présentation
+Changer Notes/Biblio/Présence. Faire répéter le slogan.
+
+### Question orale
+Avons-nous besoin de la couleur des yeux pour les notes ?
+
+### Réponse attendue
+Non.
+
+### Transition
+Formaliser le modèle Étudiant.
+
+---
+
+## Slide 08 — Réalité → Abstraction → Modèle
+
+- **ID :** `open-04-model`
+- **Chapitre :** Ouverture
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+MODÈLE ≠ personne réelle ; contrat de l’application.
+
+### Notes de présentation
+Phrase : MODÈLE ≠ SARRA ≠ AHMED ≠ LINA.
+
+### Question orale
+Un modèle est-il égal à une personne ?
+
+### Réponse attendue
+Non.
+
+### Transition
+Traduction en classe Java.
+
+---
+
+## Slide 09 — Modèle → Classe Java
+
+- **ID :** `open-05-java`
+- **Chapitre :** Ouverture
+- **Durée estimée :** ≈ 4 min
+
+### Objectif pédagogique
+Montrer la traduction attributs/méthodes → champs/méthodes Java (y compris sInscrire).
+
+### Notes de présentation
+Suivre la synchro gauche/droite. Récapituler la chaîne MONDE → ABSTRACTION → MODÈLE → CLASSE.
+
+### Question orale
+Que devient « nom » en Java ?
+
+### Réponse attendue
+String nom; (type + nom de champ).
+
+### Transition
+Pourquoi organiser un gros système avec la POO ?
+
+---
+
+## Slide 10 — Pourquoi la POO ?
+
+- **ID :** `why-oop-sense`
+- **Chapitre :** Contexte IA
+- **Durée estimée :** ≈ 4 min
+
+### Objectif pédagogique
+POO = responsabilités claires quand le code grossit.
+
+### Notes de présentation
+Montrer chaos puis blocs. Vote : structurer responsabilités.
+
+### Question orale
+La POO sert surtout à… ?
+
+### Réponse attendue
+Structurer les responsabilités.
+
+### Transition
+Pourquoi Java pour apprendre ça.
+
+---
+
+## Slide 11 — Pourquoi Java ? (concepts)
+
+- **ID :** `why-java-concepts`
+- **Chapitre :** Contexte IA
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Java comme langage de travail pour apprendre à concevoir.
+
+### Notes de présentation
+Insister sur le transfert : C#, Kotlin, TypeScript, Python…
+
+### Question orale
+Apprend-on « Java » ou « la conception » ?
+
+### Réponse attendue
+Les deux : Java rend les concepts explicites.
+
+### Transition
+Et si l’IA génère 2000 lignes ?
+
+---
+
+## Slide 12 — 2000 lignes mal conçues
+
+- **ID :** `ai-2000`
+- **Chapitre :** Contexte IA
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Séparer volume de code et qualité de conception.
+
+### Notes de présentation
+Laisser un silence après le grand message. Faire apparaître COMPRENDRE → AMÉLIORER.
+
+### Question orale
+Qu’est-ce qui donne de la valeur à un développeur ?
+
+### Réponse attendue
+Comprendre, concevoir, évaluer, tester, améliorer.
+
+### Transition
+Mini-défi : un code qui compile mais…
+
+---
+
+## Slide 13 — Mini-défi BankAccount
+
+- **ID :** `ai-challenge`
+- **Chapitre :** Contexte IA
+- **Durée estimée :** ≈ 4 min
+
+### Objectif pédagogique
+COMPILER ≠ CORRECT ; faire émerger règles métier et encapsulation.
+
+### Notes de présentation
+Ne pas spoiler le solde négatif. Faire voter Oui / Non / Je ne sais pas.
+
+### Question orale
+Que manque-t-il à withdraw ?
+
+### Réponse attendue
+Validations, accès contrôlé au solde, règles métier.
+
+### Transition
+Notre méthode de travail cette année.
+
+---
+
+## Slide 14 — Comment nous allons travailler
+
+- **ID :** `how-we-work`
+- **Chapitre :** Contexte IA
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Ancrer le pipeline : comprendre avant l’IA.
+
+### Notes de présentation
+Repérer l’étape IA après compréhension/test. Opposer INTERDIT vs ATTENDU.
+
+### Question orale
+Où place-t-on l’IA dans le processus ?
+
+### Réponse attendue
+Après compréhension et première tentative, jamais avant.
+
+### Transition
+Charte d’usage de l’IA.
+
+---
+
+## Slide 15 — Charte d’utilisation de l’IA
+
+- **ID :** `ai-charter`
+- **Chapitre :** Contexte IA
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Clarifier les règles sans punition : expliquer = obligation.
+
+### Notes de présentation
+Présenter comme contrat moral du semestre. Ton positif.
+
+### Question orale
+Que devez-vous pouvoir faire avec chaque ligne utilisée ?
+
+### Réponse attendue
+L’expliquer.
+
+### Transition
+Phrase finale puis transition classe / objet.
+
+---
+
+## Slide 16 — Objectif du développeur
+
+- **ID :** `intro-finale`
+- **Chapitre :** Contexte IA
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Clore le storytelling intro avant CLASSE vs OBJET.
+
+### Notes de présentation
+Lire à voix haute la phrase finale. Annoncer la première brique.
+
+### Question orale
+Quelle est la première brique ?
+
+### Réponse attendue
+Comprendre classe et objet.
+
+### Transition
+Une classe peut créer plusieurs objets.
+
+---
+
+## Slide 17 — Classe ≠ objet
+
+- **ID :** `open-06-class-not-object`
+- **Chapitre :** Ouverture
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Une classe → plusieurs objets ; plan vs instance.
+
+### Notes de présentation
+Vote « trois classes ? » puis NON. Phrase : CLASSE = PLAN · OBJET = INSTANCE.
+
+### Question orale
+Faut-il trois classes pour Sarra, Ahmed, Lina ?
+
+### Réponse attendue
+Non.
+
+### Transition
+new et objets vivants.
+
+---
+
+## Slide 18 — Le modèle prend vie
+
+- **ID :** `open-07-alive`
+- **Chapitre :** Ouverture
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Relier new Etudiant() à la création d’une instance vivante.
+
+### Notes de présentation
+Montrer que chaque objet a sa propre identité / état.
+
+### Question orale
+Que fait l’opérateur new ?
+
+### Réponse attendue
+Il crée un nouvel objet (instance) en mémoire.
+
+### Transition
+État et comportement sur un objet concret.
+
+---
+
+## Slide 19 — État et comportement
+
+- **ID :** `open-08-state-behavior`
+- **Chapitre :** Ouverture
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Renforcer le duo attributs (état) / méthodes (comportement).
+
+### Notes de présentation
+Faire nommer pour un objet choisi dans la salle.
+
+### Question orale
+Donnez un état et un comportement pour un Smartphone.
+
+### Réponse attendue
+Ex. batterie / appeler(), charger().
+
+### Transition
+Les objets collaborent dans un système.
+
+---
+
+## Slide 20 — Les objets collaborent
+
+- **ID :** `open-09-collaborate`
+- **Chapitre :** Ouverture
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Un système = objets qui s’envoient des messages / appellent des méthodes.
+
+### Notes de présentation
+Relier Étudiant–Cours–Enseignant sans entrer dans UML avancé.
+
+### Question orale
+Un objet travaille-t-il tout seul dans une vraie application ?
+
+### Réponse attendue
+Non : collaboration entre responsabilités.
+
+### Transition
+Mini-défi : modéliser une Voiture.
+
+---
+
+## Slide 21 — Défi Voiture
+
+- **ID :** `open-10-car`
+- **Chapitre :** Ouverture
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Faire pratiquer état + comportement sur un exemple simple.
+
+### Notes de présentation
+Laisser proposer attributs/méthodes avant de corriger.
+
+### Question orale
+Quels attributs et méthodes pour Voiture ?
+
+### Réponse attendue
+couleur, vitesse… demarrer(), accelerer(), freiner()…
+
+### Transition
+Pourquoi Java pour formaliser cela ?
+
+---
+
+## Slide 22 — Pourquoi Java ? (ouverture)
+
+- **ID :** `open-11-why-java`
+- **Chapitre :** Ouverture
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Renforcer le choix de Java comme langage pédagogique.
+
+### Notes de présentation
+Lien avec portable, typé, OOP — sans jargon excessif.
+
+### Question orale
+Citez un avantage de Java pour débuter la POO.
+
+### Réponse attendue
+Types explicites, classes obligatoires, vaste écosystème…
+
+### Transition
+Promesse du cours / transition chapitre 01.
+
+---
+
+## Slide 23 — Promesse du cours
+
+- **ID :** `open-12-promise`
+- **Chapitre :** Ouverture
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Clore l’ouverture : Comprendre · Modéliser · Coder.
+
+### Notes de présentation
+Motiver pour le chapitre Introduction à Java.
+
+### Question orale
+Que retiendrez-vous de cette ouverture en une phrase ?
+
+### Réponse attendue
+On abstrait le réel en modèle, puis en classe, pour créer des objets.
+
+### Transition
+Chapitre 01 — Introduction à Java.
+
+---
+
+## Slide 24 — Chapitre 01 — Introduction à Java
+
+- **ID :** `ch1-opener`
+- **Chapitre :** 01 Introduction
+- **Durée estimée :** ≈ 1 min
+
+### Objectif pédagogique
+Ouvrir le chapitre technique : du source à l’exécution.
+
+### Notes de présentation
+Annoncer le plan : pourquoi Java, JVM, outils, premier programme, types.
+
+### Question orale
+Qu’espérez-vous apprendre dans ce chapitre ?
+
+### Réponse attendue
+Écrire / exécuter un programme, comprendre JDK/JVM…
+
+### Transition
+Pourquoi Java (angle technique / historique).
+
+---
+
+## Slide 25 — Pourquoi Java ?
+
+- **ID :** `ch1-why-java`
+- **Chapitre :** 01 Introduction
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Lister les forces : portable, OOP, typé, concurrent, sécurisé.
+
+### Notes de présentation
+Ne pas survoler : un exemple concret par mot-clé si possible.
+
+### Question orale
+Que signifie « portable » pour Java ?
+
+### Réponse attendue
+Write once, run anywhere via la JVM / bytecode.
+
+### Transition
+Un peu d’histoire pour contextualiser.
+
+---
+
+## Slide 26 — Histoire de Java
+
+- **ID :** `ch1-history`
+- **Chapitre :** 01 Introduction
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Situer Oak → Java, Sun → Oracle, évolution des versions.
+
+### Notes de présentation
+Rester léger : dates clés et intention du langage.
+
+### Question orale
+Pourquoi Java a-t-il été créé ?
+
+### Réponse attendue
+Portabilité, réseau, simplicité relative vs C++…
+
+### Transition
+L’ADN / principes du langage.
+
+---
+
+## Slide 27 — ADN de Java
+
+- **ID :** `ch1-dna`
+- **Chapitre :** 01 Introduction
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Ancrer les principes fondateurs (simplicité, robustesse, portabilité…).
+
+### Notes de présentation
+Relier chaque principe à une conséquence concrète pour l’étudiant.
+
+### Question orale
+Quel principe justifie le typage fort ?
+
+### Réponse attendue
+Robustesse / détection précoce d’erreurs.
+
+### Transition
+Write once, run anywhere.
+
+---
+
+## Slide 28 — Write once, run anywhere
+
+- **ID :** `ch1-write-once`
+- **Chapitre :** 01 Introduction
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Expliquer source → bytecode → JVM sur chaque OS.
+
+### Notes de présentation
+Schéma mental clair avant d’entrer dans l’architecture.
+
+### Question orale
+Le .class est-il du code machine natif ?
+
+### Réponse attendue
+Non : bytecode interprété/compilé par la JVM.
+
+### Transition
+Écosystème Java.
+
+---
+
+## Slide 29 — Écosystème Java
+
+- **ID :** `ch1-ecosystem`
+- **Chapitre :** 01 Introduction
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Montrer que Java ≠ seulement le langage : libs, outils, communauté.
+
+### Notes de présentation
+Éviter de surcharger : 4–5 piliers max.
+
+### Question orale
+Citez un élément de l’écosystème hors langage.
+
+### Réponse attendue
+Maven/Gradle, Spring, JUnit, IDE…
+
+### Transition
+Éditions SE / EE / ME.
+
+---
+
+## Slide 30 — Éditions Java (SE, EE, ME)
+
+- **ID :** `ch1-editions`
+- **Chapitre :** 01 Introduction
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Clarifier SE (ce cours), EE (entreprise), ME (embarqué/historique).
+
+### Notes de présentation
+Insister : on travaille en Java SE.
+
+### Question orale
+Quelle édition pour ce cours GLSI ?
+
+### Réponse attendue
+Java SE.
+
+### Transition
+Pipeline de compilation / exécution.
+
+---
+
+## Slide 31 — Pipeline source → exécution
+
+- **ID :** `ch1-pipeline`
+- **Chapitre :** 01 Introduction
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Visualiser : .java → javac → .class → java (JVM).
+
+### Notes de présentation
+Faire répéter le pipeline à voix haute.
+
+### Question orale
+Quel outil produit le fichier .class ?
+
+### Réponse attendue
+Le compilateur javac.
+
+### Transition
+Architecture JVM / JDK.
+
+---
+
+## Slide 32 — Architecture Java (JDK / JRE / JVM)
+
+- **ID :** `ch1-architecture`
+- **Chapitre :** 01 Introduction
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Distinguer JDK (développement), JRE (exécution), JVM (moteur).
+
+### Notes de présentation
+Schéma : JDK ⊃ JRE ⊃ JVM. Aujourd’hui on installe surtout le JDK.
+
+### Question orale
+Avez-vous besoin du JDK pour seulement exécuter ?
+
+### Réponse attendue
+Historiquement JRE suffisait ; en pratique on installe le JDK.
+
+### Transition
+Chaîne d’outils concrète.
+
+---
+
+## Slide 33 — Toolchain Java
+
+- **ID :** `ch1-toolchain`
+- **Chapitre :** 01 Introduction
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Présenter JDK, compilateur, runtime, IDE — logos réels.
+
+### Notes de présentation
+Lier chaque outil à une étape du pipeline.
+
+### Question orale
+Que fait IntelliJ dans cette chaîne ?
+
+### Réponse attendue
+Édition, compilation, exécution, débogage — confort.
+
+### Transition
+Environnement de développement.
+
+---
+
+## Slide 34 — Environnement de développement
+
+- **ID :** `ch1-devenv`
+- **Chapitre :** 01 Introduction
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Guider l’installation / organisation du poste étudiant.
+
+### Notes de présentation
+Vérifier que chacun sait où est le JDK et comment lancer un projet.
+
+### Question orale
+Comment vérifier que java est installé ?
+
+### Réponse attendue
+java -version / javac -version dans un terminal.
+
+### Transition
+Prêt à coder.
+
+---
+
+## Slide 35 — Prêt à coder
+
+- **ID :** `ch1-ready`
+- **Chapitre :** 01 Introduction
+- **Durée estimée :** ≈ 1 min
+
+### Objectif pédagogique
+Motivation : premier programme, checklist mentale.
+
+### Notes de présentation
+Rassurer : on va lire le code ligne à ligne.
+
+### Question orale
+Êtes-vous prêts à écrire votre premier main ?
+
+### Réponse attendue
+Oui — avec structure class + main.
+
+### Transition
+Premier programme Java.
+
+---
+
+## Slide 36 — Premier programme Java
+
+- **ID :** `ch1-first-program`
+- **Chapitre :** 01 Introduction
+- **Durée estimée :** ≈ 4 min
+
+### Objectif pédagogique
+Lire public class, main, System.out — sans magie.
+
+### Notes de présentation
+Faire annoter oralement chaque mot-clé important.
+
+### Question orale
+Pourquoi main est-il static ?
+
+### Réponse attendue
+Appelé sans créer d’instance de la classe de démarrage.
+
+### Transition
+Identificateurs.
+
+---
+
+## Slide 37 — Identificateurs
+
+- **ID :** `ch1-identifiers`
+- **Chapitre :** 01 Introduction
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Règles de nommage : lettres, chiffres, _, $ ; pas de mot-clé ; camelCase.
+
+### Notes de présentation
+Montrer des contre-exemples invalides.
+
+### Question orale
+1etudiant est-il un identifiant valide ?
+
+### Réponse attendue
+Non : ne peut pas commencer par un chiffre.
+
+### Transition
+Commentaires.
+
+---
+
+## Slide 38 — Commentaires
+
+- **ID :** `ch1-comments`
+- **Chapitre :** 01 Introduction
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+//, /* */, /** */ — rôles (doc vs explication).
+
+### Notes de présentation
+Rappeler : un bon code se commente avec parcimonie.
+
+### Question orale
+À quoi sert /** */ ?
+
+### Réponse attendue
+Javadoc / documentation d’API.
+
+### Transition
+Types primitifs.
+
+---
+
+## Slide 39 — Types primitifs
+
+- **ID :** `ch1-primitives`
+- **Chapitre :** 01 Introduction
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+byte short int long float double char boolean — familles.
+
+### Notes de présentation
+Insister sur int/double/boolean pour débuter ; taille de int.
+
+### Question orale
+Quelle différence entre int et Integer ?
+
+### Réponse attendue
+int = primitif ; Integer = objet wrapper (plus tard).
+
+### Transition
+Casting.
+
+---
+
+## Slide 40 — Casting
+
+- **ID :** `ch1-casting`
+- **Chapitre :** 01 Introduction
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Conversion implicite (élargissement) vs explicite (rétrécissement).
+
+### Notes de présentation
+Montrer perte d’information possible (double → int).
+
+### Question orale
+Faut-il un cast pour int → long ?
+
+### Réponse attendue
+Non (élargissement sûr). Oui pour long → int.
+
+### Transition
+Défi casting.
+
+---
+
+## Slide 41 — Défi casting
+
+- **ID :** `ch1-cast-challenge`
+- **Chapitre :** 01 Introduction
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Faire prédire le résultat avant d’exécuter mentalement.
+
+### Notes de présentation
+Laisser voter, puis expliquer.
+
+### Question orale
+Que vaut (int) 3.9 ?
+
+### Réponse attendue
+3 (troncature, pas arrondi).
+
+### Transition
+Récap chapitre 01.
+
+---
+
+## Slide 42 — Récapitulatif chapitre 01
+
+- **ID :** `ch1-recap`
+- **Chapitre :** 01 Introduction
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Synthétiser pipeline, outils, premier programme, types.
+
+### Notes de présentation
+Quiz oral rapide 3 questions.
+
+### Question orale
+Citez les 3 étapes source → exécution.
+
+### Réponse attendue
+.java → javac → .class → JVM.
+
+### Transition
+Transition vers classes & objets.
+
+---
+
+## Slide 43 — Transition vers les classes & objets
+
+- **ID :** `transition`
+- **Chapitre :** Transition
+- **Durée estimée :** ≈ 1 min
+
+### Objectif pédagogique
+Relier chapitre 01 à la POO concrète.
+
+### Notes de présentation
+Rappeler le fil intro : modèle → classe → objets.
+
+### Question orale
+Qu’allons-nous construire maintenant ?
+
+### Réponse attendue
+Des classes et des objets Java.
+
+### Transition
+Ouverture chapitre 02.
+
+---
+
+## Slide 44 — Chapitre 02 — Classes & Objets
+
+- **ID :** `ch2-opener`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 1 min
+
+### Objectif pédagogique
+Ouvrir le cœur de la POO en Java.
+
+### Notes de présentation
+Annoncer piliers, classe vs objet, constructeurs, this, String, static, encapsulation.
+
+### Question orale
+Quelle différence intuitive entre classe et objet ?
+
+### Réponse attendue
+Classe = modèle / plan ; objet = instance concrète.
+
+### Transition
+Piliers de la POO (aperçu).
+
+---
+
+## Slide 45 — Piliers de la POO
+
+- **ID :** `ch2-pillars`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Présenter encapsulation, héritage, polymorphisme, abstraction — sans tout détailler.
+
+### Notes de présentation
+Dire clairement : ce chapitre approfondit surtout classe/objet/encapsulation.
+
+### Question orale
+Quel pilier cache les détails internes ?
+
+### Réponse attendue
+Encapsulation (et abstraction).
+
+### Transition
+Partir du problème avant le code.
+
+---
+
+## Slide 46 — Le problème d’abord
+
+- **ID :** `ch2-problem-first`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Renforcer : comprendre le besoin avant d’écrire la classe.
+
+### Notes de présentation
+Rejouer le réflexe anti « coder trop vite » / anti copier-coller IA.
+
+### Question orale
+Que fait-on avant d’ouvrir l’éditeur ?
+
+### Réponse attendue
+Comprendre et modéliser.
+
+### Transition
+Classe vs objet (formel).
+
+---
+
+## Slide 47 — Classe vs objet
+
+- **ID :** `ch2-class-vs-object`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Formaliser en Java : class Etudiant vs new Etudiant().
+
+### Notes de présentation
+Utiliser analogie plan / maison ou moule / gâteau.
+
+### Question orale
+Combien d’objets une classe peut-elle créer ?
+
+### Réponse attendue
+Autant que nécessaire (mémoire permettant).
+
+### Transition
+Anatomie d’une classe.
+
+---
+
+## Slide 48 — Anatomie d’une classe
+
+- **ID :** `ch2-anatomy`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Champs, constructeurs, méthodes — repères visuels.
+
+### Notes de présentation
+Faire annoter un squelette au tableau.
+
+### Question orale
+Où déclarer l’état d’un objet ?
+
+### Réponse attendue
+Dans les attributs / champs de la classe.
+
+### Transition
+Création d’objet.
+
+---
+
+## Slide 49 — Création d’objet
+
+- **ID :** `ch2-object-creation`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Syntaxe Type nom = new Type(...) ;
+
+### Notes de présentation
+Distinguer déclaration de référence et création.
+
+### Question orale
+Que contient la variable e1 après Etudiant e1 = new Etudiant() ?
+
+### Réponse attendue
+Une référence vers l’objet, pas « l’objet lui-même » au sens valeur.
+
+### Transition
+Hero new.
+
+---
+
+## Slide 50 — Le mot-clé new
+
+- **ID :** `ch2-new-hero`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+new alloue l’objet et appelle le constructeur.
+
+### Notes de présentation
+Insister sur le lien new ↔ constructeur.
+
+### Question orale
+new appelle-t-il toujours un constructeur ?
+
+### Réponse attendue
+Oui (explicite ou défaut si présent).
+
+### Transition
+Références.
+
+---
+
+## Slide 51 — Références
+
+- **ID :** `ch2-references`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Variable référence vs objet en mémoire (heap).
+
+### Notes de présentation
+Dessiner deux flèches possibles.
+
+### Question orale
+Deux variables peuvent-elles pointer le même objet ?
+
+### Réponse attendue
+Oui.
+
+### Transition
+Deux références.
+
+---
+
+## Slide 52 — Deux références, un objet
+
+- **ID :** `ch2-two-refs`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Montrer aliasing : modifier via r1 visible via r2.
+
+### Notes de présentation
+Préparer le piège du défi suivant.
+
+### Question orale
+Si e2 = e1, combien d’objets ?
+
+### Réponse attendue
+Un seul objet, deux références.
+
+### Transition
+Défi références.
+
+---
+
+## Slide 53 — Défi références
+
+- **ID :** `ch2-ref-challenge`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Faire prédire l’affichage après aliasing / réaffectation.
+
+### Notes de présentation
+Laisser voter avant la révélation.
+
+### Question orale
+Après e2 = e1 puis e2.nom = "Lina", que vaut e1.nom ?
+
+### Réponse attendue
+Lina (même objet), sauf si nouvel objet a été créé entre-temps.
+
+### Transition
+Constructeurs (hero).
+
+---
+
+## Slide 54 — Rôle du constructeur
+
+- **ID :** `ch2-ctor-hero`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Initialiser l’état à la création — invariant de départ.
+
+### Notes de présentation
+Comparer objet non initialisé vs construit proprement.
+
+### Question orale
+Peut-on appeler un constructeur comme une méthode normale ?
+
+### Réponse attendue
+Non : via new (ou this/super dans d’autres contextes).
+
+### Transition
+Constructeurs en détail.
+
+---
+
+## Slide 55 — Constructeurs
+
+- **ID :** `ch2-constructors`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Même nom que la classe, pas de type de retour.
+
+### Notes de présentation
+Montrer constructeur par défaut vs explicite.
+
+### Question orale
+Un constructeur a-t-il un type de retour void ?
+
+### Réponse attendue
+Non : aucun type de retour, pas même void.
+
+### Transition
+Surcharge de constructeurs.
+
+---
+
+## Slide 56 — Plusieurs constructeurs
+
+- **ID :** `ch2-multi-ctors`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Surcharge : signatures différentes pour différents cas.
+
+### Notes de présentation
+Relier aux besoins métier (étudiant avec/sans moyenne initiale).
+
+### Question orale
+Comment Java choisit le constructeur ?
+
+### Réponse attendue
+Par le nombre et les types des arguments.
+
+### Transition
+this (hero).
+
+---
+
+## Slide 57 — Le mot-clé this
+
+- **ID :** `ch2-this-hero`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+this = référence à l’objet courant.
+
+### Notes de présentation
+Motiver le cas paramètre qui masque le champ (this.nom = nom).
+
+### Question orale
+Pourquoi écrire this.nom = nom ?
+
+### Réponse attendue
+Pour distinguer le champ du paramètre homonyme.
+
+### Transition
+Simulateur this.
+
+---
+
+## Slide 58 — this en pratique
+
+- **ID :** `ch2-this`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Ancrer this via l’interaction / simulateur.
+
+### Notes de présentation
+Faire reformuler : « this pointe vers moi-même ».
+
+### Question orale
+this peut-il être null ?
+
+### Réponse attendue
+Non dans une instance method normale.
+
+### Transition
+Tableaux.
+
+---
+
+## Slide 59 — Tableaux
+
+- **ID :** `ch2-arrays`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Tableau d’objets = tableau de références.
+
+### Notes de présentation
+Montrer new Etudiant[n] puis boucle d’initialisation.
+
+### Question orale
+new Etudiant[3] crée-t-il 3 étudiants ?
+
+### Réponse attendue
+Non : 3 cases null jusqu’à new Etudiant() dans chaque case.
+
+### Transition
+Classe String.
+
+---
+
+## Slide 60 — String
+
+- **ID :** `ch2-string`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+String est une classe ; littéraux ; méthodes utiles.
+
+### Notes de présentation
+Préparer immutabilité et equals.
+
+### Question orale
+String est-il un type primitif ?
+
+### Réponse attendue
+Non : c’est une classe (référence).
+
+### Transition
+Immutabilité.
+
+---
+
+## Slide 61 — String immuable
+
+- **ID :** `ch2-string-immutable`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Toute « modification » crée une nouvelle String.
+
+### Notes de présentation
+Relier à la sécurité et au partage en mémoire.
+
+### Question orale
+s.toUpperCase() modifie-t-il s ?
+
+### Réponse attendue
+Non : retourne une nouvelle chaîne ; s inchangé si non réaffecté.
+
+### Transition
+equals vs ==.
+
+---
+
+## Slide 62 — equals vs ==
+
+- **ID :** `ch2-equals`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+== compare les références ; equals le contenu (pour String).
+
+### Notes de présentation
+Montrer le piège classique des littéraux / new String.
+
+### Question orale
+Quand utiliser == avec des String ?
+
+### Réponse attendue
+Presque jamais pour le contenu ; préférer equals.
+
+### Transition
+Défi String.
+
+---
+
+## Slide 63 — Défi String
+
+- **ID :** `ch2-string-challenge`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Faire prédire == / equals sur cas piège.
+
+### Notes de présentation
+Corriger collectivement.
+
+### Question orale
+Deux new String("a") : equals ? == ?
+
+### Réponse attendue
+equals true ; == false (en général).
+
+### Transition
+StringBuilder.
+
+---
+
+## Slide 64 — StringBuilder
+
+- **ID :** `ch2-stringbuilder`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Construction efficace de chaînes mutables.
+
+### Notes de présentation
+Cas d’usage : boucles de concaténation.
+
+### Question orale
+Pourquoi StringBuilder plutôt que + en boucle ?
+
+### Réponse attendue
+Évite de créer plein d’objets String temporaires.
+
+### Transition
+Surcharge de méthodes.
+
+---
+
+## Slide 65 — Surcharge (overloading)
+
+- **ID :** `ch2-overloading`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Même nom, signatures différentes — résolution à la compilation.
+
+### Notes de présentation
+Ne pas confondre avec overriding (héritage, plus tard).
+
+### Question orale
+Peut-on surcharger seulement en changeant le type de retour ?
+
+### Réponse attendue
+Non.
+
+### Transition
+static (hero).
+
+---
+
+## Slide 66 — static — idée
+
+- **ID :** `ch2-static-hero`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Membre de classe vs membre d’instance.
+
+### Notes de présentation
+Exemple : compteur d’objets, Math.sqrt.
+
+### Question orale
+Faut-il un objet pour appeler une méthode static ?
+
+### Réponse attendue
+Non.
+
+### Transition
+Univers static.
+
+---
+
+## Slide 67 — static en pratique
+
+- **ID :** `ch2-static`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Ancrer via visualisation / compteur partagé.
+
+### Notes de présentation
+Attention : trop de static = code procédural déguisé.
+
+### Question orale
+Un champ static est-il partagé entre objets ?
+
+### Réponse attendue
+Oui.
+
+### Transition
+Passage de paramètres.
+
+---
+
+## Slide 68 — Paramètres
+
+- **ID :** `ch2-parameters`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Passage par valeur des références (copie de la référence).
+
+### Notes de présentation
+Clarifier le mythe « Java passe les objets par référence ».
+
+### Question orale
+Modifier p.x dans une méthode affecte-t-il l’appelant ?
+
+### Réponse attendue
+Oui si on mute l’objet ; non si on fait p = new ... dans la méthode.
+
+### Transition
+Packages.
+
+---
+
+## Slide 69 — Packages
+
+- **ID :** `ch2-packages`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Organisation en espaces de noms ; import.
+
+### Notes de présentation
+Convention reverse-domain.
+
+### Question orale
+À quoi sert package ?
+
+### Réponse attendue
+Structurer et éviter les collisions de noms.
+
+### Transition
+Projet pro / structure.
+
+---
+
+## Slide 70 — Structure de projet
+
+- **ID :** `ch2-pro-project`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Montrer une organisation réaliste de dossiers/sources.
+
+### Notes de présentation
+Relier à ce que l’IDE attend.
+
+### Question orale
+Où placer les sources Java typiquement ?
+
+### Réponse attendue
+src/main/java (Maven) ou src selon le projet pédagogique.
+
+### Transition
+private / encapsulation (hero).
+
+---
+
+## Slide 71 — Pourquoi private ?
+
+- **ID :** `ch2-private-hero`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Protéger l’état ; contrôler les modifications.
+
+### Notes de présentation
+Reprendre BankAccount : balance public = danger.
+
+### Question orale
+Que risque un attribut public balance ?
+
+### Réponse attendue
+Modification invalide (négatif, incohérent).
+
+### Transition
+Encapsulation.
+
+---
+
+## Slide 72 — Encapsulation
+
+- **ID :** `ch2-encapsulation`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Cacher l’état + exposer un comportement sûr.
+
+### Notes de présentation
+Relier aux getters/setters avec validation.
+
+### Question orale
+Encapsulation = seulement private ?
+
+### Réponse attendue
+Non : private + méthodes publiques bien conçues.
+
+### Transition
+Visibilité.
+
+---
+
+## Slide 73 — Modificateurs de visibilité
+
+- **ID :** `ch2-visibility`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+private, package, protected, public — intuition.
+
+### Notes de présentation
+Pour ce niveau : private par défaut pour les champs.
+
+### Question orale
+Quel modificateur pour un champ d’état sensible ?
+
+### Réponse attendue
+private.
+
+### Transition
+Getters / setters.
+
+---
+
+## Slide 74 — Getters et setters
+
+- **ID :** `ch2-getters-setters`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Accès contrôlé ; validation dans setX.
+
+### Notes de présentation
+Éviter les setters vides « pour la forme ».
+
+### Question orale
+Un setter doit-il toujours accepter toute valeur ?
+
+### Réponse attendue
+Non : il peut refuser / corriger selon les règles métier.
+
+### Transition
+Bénéfice encapsulation.
+
+---
+
+## Slide 75 — Bénéfice de l’encapsulation
+
+- **ID :** `ch2-encap-benefit`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Maintenabilité, invariants, évolution sans casser les clients.
+
+### Notes de présentation
+Exemple avant/après.
+
+### Question orale
+Si je change la représentation interne, que se passe-t-il pour le client ?
+
+### Réponse attendue
+Rien si l’API publique reste stable.
+
+### Transition
+Synthèse campus HUD.
+
+---
+
+## Slide 76 — Synthèse Campus
+
+- **ID :** `ch2-campus-hud`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 2 min
+
+### Objectif pédagogique
+Réviser classe/objet/état/comportement sur le thème campus.
+
+### Notes de présentation
+Interaction légère pour réactiver la salle.
+
+### Question orale
+Citez une classe du campus et un attribut private.
+
+### Réponse attendue
+Ex. Etudiant / moyenne.
+
+### Transition
+Récap chapitre 02.
+
+---
+
+## Slide 77 — Récapitulatif chapitre 02
+
+- **ID :** `ch2-recap`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Checklist mentale : classe, objet, new, this, String, static, encapsulation.
+
+### Notes de présentation
+Quiz oral 5 questions rapides.
+
+### Question orale
+Différence clé classe / objet ?
+
+### Réponse attendue
+Modèle vs instance.
+
+### Transition
+Défi final.
+
+---
+
+## Slide 78 — Défi final
+
+- **ID :** `ch2-final-challenge`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 5 min
+
+### Objectif pédagogique
+Mobiliser plusieurs notions sur un mini problème.
+
+### Notes de présentation
+Laisser chercher avant la correction ; autoriser l’IA puis exiger l’explication.
+
+### Question orale
+Quelles classes voyez-vous dans l’énoncé ?
+
+### Réponse attendue
+Selon énoncé — justifier responsabilités.
+
+### Transition
+Corrigé / réponses.
+
+---
+
+## Slide 79 — Corrigé du défi final
+
+- **ID :** `ch2-final-answer`
+- **Chapitre :** 02 Classes & Objets
+- **Durée estimée :** ≈ 3 min
+
+### Objectif pédagogique
+Corriger en explicitant le raisonnement, pas seulement le code.
+
+### Notes de présentation
+Relier chaque choix à une règle vue en cours.
+
+### Question orale
+Pourquoi telle méthode n’est-elle pas static ?
+
+### Réponse attendue
+Parce qu’elle dépend de l’état de l’instance.
+
+### Transition
+Clôture du cours / perspectives.
+
+---
+
+## Slide 80 — Fin de la séance / du module
+
+- **ID :** `end`
+- **Chapitre :** Fin
+- **Durée estimée :** ≈ 1 min
+
+### Objectif pédagogique
+Clôturer, rappeler ressources et travail à faire.
+
+### Notes de présentation
+Remercier ; annoncer la suite (héritage…) si prévu.
+
+### Question orale
+Quelle idée gardez-vous pour la semaine ?
+
+### Réponse attendue
+Réponses libres — viser classe/objet ou encapsulation.
+
+### Transition
+Fin.
+
+---

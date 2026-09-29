@@ -66,59 +66,73 @@ function Fade({ show, children, className = '', style }: {
 // ─── SCENE 01 — REGARDEZ AUTOUR DE VOUS ───────────────────────────────────
 function Scene01LookAround() {
   const phase = usePhase([600, 1400, 2200, 3000, 3800, 4600, 5400, 6200, 7500])
+  const [active, setActive] = useState<string | null>(null)
   const entities = [
-    { label: 'Étudiant', x: '8%', y: '18%' },
-    { label: 'Enseignant', x: '72%', y: '14%' },
-    { label: 'Cours', x: '18%', y: '72%' },
-    { label: 'Salle', x: '78%', y: '68%' },
-    { label: 'Ordinateur', x: '4%', y: '48%' },
-    { label: 'Bibliothèque', x: '82%', y: '42%' },
-    { label: 'Voiture', x: '42%', y: '8%' },
-    { label: 'Smartphone', x: '55%', y: '78%' },
+    {
+      label: 'Étudiant', x: '8%', y: '18%',
+      etat: ['nom', 'matricule', 'moyenne'],
+      comp: ['sInscrire()', 'calculerMoyenne()', 'afficherProfil()'],
+    },
+    {
+      label: 'Voiture', x: '42%', y: '8%',
+      etat: ['couleur', 'vitesse', 'carburant'],
+      comp: ['demarrer()', 'accelerer()', 'freiner()'],
+    },
+    {
+      label: 'Enseignant', x: '72%', y: '14%',
+      etat: ['nom', 'spécialité', 'département'],
+      comp: ['enseigner()', 'evaluer()', 'publierNote()'],
+    },
+    { label: 'Cours', x: '18%', y: '72%', etat: ['titre', 'crédits'], comp: ['ouvrir()', 'evaluer()'] },
+    { label: 'Salle', x: '78%', y: '68%', etat: ['numero', 'capacite'], comp: ['reserver()'] },
+    { label: 'Ordinateur', x: '4%', y: '48%', etat: ['marque', 'ram'], comp: ['demarrer()', 'eteindre()'] },
+    { label: 'Bibliothèque', x: '82%', y: '42%', etat: ['nom', 'nbLivres'], comp: ['emprunter()'] },
+    { label: 'Smartphone', x: '55%', y: '78%', etat: ['modele', 'batterie'], comp: ['appeler()', 'charger()'] },
   ]
+  const selected = entities.find(e => e.label === active)
 
   return (
     <div className="w-full h-full relative overflow-hidden" style={{ background: D1 }}>
       <div className="absolute inset-0" style={{
         backgroundImage: `radial-gradient(ellipse at 50% 45%, ${ORANGE}14 0%, transparent 55%)`,
       }} />
-      {/* Abstract silhouettes */}
-      <svg className="absolute inset-0 w-full h-full opacity-[0.07]" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
-        <circle cx="200" cy="200" r="80" fill="none" stroke={OW} strokeWidth="1.5" />
-        <rect x="1200" y="120" width="90" height="120" fill="none" stroke={OW} strokeWidth="1.5" rx="4" />
-        <path d="M140 650 L180 580 L220 650 Z" fill="none" stroke={OW} strokeWidth="1.5" />
-        <rect x="1280" y="620" width="140" height="90" fill="none" stroke={OW} strokeWidth="1.5" rx="6" />
-        <circle cx="800" cy="780" r="40" fill="none" stroke={OW} strokeWidth="1.5" />
-        <rect x="760" y="820" width="80" height="12" fill="none" stroke={OW} strokeWidth="1.5" />
-      </svg>
 
       {entities.map((e, i) => (
-        <div
+        <button
           key={e.label}
-          className="absolute mono text-sm tracking-widest uppercase"
+          type="button"
+          onClick={() => setActive(active === e.label ? null : e.label)}
+          className="absolute mono tracking-widest uppercase"
           style={{
             ...mono,
             left: e.x,
             top: e.y,
-            color: SUB,
-            letterSpacing: '0.2em',
-            opacity: phase > i ? 0.85 : 0,
-            transition: 'opacity 1s ease',
+            color: active === e.label ? ORANGE : SUB,
+            letterSpacing: '0.14em',
+            opacity: phase > i ? 0.95 : 0,
+            transition: 'opacity 1s ease, color 0.3s',
+            background: active === e.label ? ORANGE + '18' : 'transparent',
+            border: `2.5px solid ${active === e.label ? ORANGE : D4}`,
+            borderRadius: 10,
+            padding: '10px 14px',
+            fontSize: 18,
+            fontWeight: 900,
+            cursor: 'pointer',
           }}
         >
           {e.label}
-        </div>
+        </button>
       ))}
 
-      <div className="absolute inset-0 flex flex-col items-center justify-center px-12 text-center">
-        <Fade show={phase >= 1} className="mb-8 flex justify-center">
+      <div className="absolute inset-0 flex flex-col items-center justify-center px-12 text-center pointer-events-none">
+        <Fade show={phase >= 1} className="mb-6 flex justify-center pointer-events-auto">
           <LogoStrip kinds={['java', 'jdk', 'jvm', 'intellij']} size={44} gap={12} />
         </Fade>
         <h1
           className="font-bold leading-none tracking-tight"
           style={{
             ...display,
-            fontSize: 'clamp(50px, 7.56vw, 97px)',
+            fontSize: 'clamp(44px, 6.5vw, 84px)',
             color: OW,
             opacity: phase >= 1 ? 1 : 0,
             transition: 'opacity 1.2s ease',
@@ -127,165 +141,179 @@ function Scene01LookAround() {
         >
           REGARDEZ AUTOUR DE VOUS.
         </h1>
+        <Fade show={phase >= 2} className="mt-4">
+          <p className="mono font-black" style={{ ...mono, color: ORANGE, fontSize: 18, letterSpacing: '0.12em' }}>
+            TOUT EST DÉJÀ UN OBJET QUI ATTEND D&apos;ÊTRE MODÉLISÉ.
+          </p>
+        </Fade>
 
-        <Fade show={phase >= 9} className="mt-16 max-w-3xl">
+        <Fade show={phase >= 9 && !selected} className="mt-10 max-w-3xl">
           <p
             className="font-bold leading-tight"
             style={{
               ...display,
-              fontSize: 'clamp(30px, 3.46vw, 48px)',
-              color: ORANGE,
+              fontSize: 'clamp(26px, 3vw, 40px)',
+              color: OW,
               letterSpacing: '-0.02em',
             }}
           >
-            LE MONDE EST FAIT<br />
-            D&apos;ENTITÉS QUI ONT UN ÉTAT<br />
-            ET UN COMPORTEMENT.
+            LE MONDE EST FAIT D&apos;ENTITÉS.<br />
+            CHAQUE ENTITÉ = <span style={{ color: BLUE }}>ÉTAT</span> + <span style={{ color: EMERALD }}>COMPORTEMENT</span>.
+          </p>
+          <p className="mono mt-3 font-bold" style={{ ...mono, color: ORANGE, fontSize: 20 }}>
+            À VOUS → cliquez une entité. Nommez état + comportement à voix haute.
           </p>
         </Fade>
       </div>
+
+      {selected && (
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 rounded-2xl p-5 pointer-events-auto"
+          style={{ background: D2, border: `2px solid ${ORANGE}`, boxShadow: '0 16px 48px rgba(15,23,42,0.12)', minWidth: 380 }}>
+          <p className="mono font-black mb-1" style={{ ...mono, color: ORANGE, fontSize: 24 }}>{selected.label.toUpperCase()}</p>
+          <p className="mono font-black mb-3" style={{ ...mono, color: MUTED, fontSize: 20 }}>ce qu&apos;elle EST + ce qu&apos;elle FAIT</p>
+          <div className="flex gap-8">
+            <div>
+              <p className="mono font-black mb-2" style={{ ...mono, color: BLUE, fontSize: 20, letterSpacing: '0.12em' }}>ÉTAT</p>
+              {selected.etat.map(a => <p key={a} className="mono font-black" style={{ ...mono, color: OW, fontSize: 22 }}>{a}</p>)}
+            </div>
+            <div>
+              <p className="mono font-black mb-2" style={{ ...mono, color: EMERALD, fontSize: 20, letterSpacing: '0.12em' }}>COMPORTEMENT</p>
+              {selected.comp.map(a => <p key={a} className="mono font-black" style={{ ...mono, color: OW, fontSize: 22 }}>{a}</p>)}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
 
-// ─── SCENE 02 — THE REAL WORLD (campus) ───────────────────────────────────
+// ─── SCENE 02 — COMMENT REPRÉSENTER CE MONDE ──────────────────────────────
 function Scene02Campus() {
-  const [active, setActive] = useState<string | null>(null)
-  const phase = usePhase([400, 1200])
+  const phase = usePhase([400, 1200, 2200, 3400, 4800])
+  const [revealed, setRevealed] = useState(isPrintMode())
+  const [vote, setVote] = useState<string | null>(isPrintMode() ? 'c' : null)
+  const showAnswer = revealed || phase >= 5 || isPrintMode()
 
-  const spots = [
-    { id: 'etudiant', label: 'Étudiant', x: 22, y: 55, icon: (
-      <g>
-        <circle cx="0" cy="-18" r="14" fill="none" stroke="currentColor" strokeWidth="2" />
-        <path d="M-22 28 Q0 8 22 28" fill="none" stroke="currentColor" strokeWidth="2" />
-      </g>
-    )},
-    { id: 'enseignant', label: 'Enseignant', x: 48, y: 38, icon: (
-      <g>
-        <circle cx="0" cy="-16" r="12" fill="none" stroke="currentColor" strokeWidth="2" />
-        <path d="M-20 26 Q0 6 20 26" fill="none" stroke="currentColor" strokeWidth="2" />
-        <rect x="-28" y="8" width="18" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" />
-      </g>
-    )},
-    { id: 'salle', label: 'Salle', x: 72, y: 48, icon: (
-      <g>
-        <rect x="-36" y="-28" width="72" height="52" fill="none" stroke="currentColor" strokeWidth="2" />
-        <path d="M-36 -28 L0 -48 L36 -28" fill="none" stroke="currentColor" strokeWidth="2" />
-        <rect x="-8" y="4" width="16" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" />
-      </g>
-    )},
-    { id: 'cours', label: 'Cours', x: 38, y: 68, icon: (
-      <g>
-        <rect x="-24" y="-20" width="48" height="40" fill="none" stroke="currentColor" strokeWidth="2" rx="2" />
-        <line x1="-14" y1="-8" x2="14" y2="-8" stroke="currentColor" strokeWidth="1.5" />
-        <line x1="-14" y1="2" x2="10" y2="2" stroke="currentColor" strokeWidth="1.5" />
-        <line x1="-14" y1="12" x2="8" y2="12" stroke="currentColor" strokeWidth="1.5" />
-      </g>
-    )},
-    { id: 'ordi', label: 'Ordinateur', x: 58, y: 62, icon: (
-      <g>
-        <rect x="-26" y="-18" width="52" height="32" fill="none" stroke="currentColor" strokeWidth="2" rx="2" />
-        <line x1="-30" y1="18" x2="30" y2="18" stroke="currentColor" strokeWidth="2" />
-      </g>
-    )},
-    { id: 'biblio', label: 'Bibliothèque', x: 85, y: 32, icon: (
-      <g>
-        <rect x="-30" y="-24" width="14" height="48" fill="none" stroke="currentColor" strokeWidth="1.5" />
-        <rect x="-12" y="-24" width="14" height="48" fill="none" stroke="currentColor" strokeWidth="1.5" />
-        <rect x="6" y="-24" width="14" height="48" fill="none" stroke="currentColor" strokeWidth="1.5" />
-      </g>
-    )},
+  const steps = [
+    { label: 'RÉEL', sub: 'humain', color: OW },
+    { label: 'FILTRE', sub: 'utile seulement', color: BLUE },
+    { label: 'DONNÉES', sub: 'nom, notes…', color: VIOLET },
+    { label: 'MODÈLE', sub: 'contrat logiciel', color: ORANGE },
   ]
 
   return (
-    <div className="w-full h-full relative overflow-hidden" style={{ background: D1 }}>
-      {/* Campus atmosphere */}
-      <div className="absolute inset-0" style={{
-        background: `
-          linear-gradient(180deg, #E8F0FE 0%, #F4F7FB 45%, #EEF2F7 100%)
-        `,
+    <div className="w-full h-full relative overflow-hidden flex flex-col px-10 py-8" style={{ background: D1 }}>
+      <div className="absolute inset-0 pointer-events-none" style={{
+        backgroundImage: `radial-gradient(ellipse at 50% 30%, ${BLUE}14 0%, transparent 55%)`,
       }} />
-      <div className="absolute inset-0 opacity-30" style={{
-        backgroundImage: `linear-gradient(${BLUE}08 1px, transparent 1px), linear-gradient(90deg, ${BLUE}08 1px, transparent 1px)`,
-        backgroundSize: '64px 64px',
-      }} />
-      {/* Horizon / ground plane */}
-      <div className="absolute bottom-0 left-0 right-0 h-[42%]" style={{
-        background: `linear-gradient(180deg, transparent, ${D2}88 30%, ${D2})`,
-        borderTop: `1px solid ${D4}`,
-      }} />
-      {/* Soft building silhouettes */}
-      <svg className="absolute bottom-[38%] left-0 w-full h-[35%] opacity-40" viewBox="0 0 1600 300" preserveAspectRatio="none">
-        <path d="M0 300 L0 180 L80 180 L80 100 L160 100 L160 180 L240 180 L240 60 L400 60 L400 180 L520 180 L520 40 L700 40 L700 180 L820 180 L820 90 L980 90 L980 180 L1100 180 L1100 50 L1300 50 L1300 180 L1450 180 L1450 120 L1600 120 L1600 300 Z"
-          fill={D3} stroke={D4} strokeWidth="1" />
-      </svg>
 
-      {spots.map((s, i) => {
-        const isOn = active === s.id
-        return (
-          <button
-            key={s.id}
-            type="button"
-            onClick={() => setActive(isOn ? null : s.id)}
-            className="absolute flex flex-col items-center gap-2 cursor-pointer group"
-            style={{
-              left: `${s.x}%`,
-              top: `${s.y}%`,
-              transform: 'translate(-50%, -50%)',
-              opacity: phase >= 1 ? 1 : 0,
-              transition: `opacity 0.7s ease ${i * 0.12}s`,
-              color: isOn ? ORANGE : SUB,
-              background: 'none',
-              border: 'none',
-              padding: 0,
-            }}
-          >
-            <div
-              className="w-20 h-20 flex items-center justify-center rounded-full transition-all duration-300"
-              style={{
-                border: `1.5px solid ${isOn ? ORANGE : D4}`,
-                background: isOn ? `${ORANGE}18` : `${D2}aa`,
-                boxShadow: isOn ? `0 0 40px ${ORANGE}44` : 'none',
-              }}
-            >
-              <svg width="56" height="56" viewBox="-40 -50 80 90">{s.icon}</svg>
-            </div>
-            <span
-              className="mono text-xs font-bold tracking-widest uppercase"
-              style={{
-                ...mono,
-                color: isOn ? ORANGE : 'transparent',
-                transition: 'color 0.3s',
-                letterSpacing: '0.15em',
-              }}
-            >
-              {s.label}
-            </span>
-          </button>
-        )
-      })}
-
-      <Fade show={phase >= 2} className="absolute bottom-16 left-0 right-0 text-center px-12">
-        <p
-          className="font-bold leading-tight"
-          style={{
-            ...display,
-            fontSize: 'clamp(33px, 4.1vw, 58px)',
-            color: OW,
-            letterSpacing: '-0.02em',
-          }}
-        >
-          COMMENT REPRÉSENTER<br />
-          <span style={{ color: ORANGE }}>CE MONDE DANS UN PROGRAMME ?</span>
+      <div className="relative z-10 shrink-0 mb-5">
+        <p className="mono font-black tracking-widest mb-2" style={{ ...mono, color: ORANGE, fontSize: 20, letterSpacing: '0.16em' }}>
+          VÉRITÉ INFORMATIQUE
         </p>
+        <h2 className="font-black leading-none" style={{ ...display, fontSize: 44, color: OW, letterSpacing: '-0.03em', maxWidth: 1200 }}>
+          L&apos;ORDINATEUR NE CONNAÎT PAS<br />
+          <span style={{ color: ORANGE }}>« UN ÉTUDIANT ».</span>
+        </h2>
+        <p className="font-black mt-3" style={{ ...display, fontSize: 28, color: SUB }}>
+          Il ne manipule que des <span style={{ color: BLUE }}>données</span> + des <span style={{ color: BLUE }}>instructions</span>.
+        </p>
+      </div>
+
+      <div className="relative z-10 flex items-stretch gap-3 mb-6 shrink-0">
+        {steps.map((s, i) => (
+          <div key={s.label} className="flex items-center gap-3 flex-1 min-w-0">
+            <Fade show={phase >= i + 1} className="flex-1">
+              <div className="rounded-2xl px-4 py-5 text-center h-full"
+                style={{ background: D2, border: `4px solid ${s.color}` }}>
+                <p className="font-black" style={{ ...display, color: s.color, fontSize: 28 }}>{s.label}</p>
+                <p className="mono font-black mt-2" style={{ ...mono, color: OW, fontSize: 18 }}>{s.sub}</p>
+              </div>
+            </Fade>
+            {i < steps.length - 1 && (
+              <Fade show={phase >= i + 2} className="shrink-0">
+                <span className="mono font-black" style={{ ...mono, color: ORANGE, fontSize: 32 }}>→</span>
+              </Fade>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <Fade show={phase >= 4} className="relative z-10 flex-1 flex flex-col min-h-0">
+        <button
+          type="button"
+          onClick={() => setRevealed(true)}
+          className="text-left mb-4"
+          style={{ background: 'none', border: 'none', cursor: showAnswer ? 'default' : 'pointer', padding: 0 }}
+        >
+          <p className="font-black leading-tight" style={{ ...display, fontSize: 32, color: OW }}>
+            QUESTION — comment passer du réel<br />
+            à quelque chose <span style={{ color: ORANGE }}>manipulable par un programme</span> ?
+          </p>
+          {!showAnswer && (
+            <p className="mono font-black mt-3" style={{ ...mono, color: ORANGE, fontSize: 20 }}>
+              CLIQUER POUR RÉVÉLER →
+            </p>
+          )}
+        </button>
+
+        {showAnswer && (
+          <div className="flex gap-5 flex-1 min-h-0">
+            <div className="flex-1 rounded-2xl p-6 flex flex-col justify-center"
+              style={{ background: OW }}>
+              <p className="font-black leading-none mb-3" style={{ ...display, fontSize: 40, color: ORANGE }}>
+                EN CRÉANT UN MODÈLE.
+              </p>
+              <p className="mono font-black" style={{ ...mono, color: '#fff', fontSize: 22 }}>
+                PAS DE MODÈLE → PAS DE PROGRAMME FIABLE
+              </p>
+            </div>
+
+            <div className="flex-1 rounded-2xl p-5 flex flex-col"
+              style={{ background: D2, border: `4px solid ${ORANGE}` }}>
+              <p className="mono font-black mb-2" style={{ ...mono, color: ORANGE, fontSize: 18, letterSpacing: '0.12em' }}>
+                À VOUS
+              </p>
+              <p className="font-black mb-4 leading-tight" style={{ ...display, fontSize: 26, color: OW }}>
+                Sans modèle, que fait le programmeur ?
+              </p>
+              <div className="flex flex-col gap-2.5 mb-3">
+                {[
+                  { id: 'a', label: 'Il tape au hasard' },
+                  { id: 'b', label: 'Il copie sans comprendre' },
+                  { id: 'c', label: 'Les deux — et ça casse' },
+                ].map(c => (
+                  <button key={c.id} type="button" onClick={() => setVote(c.id)}
+                    className="px-4 py-3 rounded-xl mono font-black text-left"
+                    style={{
+                      ...mono, fontSize: 22,
+                      background: vote === c.id ? ORANGE : D3,
+                      color: vote === c.id ? '#fff' : OW,
+                      border: `3px solid ${vote === c.id ? ORANGE : OW}`,
+                    }}>
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+              {(vote || isPrintMode()) && (
+                <p className="font-black" style={{ color: OW, fontSize: 22 }}>
+                  Exact. <span style={{ color: ORANGE }}>D’abord le modèle. Ensuite le code.</span>
+                </p>
+              )}
+            </div>
+          </div>
+        )}
       </Fade>
     </div>
   )
 }
 
-// ─── SCENE 03 — TOO MUCH INFORMATION ──────────────────────────────────────
+// ─── SCENE 03 — ABSTRACTION + CONTEXTES ───────────────────────────────────
+type AbsContext = 'notes' | 'biblio' | 'presence'
+
 function Scene03Abstraction() {
   const [abstracted, setAbstracted] = useState(false)
+  const [ctx, setCtx] = useState<AbsContext>('notes')
   const phase = usePhase([500, 1400, 2800])
 
   const allAttrs = [
@@ -303,6 +331,12 @@ function Scene03Abstraction() {
     { k: 'nationalité', keep: false },
   ]
   const behaviors = ['sInscrire()', 'calculerMoyenne()', 'afficherProfil()']
+  const contexts: { id: AbsContext; label: string; attrs: string[] }[] = [
+    { id: 'notes', label: 'Gestion des notes', attrs: ['nom', 'matricule', 'moyenne', 'niveau'] },
+    { id: 'biblio', label: 'Bibliothèque', attrs: ['nom', 'matricule', 'nombreLivresEmpruntes'] },
+    { id: 'presence', label: 'Présence', attrs: ['nom', 'matricule', 'nombreAbsences'] },
+  ]
+  const activeCtx = contexts.find(c => c.id === ctx)!
 
   return (
     <div className="w-full h-full relative overflow-hidden flex" style={{ background: D1 }}>
@@ -310,9 +344,8 @@ function Scene03Abstraction() {
         backgroundImage: `radial-gradient(ellipse at 30% 50%, ${BLUE}15 0%, transparent 50%)`,
       }} />
 
-      {/* Student silhouette */}
-      <div className="w-[38%] h-full flex flex-col items-center justify-center relative">
-        <svg width="180" height="280" viewBox="0 0 180 280" className="opacity-90">
+      <div className="w-[34%] h-full flex flex-col items-center justify-center relative">
+        <svg width="160" height="240" viewBox="0 0 180 280" className="opacity-90">
           <circle cx="90" cy="60" r="42" fill="none" stroke={ORANGE} strokeWidth="2.5" />
           <path d="M30 260 Q30 140 90 120 Q150 140 150 260" fill="none" stroke={ORANGE} strokeWidth="2.5" />
           <circle cx="75" cy="55" r="4" fill={ORANGE} />
@@ -320,11 +353,13 @@ function Scene03Abstraction() {
           <path d="M75 75 Q90 85 105 75" fill="none" stroke={ORANGE} strokeWidth="2" />
         </svg>
         <p className="mono text-xs tracking-widest mt-4" style={{ ...mono, color: SUB }}>ÉTUDIANT</p>
+        <Fade show={abstracted} className="mt-6 px-4 text-center">
+          <p className="mono" style={{ ...mono, color: MUTED, fontSize: 18 }}>réalité complexe → filtre → utiles</p>
+        </Fade>
       </div>
 
-      {/* Attributes cloud */}
-      <div className="flex-1 h-full flex flex-col justify-center pr-12 pl-4 relative">
-        <div className="flex flex-wrap gap-3 mb-8 max-w-xl">
+      <div className="flex-1 h-full flex flex-col justify-center pr-10 pl-2 relative overflow-hidden">
+        <div className="flex flex-wrap gap-2.5 mb-6 max-w-xl">
           {allAttrs.map((a, i) => {
             const fadeOut = abstracted && !a.keep
             const highlight = abstracted && a.keep
@@ -337,7 +372,7 @@ function Scene03Abstraction() {
                   color: highlight ? ORANGE : fadeOut ? MUTED : SUB,
                   background: highlight ? `${ORANGE}18` : 'transparent',
                   border: `1px solid ${highlight ? ORANGE + '66' : D4}`,
-                  opacity: fadeOut ? 0.15 : phase >= 1 ? 1 : 0,
+                  opacity: fadeOut ? 0.12 : phase >= 1 ? 1 : 0,
                   transform: fadeOut ? 'scale(0.85)' : 'scale(1)',
                   transition: `all 0.7s ease ${i * 0.04}s`,
                   textDecoration: fadeOut ? 'line-through' : 'none',
@@ -353,20 +388,14 @@ function Scene03Abstraction() {
           <button
             type="button"
             onClick={() => setAbstracted(true)}
-            className="text-left mb-6 group"
+            className="text-left mb-4"
             style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
           >
-            <p
-              className="font-bold leading-tight"
-              style={{
-                ...display,
-                fontSize: 'clamp(36px, 3.78vw, 53px)',
-                color: OW,
-                letterSpacing: '-0.02em',
-              }}
-            >
-              AVONS-NOUS BESOIN<br />
-              <span style={{ color: ORANGE }}>DE TOUT CONNAÎTRE ?</span>
+            <p className="font-bold leading-tight" style={{
+              ...display, fontSize: 'clamp(28px, 3.2vw, 42px)', color: OW, letterSpacing: '-0.02em',
+            }}>
+              Notre app gère les résultats.<br />
+              <span style={{ color: ORANGE }}>Avons-nous besoin de tout ?</span>
             </p>
             <p className="mono text-xs mt-3 tracking-widest" style={{ ...mono, color: MUTED }}>
               CLIQUER POUR ABSTRAIRE →
@@ -375,30 +404,55 @@ function Scene03Abstraction() {
         </Fade>
 
         <Fade show={abstracted}>
-          <div className="flex flex-wrap gap-3 mb-8">
+          <div className="flex flex-wrap gap-2.5 mb-5">
             {behaviors.map((b) => (
-              <span
-                key={b}
-                className="mono text-base px-4 py-2 rounded-lg font-bold"
-                style={{
-                  ...mono,
-                  color: EMERALD,
-                  background: `${EMERALD}14`,
-                  border: `1px solid ${EMERALD}55`,
-                }}
-              >
-                {b}
-              </span>
+              <span key={b} className="mono text-base px-3 py-1.5 rounded-lg font-bold" style={{
+                ...mono, color: EMERALD, background: `${EMERALD}14`, border: `1px solid ${EMERALD}55`,
+              }}>{b}</span>
             ))}
           </div>
-          <p
-            className="font-bold leading-none mb-3"
-            style={{ ...display, fontSize: 'clamp(58px, 6.48vw, 83px)', color: ORANGE, letterSpacing: '-0.03em' }}
-          >
-            ABSTRACTION.
+          <p className="font-bold leading-none mb-2" style={{ ...display, fontSize: 48, color: ORANGE, letterSpacing: '-0.03em' }}>
+            ABSTRACTION
           </p>
-          <p style={{ color: SUB, fontSize: 25, maxWidth: 420 }}>
-            Garder seulement les informations utiles à notre problème.
+          <p className="mono font-black mb-3" style={{ ...mono, color: BLUE, fontSize: 20, letterSpacing: '0.06em' }}>
+            GARDER L’UTILE. JETER LE RESTE. POUR CE PROBLÈME.
+          </p>
+          <p style={{ color: SUB, fontSize: 18, maxWidth: 440, marginBottom: 14 }}>
+            Garder uniquement informations + comportements utiles à NOTRE problème.
+          </p>
+
+          <div className="flex gap-2 mb-4 flex-wrap">
+            {contexts.map(c => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => setCtx(c.id)}
+                className="mono font-bold px-3 py-2 rounded-xl"
+                style={{
+                  ...mono, fontSize: 18,
+                  background: ctx === c.id ? ORANGE : D3,
+                  color: ctx === c.id ? ON_ACCENT : SUB,
+                  border: `3px solid ${ctx === c.id ? ORANGE : D4}`,
+                  cursor: 'pointer',
+                }}
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {activeCtx.attrs.map(a => (
+              <span key={a} className="mono px-3 py-1.5 rounded-lg font-bold" style={{
+                ...mono, color: BLUE, background: BLUE + '14', border: `1px solid ${BLUE}44`, fontSize: 20,
+              }}>{a}</span>
+            ))}
+          </div>
+          <p className="font-black leading-tight" style={{ ...display, fontSize: 22, color: OW }}>
+            UNE MÊME ENTITÉ RÉELLE<br />
+            <span style={{ color: ORANGE }}>≠ UN SEUL MODÈLE.</span>
+          </p>
+          <p className="mono font-black mt-2" style={{ ...mono, color: MUTED, fontSize: 18 }}>
+            Changez de contexte ci-dessus → le modèle change. Retenez ça.
           </p>
         </Fade>
       </div>
@@ -474,13 +528,20 @@ function Scene04Model() {
         </div>
       </Fade>
 
-      <Fade show={phase >= 4} className="mt-14 text-center">
+      <Fade show={phase >= 4} className="mt-12 text-center px-8">
         <p
-          className="font-bold leading-tight"
-          style={{ ...display, fontSize: 'clamp(41px, 4.86vw, 67px)', color: OW, letterSpacing: '-0.02em' }}
+          className="font-bold leading-tight mb-3"
+          style={{ ...display, fontSize: 'clamp(34px, 4.2vw, 56px)', color: OW, letterSpacing: '-0.02em' }}
         >
           NOUS VENONS DE CRÉER<br />
           <span style={{ color: ORANGE }}>UN MODÈLE.</span>
+        </p>
+        <p className="mono font-black mb-3" style={{ ...mono, color: BLUE, fontSize: 20, letterSpacing: '0.08em' }}>
+          MODÈLE ≠ SARRA ≠ AHMED ≠ LINA
+        </p>
+        <p style={{ color: SUB, fontSize: 19, maxWidth: 540, margin: '0 auto', lineHeight: 1.4 }}>
+          Ce modèle décrit ce qu&apos;est <span style={{ color: ORANGE, fontWeight: 800 }}>un</span> étudiant
+          dans notre application — pas une personne précise.
         </p>
       </Fade>
     </div>
@@ -498,20 +559,21 @@ function Scene05ModelToJava() {
     { show: 4, code: '    double moyenne;' },
     { show: 4, code: '    int niveau;' },
     { show: 5, code: '' },
-    { show: 5, code: '    void afficherProfil() {' },
-    { show: 5, code: '        // ...' },
-    { show: 5, code: '    }' },
-    { show: 5, code: '' },
-    { show: 5, code: '    void calculerMoyenne() {' },
-    { show: 5, code: '        // ...' },
-    { show: 5, code: '    }' },
+    { show: 5, code: '    void sInscrire() { }' },
+    { show: 5, code: '    void calculerMoyenne() { }' },
+    { show: 5, code: '    void afficherProfil() { }' },
     { show: 2, code: '}' },
+  ]
+
+  const methods = [
+    { m: 'sInscrire()', p: 5 },
+    { m: 'calculerMoyenne()', p: 5 },
+    { m: 'afficherProfil()', p: 5 },
   ]
 
   return (
     <div className="w-full h-full relative overflow-hidden flex flex-col" style={{ background: D1 }}>
       <div className="flex-1 flex min-h-0">
-        {/* Left — model */}
         <div className="w-[42%] flex flex-col items-center justify-center border-r" style={{ borderColor: D4 }}>
           <p className="mono text-xs tracking-widest mb-6" style={{ ...mono, color: MUTED }}>MODÈLE</p>
           <div style={{ minWidth: 260, border: `2px solid ${ORANGE}`, background: D2 }}>
@@ -531,26 +593,25 @@ function Scene05ModelToJava() {
                 <div key={x.f} className="mono py-1" style={{
                   ...mono,
                   color: phase >= x.p ? BLUE : MUTED,
-                  fontSize: 22,
+                  fontSize: 20,
                   transition: 'color 0.4s',
                   opacity: phase >= x.p ? 1 : 0.4,
                 }}>{x.f}</div>
               ))}
             </div>
             <div className="px-6 py-3">
-              {['afficherProfil()', 'calculerMoyenne()'].map((m) => (
-                <div key={m} className="mono py-1" style={{
+              {methods.map((x) => (
+                <div key={x.m} className="mono py-1" style={{
                   ...mono,
-                  color: phase >= 5 ? EMERALD : MUTED,
-                  fontSize: 22,
+                  color: phase >= x.p ? EMERALD : MUTED,
+                  fontSize: 18,
                   transition: 'color 0.4s',
-                }}>{m}</div>
+                }}>{x.m}</div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Right — editor */}
         <div className="flex-1 flex flex-col p-8">
           <p className="mono text-xs tracking-widest mb-4" style={{ ...mono, color: MUTED }}>JAVA</p>
           <div className="flex-1 rounded-xl overflow-hidden flex flex-col" style={{ border: `1px solid ${E_BORD}`, background: E_BG }}>
@@ -565,7 +626,7 @@ function Scene05ModelToJava() {
             <div className="flex-1 flex overflow-hidden">
               <div className="pt-3 pr-3 text-right select-none" style={{ width: 48, background: '#0A0F1A', borderRight: `1px solid ${E_BORD}` }}>
                 {codeLines.map((_, i) => (
-                  <div key={i} className="mono" style={{ ...mono, lineHeight: '2.1rem', fontSize: 20, color: '#3B4252' }}>{i + 1}</div>
+                  <div key={i} className="mono" style={{ ...mono, lineHeight: '2.1rem', fontSize: 18, color: '#3B4252' }}>{i + 1}</div>
                 ))}
               </div>
               <div className="flex-1 py-3 pl-4">
@@ -576,7 +637,7 @@ function Scene05ModelToJava() {
                     style={{
                       ...mono,
                       lineHeight: '2.1rem',
-                      fontSize: 22,
+                      fontSize: 20,
                       color: '#D4D4D4',
                       opacity: phase >= l.show ? 1 : 0,
                       transition: 'opacity 0.5s ease',
@@ -590,14 +651,14 @@ function Scene05ModelToJava() {
         </div>
       </div>
 
-      <Fade show={phase >= 6} className="shrink-0 py-5 flex items-center justify-center gap-5"
+      <Fade show={phase >= 6} className="shrink-0 py-5 flex items-center justify-center gap-4 flex-wrap"
         style={{ borderTop: `1px solid ${D4}`, background: D2 }}>
-        {['REAL WORLD', '→', 'MODEL', '→', 'JAVA CLASS'].map((t, i) => (
+        {['MONDE RÉEL', '→', 'ABSTRACTION', '→', 'MODÈLE', '→', 'CLASSE JAVA'].map((t, i) => (
           <span key={i} className="mono font-black tracking-widest" style={{
             ...mono,
-            fontSize: t === '→' ? 14 : 13,
-            color: t === 'JAVA CLASS' ? ORANGE : t === '→' ? MUTED : OW,
-            letterSpacing: '0.1em',
+            fontSize: t === '→' ? 14 : 12,
+            color: t === 'CLASSE JAVA' ? ORANGE : t === '→' ? MUTED : OW,
+            letterSpacing: '0.08em',
           }}>{t}</span>
         ))}
       </Fade>
@@ -607,41 +668,68 @@ function Scene05ModelToJava() {
 
 // ─── SCENE 06 — CLASS ≠ OBJECT ────────────────────────────────────────────
 function Scene06ClassNotObject() {
-  const phase = usePhase([800, 2800, 4200, 5600])
+  const phase = usePhase([500, 1400, 2600, 4000, 5400])
+  const [vote, setVote] = useState<string | null>(isPrintMode() ? 'no' : null)
+  const names = ['Sarra', 'Ahmed', 'Lina']
+  const answered = vote !== null || phase >= 4 || isPrintMode()
 
   return (
-    <div className="w-full h-full relative overflow-hidden flex flex-col items-center justify-center" style={{ background: D1 }}>
+    <div className="w-full h-full relative overflow-hidden flex flex-col items-center justify-center px-12" style={{ background: D1 }}>
       <div className="absolute inset-0" style={{
         backgroundImage: `radial-gradient(ellipse at 50% 50%, ${ORANGE}10 0%, transparent 50%)`,
       }} />
 
-      <Fade show={phase >= 1}>
-        <p className="mono font-bold mb-10" style={{ ...mono, fontSize: 36, color: BLUE }}>
-          class Etudiant
-        </p>
+      <Fade show={phase >= 1} className="text-center mb-6">
+        <p className="mono font-black tracking-widest mb-2" style={{ ...mono, color: MUTED, fontSize: 18 }}>NOUS AVONS LE MODÈLE</p>
+        <p className="mono font-bold" style={{ ...mono, fontSize: 30, color: BLUE }}>class Etudiant</p>
       </Fade>
 
-      <Fade show={phase >= 2} className="text-center mb-10">
-        <p
-          className="font-bold leading-tight"
-          style={{ ...display, fontSize: 'clamp(46px, 5.4vw, 74px)', color: OW, letterSpacing: '-0.02em' }}
-        >
-          EST-CE DÉJÀ<br />UN ÉTUDIANT ?
-        </p>
+      <Fade show={phase >= 2} className="flex items-center gap-6 mb-8">
+        <div className="rounded-xl px-5 py-3 mono font-black" style={{ ...mono, background: ORANGE, color: '#fff', fontSize: 18 }}>
+          Etudiant
+        </div>
+        <span className="mono font-black" style={{ ...mono, color: MUTED, fontSize: 26 }}>↓</span>
+        <div className="flex gap-3">
+          {names.map(n => (
+            <div key={n} className="rounded-xl px-4 py-3 mono font-black" style={{
+              ...mono, background: D2, border: `2px solid ${BLUE}`, color: OW, fontSize: 22,
+            }}>{n}</div>
+          ))}
+        </div>
       </Fade>
 
-      <Fade show={phase >= 3} className="text-center">
-        <p
-          className="font-bold leading-none mb-6"
-          style={{ ...display, fontSize: 'clamp(74px, 10.8vw, 132px)', color: ORANGE, letterSpacing: '-0.04em' }}
-        >
+      <Fade show={phase >= 3} className="text-center mb-6 max-w-2xl">
+        <p className="font-black leading-tight mb-4" style={{ ...display, fontSize: 'clamp(28px, 3.4vw, 40px)', color: OW }}>
+          À VOUS : faut-il <span style={{ color: ORANGE }}>trois classes</span> ?
+        </p>
+        <div className="flex justify-center gap-3 mb-4">
+          {[
+            { id: 'yes', label: 'Oui — une par personne' },
+            { id: 'no', label: 'Non — une classe suffit' },
+          ].map(c => (
+            <button key={c.id} type="button" onClick={() => setVote(c.id)}
+              className="px-5 py-3 rounded-xl mono font-black"
+              style={{
+                ...mono, fontSize: 20,
+                background: vote === c.id ? ORANGE : D2,
+                color: vote === c.id ? '#fff' : OW,
+                border: `2px solid ${vote === c.id ? ORANGE : D4}`,
+              }}>
+              {c.label}
+            </button>
+          ))}
+        </div>
+      </Fade>
+
+      <Fade show={answered} className="text-center">
+        <p className="font-black leading-none mb-4" style={{ ...display, fontSize: 'clamp(64px, 9vw, 100px)', color: ORANGE }}>
           NON.
         </p>
-        <p className="mono font-bold tracking-widest mb-4" style={{ ...mono, fontSize: 25, color: OW, letterSpacing: '0.2em' }}>
-          A CLASS IS A MODEL.
+        <p className="font-black leading-tight mb-2" style={{ ...display, fontSize: 'clamp(26px, 3vw, 36px)', color: OW }}>
+          UNE CLASSE → PLUSIEURS OBJETS.
         </p>
-        <p style={{ color: SUB, fontSize: 25, maxWidth: 480 }}>
-          Une classe décrit comment seront construits les objets.
+        <p className="mono font-black" style={{ ...mono, color: BLUE, fontSize: 20, letterSpacing: '0.08em' }}>
+          CLASSE = PLAN · OBJET = INSTANCE VIVANTE
         </p>
       </Fade>
     </div>
@@ -904,7 +992,7 @@ function Scene09Collaborate() {
               transform: 'translate(-50%, -50%)',
               color: SUB,
               background: `${D1}ee`,
-              border: `1px solid ${D4}`,
+              border: `2px solid ${D4}`,
               opacity: phase >= e.p ? 1 : 0,
               transition: 'opacity 0.8s',
               whiteSpace: 'nowrap',
@@ -1026,7 +1114,7 @@ function Scene10CarChallenge() {
                 style={{
                   ...mono,
                   background: D2,
-                  border: `1px solid ${D4}`,
+                  border: `2px solid ${D4}`,
                   color: OW,
                 }}
               />
@@ -1062,7 +1150,7 @@ function Scene10CarChallenge() {
               <div className="flex flex-wrap gap-2 mb-8">
                 {proposals.map((p) => (
                   <span key={p} className="mono text-sm px-3 py-1 rounded-lg" style={{
-                    ...mono, color: OW, background: D3, border: `1px solid ${D4}`,
+                    ...mono, color: OW, background: D3, border: `2px solid ${D4}`,
                   }}>{p}</span>
                 ))}
               </div>
@@ -1074,7 +1162,7 @@ function Scene10CarChallenge() {
               style={{
                 ...mono,
                 background: 'transparent',
-                border: `1.5px solid ${ORANGE}`,
+                border: `3px solid ${ORANGE}`,
                 color: ORANGE,
                 cursor: 'pointer',
                 letterSpacing: '0.12em',
@@ -1320,17 +1408,27 @@ function Scene12Promise() {
 }
 
 // ─── Export registry ──────────────────────────────────────────────────────
-export const OPENING_SLIDES: { component: FC; chapter: string }[] = [
-  { component: Scene01LookAround, chapter: 'Ouverture' },
-  { component: Scene02Campus, chapter: 'Ouverture' },
-  { component: Scene03Abstraction, chapter: 'Ouverture' },
-  { component: Scene04Model, chapter: 'Ouverture' },
-  { component: Scene05ModelToJava, chapter: 'Ouverture' },
-  { component: Scene06ClassNotObject, chapter: 'Ouverture' },
-  { component: Scene07ObjectsAlive, chapter: 'Ouverture' },
-  { component: Scene08StateBehavior, chapter: 'Ouverture' },
-  { component: Scene09Collaborate, chapter: 'Ouverture' },
-  { component: Scene10CarChallenge, chapter: 'Ouverture' },
-  { component: Scene11WhyJava, chapter: 'Ouverture' },
-  { component: Scene12Promise, chapter: 'Ouverture' },
+/** Scenes 01–05 : monde réel → abstraction → modèle → classe Java */
+export const OPENING_EARLY: { component: FC; chapter: string; id: string }[] = [
+  { component: Scene01LookAround, chapter: 'Ouverture', id: 'open-01-look' },
+  { component: Scene02Campus, chapter: 'Ouverture', id: 'open-02-represent' },
+  { component: Scene03Abstraction, chapter: 'Ouverture', id: 'open-03-abstraction' },
+  { component: Scene04Model, chapter: 'Ouverture', id: 'open-04-model' },
+  { component: Scene05ModelToJava, chapter: 'Ouverture', id: 'open-05-java' },
+]
+
+/** Scenes 06–12 : classe vs objet et suite narrative */
+export const OPENING_LATE: { component: FC; chapter: string; id: string }[] = [
+  { component: Scene06ClassNotObject, chapter: 'Ouverture', id: 'open-06-class-not-object' },
+  { component: Scene07ObjectsAlive, chapter: 'Ouverture', id: 'open-07-alive' },
+  { component: Scene08StateBehavior, chapter: 'Ouverture', id: 'open-08-state-behavior' },
+  { component: Scene09Collaborate, chapter: 'Ouverture', id: 'open-09-collaborate' },
+  { component: Scene10CarChallenge, chapter: 'Ouverture', id: 'open-10-car' },
+  { component: Scene11WhyJava, chapter: 'Ouverture', id: 'open-11-why-java' },
+  { component: Scene12Promise, chapter: 'Ouverture', id: 'open-12-promise' },
+]
+
+export const OPENING_SLIDES: { component: FC; chapter: string; id: string }[] = [
+  ...OPENING_EARLY,
+  ...OPENING_LATE,
 ]

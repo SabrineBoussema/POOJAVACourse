@@ -87,61 +87,90 @@ body {
 
 /*
   Amphithéâtre — typographie renforcée dans la scène 1920×1080.
-  Les classes Tailwind trop petites deviennent lisibles en projection.
+  Aligné sur le style diapo 3 (gros, gras, contrasté).
 */
+.presentation-stage-inner .slide-chrome,
+.print-slide .slide-chrome {
+  --amphi-title: 48px;
+  --amphi-body: 24px;
+  --amphi-kicker: 18px;
+  --amphi-card: 22px;
+}
+
+/* Texte principal toujours gras et sombre par défaut */
+.presentation-stage-inner .slide-chrome button,
+.print-slide .slide-chrome button {
+  font-weight: 800;
+}
+
 .presentation-stage-inner .text-\[10px\],
 .presentation-stage-inner .text-\[11px\],
 .print-slide .text-\[10px\],
 .print-slide .text-\[11px\] {
   font-size: 18px !important;
   line-height: 1.35 !important;
+  font-weight: 800 !important;
 }
 .presentation-stage-inner .text-xs,
 .print-slide .text-xs {
   font-size: 18px !important;
   line-height: 1.4 !important;
+  font-weight: 800 !important;
 }
 .presentation-stage-inner .text-sm,
 .print-slide .text-sm {
   font-size: 22px !important;
   line-height: 1.45 !important;
+  font-weight: 700 !important;
 }
 .presentation-stage-inner .text-base,
 .print-slide .text-base {
   font-size: 24px !important;
   line-height: 1.45 !important;
+  font-weight: 700 !important;
 }
 .presentation-stage-inner .text-lg,
 .print-slide .text-lg {
   font-size: 28px !important;
   line-height: 1.4 !important;
+  font-weight: 800 !important;
 }
 .presentation-stage-inner .text-xl,
 .print-slide .text-xl {
   font-size: 32px !important;
   line-height: 1.35 !important;
+  font-weight: 800 !important;
 }
 .presentation-stage-inner .text-2xl,
 .print-slide .text-2xl {
   font-size: 40px !important;
   line-height: 1.3 !important;
+  font-weight: 900 !important;
 }
 .presentation-stage-inner .text-3xl,
 .print-slide .text-3xl {
   font-size: 48px !important;
   line-height: 1.25 !important;
+  font-weight: 900 !important;
 }
 .presentation-stage-inner .text-4xl,
 .print-slide .text-4xl {
   font-size: 56px !important;
+  font-weight: 900 !important;
 }
 
-/* Cards / panels — elevation légère sur fond clair */
+/* Cartes / panneaux — bordures plus visibles en projection */
 .presentation-stage-inner .rounded-2xl,
 .presentation-stage-inner .rounded-xl,
 .print-slide .rounded-2xl,
 .print-slide .rounded-xl {
-  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 6px 22px rgba(15, 23, 42, 0.07);
+}
+
+/* Mono toujours bien gras hors éditeur de code sombre */
+.presentation-stage-inner .mono,
+.print-slide .mono {
+  font-weight: 800;
 }
 
 /* Espace sous la barre chrome (évite le chevauchement titres) */

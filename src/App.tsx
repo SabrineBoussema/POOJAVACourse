@@ -1,6 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import fsmLogo from './assets/attachment2.png'
-import { OPENING_SLIDES } from './OpeningSequence'
+import { OPENING_EARLY, OPENING_LATE } from './OpeningSequence'
+import { AI_INTRO_PRE, AI_INTRO_MID } from './AiIntroSequence'
+import { AMPHI, amphiKicker, amphiTitle } from './amphi'
+import { TEACHER_SHORTCUT, type TeachingNote } from './TeachingNotes'
+import { NOTES_BY_ID, notesToMarkdown, noteToMarkdown, ALL_SLIDE_NOTES } from './AllSlideNotes'
 import { ToolLogo, TechMark, LogoStrip } from './TechLogos'
 import { hi } from './syntaxHighlight'
 
@@ -72,11 +76,10 @@ function glowBg(color: string, x = '30%', y = '40%'): React.CSSProperties {
   }
 }
 
-/** En-tête de section académique — cohérent sur toutes les slides */
+/** En-tête de section académique — style amphi diapo 3 */
 function SlideKicker({ children, color = ORANGE }: { children: React.ReactNode; color?: string }) {
   return (
-    <p className="mono font-black tracking-widest mb-3"
-      style={{ color, fontSize: 16, letterSpacing: '0.18em' }}>
+    <p className="mono font-black tracking-widest mb-3" style={amphiKicker(color)}>
       {children}
     </p>
   )
@@ -84,13 +87,7 @@ function SlideKicker({ children, color = ORANGE }: { children: React.ReactNode; 
 
 function SlideTitleText({ children, light = false }: { children: React.ReactNode; light?: boolean }) {
   return (
-    <h2 className="font-black leading-tight"
-      style={{
-        fontFamily: "'Syne', system-ui, sans-serif",
-        fontSize: 52,
-        color: light ? '#fff' : OW,
-        letterSpacing: '-0.03em',
-      }}>
+    <h2 className="font-black leading-tight" style={amphiTitle(light)}>
       {children}
     </h2>
   )
@@ -134,17 +131,17 @@ function SlideChrome({ children }: { children: React.ReactNode }) {
             style={{ width: 34, height: 34 }}
           />
           <div className="leading-tight">
-            <p className="mono font-black" style={{ color: ORANGE, fontSize: 13, letterSpacing: '0.12em' }}>
+            <p className="mono font-black" style={{ color: ORANGE, fontSize: AMPHI.kicker, letterSpacing: '0.12em' }}>
               JAVA
             </p>
-            <p className="mono" style={{ color: MUTED, fontSize: 12 }}>
+            <p className="mono font-black" style={{ color: SUB, fontSize: 18 }}>
               FSM · POO · GLSI 2
             </p>
           </div>
           <span
             className="mono font-bold px-2 py-1 rounded-md ml-1"
             style={{
-              fontSize: 11,
+              fontSize: 16,
               letterSpacing: '0.06em',
               background: 'rgba(245,158,11,0.14)',
               color: '#B45309',
@@ -175,8 +172,8 @@ function Editor({
   terminalTitle?: string; runLabel?: string
 }) {
   const lines = code.split('\n')
-  const fs = large ? 24 : 20
-  const lh = large ? '2.2rem' : '2.05rem'
+  const fs = large ? 26 : 22
+  const lh = large ? '2.35rem' : '2.15rem'
   const outLines = terminalOutput ? terminalOutput.split('\n') : []
   return (
     <div className="flex flex-col rounded-xl overflow-hidden shadow-2xl h-full"
@@ -184,9 +181,9 @@ function Editor({
       {/* Title bar */}
       <div className="flex items-center gap-0 shrink-0" style={{ background: '#161B22', borderBottom: `1px solid ${E_BORD}`, height: 40 }}>
         <div className="flex items-center gap-1.5 px-4">
-          <span style={{ color: '#FF5F57', fontSize: 12 }}>●</span>
-          <span style={{ color: '#FFBD2E', fontSize: 12 }}>●</span>
-          <span style={{ color: '#28CA41', fontSize: 12 }}>●</span>
+          <span style={{ color: '#FF5F57', fontSize: 18 }}>●</span>
+          <span style={{ color: '#FFBD2E', fontSize: 18 }}>●</span>
+          <span style={{ color: '#28CA41', fontSize: 18 }}>●</span>
         </div>
         <div className="px-3 py-1 text-sm mono flex items-center gap-2"
           style={{ background: E_BG, borderRight: `1px solid ${E_BORD}`, color: '#8B949E', borderBottom: `2px solid ${ORANGE}` }}>
@@ -313,10 +310,10 @@ function ChallengeArena({ number, code, question, options, correctIndex, explana
       <div className="flex items-center justify-between px-12 pt-8 pb-4 shrink-0">
         <div className="flex items-center gap-4">
           <div className="mono font-black tracking-widest px-4 py-1.5 rounded-full"
-            style={{ background: VIOLET+'18', color: VIOLET, border: `1.5px solid ${VIOLET}55`, fontSize: 15, letterSpacing: '0.14em' }}>
+            style={{ background: VIOLET+'18', color: VIOLET, border: `1.5px solid ${VIOLET}55`, fontSize: 20, letterSpacing: '0.14em' }}>
             JAVA ARENA
           </div>
-          <span className="mono font-bold" style={{ color: SUB, fontSize: 20 }}>Challenge {String(number).padStart(2,'0')}</span>
+          <span className="mono font-bold" style={{ color: SUB, fontSize: 24 }}>Challenge {String(number).padStart(2,'0')}</span>
         </div>
         {!answered && (
           <div className="flex items-center gap-3">
@@ -327,7 +324,7 @@ function ChallengeArena({ number, code, question, options, correctIndex, explana
                   strokeDasharray={`${pct} 100`} style={{ transition: 'stroke-dasharray 1s linear' }} />
               </svg>
               <span className="absolute inset-0 flex items-center justify-center mono font-bold"
-                style={{ fontSize: 20, color: timerColor }}>{timeLeft}</span>
+                style={{ fontSize: 24, color: timerColor }}>{timeLeft}</span>
             </div>
           </div>
         )}
@@ -365,7 +362,7 @@ function ChallengeArena({ number, code, question, options, correctIndex, explana
               style={{ background: bg, border: `2px solid ${border}`, cursor: answered ? 'default' : 'pointer',
                 boxShadow: answered && i === correctIndex ? `0 0 24px ${EMERALD}33` : '0 4px 16px rgba(15,23,42,0.06)' }}>
               <span className="mono font-black shrink-0" style={{ fontSize: 40, color: lc }}>{label}</span>
-              <span className="font-semibold" style={{ fontSize: 24, color: tc }}>{opt}</span>
+              <span className="font-semibold" style={{ fontSize: 26, color: tc }}>{opt}</span>
             </button>
           )
         })}
@@ -375,8 +372,8 @@ function ChallengeArena({ number, code, question, options, correctIndex, explana
         <div className="px-12 pb-8 mt-4">
           <div className="rounded-xl px-6 py-4 flex gap-4"
             style={{ background: ORANGE+'12', border: `1.5px solid ${ORANGE}44` }}>
-            <span className="mono font-black shrink-0 mt-0.5" style={{ color: ORANGE, fontSize: 16 }}>POURQUOI</span>
-            <span className="leading-relaxed" style={{ color: SUB, fontSize: 22 }}>{explanation}</span>
+            <span className="mono font-black shrink-0 mt-0.5" style={{ color: ORANGE, fontSize: 20 }}>POURQUOI</span>
+            <span className="leading-relaxed" style={{ color: SUB, fontSize: 24 }}>{explanation}</span>
           </div>
         </div>
       )}
@@ -401,7 +398,7 @@ function MemoryArena({ steps, title = 'MEMORY ARENA' }: { steps: MemStep[]; titl
       {/* Top */}
       <div className="flex items-center justify-between px-8 pt-5 pb-3 shrink-0">
         <div>
-          <p className="mono text-xs font-black tracking-widest mb-0.5" style={{ fontSize: 16, letterSpacing: '0.16em',  color: VIOLET }}>{title}</p>
+          <p className="mono text-xs font-black tracking-widest mb-0.5" style={{ fontSize: 20, letterSpacing: '0.16em',  color: VIOLET }}>{title}</p>
           <p className="mono font-bold text-sm" style={{ color: OW, background: D3, padding: '3px 10px', borderRadius: 6, border: `1px solid ${VIOLET}44` }}>
             <span style={{ color: VIOLET }}>▶ </span>{s.instruction}
           </p>
@@ -420,15 +417,15 @@ function MemoryArena({ steps, title = 'MEMORY ARENA' }: { steps: MemStep[]; titl
         {/* STACK — 28% */}
         <div className="flex flex-col" style={{ width: '28%', background: D2, borderRight: `1px solid ${D4}` }}>
           <div className="px-4 py-3 border-b" style={{ borderColor: D4 }}>
-            <p className="mono text-xs font-black tracking-widest" style={{ fontSize: 16, letterSpacing: '0.16em',  color: BLUE }}>STACK</p>
+            <p className="mono text-xs font-black tracking-widest" style={{ fontSize: 20, letterSpacing: '0.16em',  color: BLUE }}>STACK</p>
           </div>
           <div className="flex-1 p-4 flex flex-col gap-2 justify-end">
             {s.stack.map(v => (
               <div key={v.name} className="flex items-center justify-between rounded-xl px-4 py-3"
                 style={{ background: v.active ? BLUE+'22' : D3, border: `1.5px solid ${v.active ? BLUE+'88' : D4}`,
                   boxShadow: v.active ? `0 0 16px ${BLUE}33` : 'none' }}>
-                <span className="mono font-bold" style={{ fontSize: 22, color: v.active ? BLUE : OW }}>{v.name}</span>
-                <span className="mono font-black" style={{ fontSize: 21, color: v.active ? VIOLET : SUB }}>{v.value}</span>
+                <span className="mono font-bold" style={{ fontSize: 24, color: v.active ? BLUE : OW }}>{v.name}</span>
+                <span className="mono font-black" style={{ fontSize: 24, color: v.active ? VIOLET : SUB }}>{v.value}</span>
               </div>
             ))}
             {s.stack.length === 0 && <span className="mono text-xs text-center" style={{ color: MUTED }}>— empty —</span>}
@@ -437,7 +434,7 @@ function MemoryArena({ steps, title = 'MEMORY ARENA' }: { steps: MemStep[]; titl
 
         {/* HIGHWAY — 20% */}
         <div className="flex flex-col items-center justify-center" style={{ width: '20%', background: D1, borderRight: `1px solid ${D4}` }}>
-          <p className="mono text-xs font-black tracking-widest mb-5" style={{ fontSize: 16, letterSpacing: '0.16em',  color: MUTED }}>REF</p>
+          <p className="mono text-xs font-black tracking-widest mb-5" style={{ fontSize: 20, letterSpacing: '0.16em',  color: MUTED }}>REF</p>
           {s.refs.length > 0 ? s.refs.map(r => (
             <div key={r.from+r.to} className="flex flex-col items-center gap-1 w-full px-4">
               <span className="mono text-xs font-bold" style={{ color: r.active ? VIOLET : MUTED }}>{r.from}</span>
@@ -453,7 +450,7 @@ function MemoryArena({ steps, title = 'MEMORY ARENA' }: { steps: MemStep[]; titl
         {/* HEAP — 52% */}
         <div className="flex flex-col" style={{ width: '52%', background: D1 }}>
           <div className="px-4 py-3 border-b" style={{ borderColor: D4 }}>
-            <p className="mono text-xs font-black tracking-widest" style={{ fontSize: 16, letterSpacing: '0.16em',  color: ORANGE }}>HEAP</p>
+            <p className="mono text-xs font-black tracking-widest" style={{ fontSize: 20, letterSpacing: '0.16em',  color: ORANGE }}>HEAP</p>
           </div>
           <div className="flex-1 p-5 flex flex-wrap gap-4 content-start">
             {s.heap.map(obj => (
@@ -516,7 +513,7 @@ function ObjectCreationSeq() {
     <div className="w-full h-full flex flex-col px-12 py-8" style={glowBg(s.color, '80%', '20%')}>
       <FsmCorner />
       <div className="shrink-0 mb-6">
-        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color: ORANGE }}>WHAT HAPPENS WHEN JAVA SEES</p>
+        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color: ORANGE }}>WHAT HAPPENS WHEN JAVA SEES</p>
         <div className="font-black" style={{ fontSize: 67, color: OW, letterSpacing: '-2px' }}>
           new <span style={{ color: ORANGE }}>Point(3,4)</span>
         </div>
@@ -572,7 +569,7 @@ function ThisSimulator() {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center px-12" style={glowBg(active === 'p1' ? BLUE : active === 'p2' ? VIOLET : ORANGE)}>
       <FsmCorner />
-      <p className="mono text-xs font-black tracking-widest mb-4" style={{ fontSize: 16, letterSpacing: '0.16em',  color: ORANGE }}>THIS SIMULATOR</p>
+      <p className="mono text-xs font-black tracking-widest mb-4" style={{ fontSize: 20, letterSpacing: '0.16em',  color: ORANGE }}>THIS SIMULATOR</p>
       <p className="text-lg mb-8 text-center" style={{ color: SUB }}>
         Cliquez sur un objet pour appeler <span className="mono font-bold" style={{ color: ORANGE }}>move()</span>
       </p>
@@ -634,11 +631,11 @@ function StaticUniverse() {
   return (
     <div className="w-full h-full flex flex-col px-10 py-8" style={DARK_GRID}>
       <FsmCorner />
-      <p className="mono text-xs font-black tracking-widest mb-4" style={{ fontSize: 16, letterSpacing: '0.16em',  color: ORANGE }}>STATIC UNIVERSE</p>
+      <p className="mono text-xs font-black tracking-widest mb-4" style={{ fontSize: 20, letterSpacing: '0.16em',  color: ORANGE }}>STATIC UNIVERSE</p>
       {/* Class container */}
       <div className="rounded-2xl p-5 mb-6 relative"
         style={{ border: `2px solid ${ORANGE}55`, background: ORANGE+'0a', boxShadow: counter > 0 ? `0 0 32px ${ORANGE}22` : 'none' }}>
-        <p className="mono text-xs font-black tracking-widest mb-3" style={{ fontSize: 16, letterSpacing: '0.16em',  color: ORANGE }}>CLASS POINT</p>
+        <p className="mono text-xs font-black tracking-widest mb-3" style={{ fontSize: 20, letterSpacing: '0.16em',  color: ORANGE }}>CLASS POINT</p>
         <div className="flex items-center justify-between">
           <div className="mono text-3xl font-black" style={{ color: OW }}>
             static <span style={{ color: ORANGE }}>nbPoints</span> =
@@ -652,7 +649,7 @@ function StaticUniverse() {
       </div>
       {/* Instance world */}
       <div>
-        <p className="mono text-xs font-black tracking-widest mb-3" style={{ fontSize: 16, letterSpacing: '0.16em',  color: BLUE }}>INSTANCE WORLD</p>
+        <p className="mono text-xs font-black tracking-widest mb-3" style={{ fontSize: 20, letterSpacing: '0.16em',  color: BLUE }}>INSTANCE WORLD</p>
         <div className="flex gap-5">
           {['p1','p2','p3'].map((id,i) => {
             const inst = instances[i]
@@ -660,7 +657,7 @@ function StaticUniverse() {
               <div key={id} className="flex-1 flex flex-col gap-3 items-center">
                 <div className="rounded-xl overflow-hidden transition-all w-full"
                   style={{ border: `1.5px solid ${inst ? BLUE+'66' : D4}`, opacity: inst ? 1 : 0.3 }}>
-                  <div className="px-4 py-2 font-black mono" style={{ background: inst ? BLUE : D3, color: '#fff', fontSize: 22 }}>{id}</div>
+                  <div className="px-4 py-2 font-black mono" style={{ background: inst ? BLUE : D3, color: '#fff', fontSize: 24 }}>{id}</div>
                   {[{k:'x',v:inst?.x||'?'},{k:'y',v:inst?.y||'?'}].map(f=>(
                     <div key={f.k} className="flex justify-between px-4 py-2 border-t mono text-sm"
                       style={{ borderColor: D4, background: D2, color: inst?OW:MUTED }}>
@@ -890,7 +887,7 @@ class Etudiant {
             <p className="uppercase leading-snug"
               style={{
                 fontFamily: "'Syne', system-ui, sans-serif",
-                fontSize: 17,
+                fontSize: 22,
                 fontWeight: 700,
                 color: BLUE,
                 letterSpacing: '0.14em',
@@ -933,7 +930,7 @@ class Etudiant {
             <p
               style={{
                 fontFamily: "'Syne', system-ui, sans-serif",
-                fontSize: 26,
+                fontSize: 28,
                 fontWeight: 600,
                 color: LSUB,
                 marginBottom: 16,
@@ -962,12 +959,12 @@ class Etudiant {
               {i > 0 && <div className="w-px h-10 self-center" style={{ background: LBORD }} />}
               <div>
                 <p className="mono tracking-widest uppercase mb-1"
-                  style={{ color: MUTED, fontSize: 12, letterSpacing: '0.12em' }}>
+                  style={{ color: MUTED, fontSize: 18, letterSpacing: '0.12em' }}>
                   {m.k}
                 </p>
                 <p style={{
                   fontFamily: "'Syne', system-ui, sans-serif",
-                  fontSize: 20,
+                  fontSize: 24,
                   fontWeight: 700,
                   color: LTEXT,
                 }}>
@@ -993,7 +990,7 @@ class Etudiant {
           <span key={k.t} className="absolute mono select-none pointer-events-none"
             style={{
               left: k.x, top: k.y, transform: 'translate(-50%, -50%)',
-              fontSize: 18, color: BLUE, opacity: phase >= 4 ? 0.22 : 0,
+              fontSize: 22, color: BLUE, opacity: phase >= 4 ? 0.22 : 0,
               transition: isPrint ? 'none' : 'opacity 1s ease',
               fontWeight: 600,
               zIndex: 0,
@@ -1030,12 +1027,12 @@ function CoverEditor({ code }: { code: string }) {
     <div className="flex flex-col h-full w-full" style={{ border: `1px solid ${E_BORD}`, background: E_BG }}>
       <div className="flex items-center shrink-0" style={{ background: '#161B22', borderBottom: `1px solid ${E_BORD}`, height: 42 }}>
         <div className="flex items-center gap-1.5 px-4">
-          <span style={{ color: '#FF5F57', fontSize: 12 }}>●</span>
-          <span style={{ color: '#FFBD2E', fontSize: 12 }}>●</span>
-          <span style={{ color: '#28CA41', fontSize: 12 }}>●</span>
+          <span style={{ color: '#FF5F57', fontSize: 18 }}>●</span>
+          <span style={{ color: '#FFBD2E', fontSize: 18 }}>●</span>
+          <span style={{ color: '#28CA41', fontSize: 18 }}>●</span>
         </div>
         <div className="px-3 py-1 mono flex items-center gap-2"
-          style={{ background: E_BG, color: '#8B949E', borderBottom: `2px solid ${ORANGE}`, fontSize: 15 }}>
+          style={{ background: E_BG, color: '#8B949E', borderBottom: `2px solid ${ORANGE}`, fontSize: 20 }}>
           <span style={{ color: ORANGE, fontWeight: 700 }}>Java</span>
           Main.java
         </div>
@@ -1084,12 +1081,12 @@ function SlideCh1Opener() {
       </div>
       <div className="relative z-10 w-full h-full flex flex-col justify-center px-20">
         <div className="w-16 h-1.5 rounded mb-6" style={{ background: '#ffffffcc' }} />
-        <p className="mono font-black tracking-widest mb-4" style={{ color: '#ffffffcc', fontSize: 18, letterSpacing: '0.22em' }}>CHAPITRE 01</p>
+        <p className="mono font-black tracking-widest mb-4" style={{ color: '#ffffffcc', fontSize: 22, letterSpacing: '0.22em' }}>CHAPITRE 01</p>
         <h1 className="font-black mb-5 leading-none"
           style={{ fontFamily: "'Syne', system-ui, sans-serif", fontSize: 92, color: '#fff', letterSpacing: '-0.04em' }}>
           Introduction à Java
         </h1>
-        <p style={{ color: '#ffffffee', maxWidth: 560, fontSize: 26, lineHeight: 1.45 }} className="mb-8">
+        <p style={{ color: '#ffffffee', maxWidth: 560, fontSize: 28, lineHeight: 1.45 }} className="mb-8">
           Du code source à l&apos;exécution — comprendre comment Java fonctionne vraiment.
         </p>
         <LogoStrip kinds={['java', 'jdk', 'jvm', 'intellij']} size={52} gap={14} />
@@ -1116,7 +1113,7 @@ function SlideWhyJava() {
           style={{ fontFamily: "'Syne', system-ui, sans-serif", fontSize: 108, color: OW, letterSpacing: '-0.05em' }}>
           POURQUOI<br /><span style={{ color: ORANGE }}>JAVA ?</span>
         </div>
-        <p className="mt-8" style={{ color: SUB, maxWidth: 420, fontSize: 24, lineHeight: 1.5 }}>
+        <p className="mt-8" style={{ color: SUB, maxWidth: 420, fontSize: 26, lineHeight: 1.5 }}>
           Cinq raisons qui ont transformé le développement logiciel depuis 1995.
         </p>
       </div>
@@ -1142,7 +1139,7 @@ function SlideWhyJava() {
             const y = 190 + 170 * Math.sin(rad)
             return (
               <div key={i} className="absolute flex items-center justify-center rounded-xl px-3 py-2 mono font-bold"
-                style={{ left: x-56, top: y-22, width:112, height:44, background: D2, border:`2px solid ${n.color}`, color: n.color, fontSize: 16,
+                style={{ left: x-56, top: y-22, width:112, height:44, background: D2, border:`2px solid ${n.color}`, color: n.color, fontSize: 20,
                   boxShadow: '0 6px 20px rgba(15,23,42,0.08)' }}>
                 {n.label}
               </div>
@@ -1167,7 +1164,7 @@ function SlideHistory() {
     <div className="w-full h-full flex flex-col px-12 py-10" style={DARK_GRID}>
       <FsmCorner />
       <div className="mb-8">
-        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color: ORANGE }}>TIMELINE</p>
+        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color: ORANGE }}>TIMELINE</p>
         <h2 className="font-black" style={{ fontSize:74, color: OW, letterSpacing:'-3px', lineHeight:1 }}>L'histoire de Java</h2>
       </div>
       {/* Timeline track */}
@@ -1201,7 +1198,7 @@ function SlideJavaDna() {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center px-12" style={DARK_GRID}>
       <FsmCorner />
-      <p className="mono text-xs font-black tracking-widest mb-5" style={{ fontSize: 16, letterSpacing: '0.16em',  color: ORANGE }}>L'ADN DE JAVA</p>
+      <p className="mono text-xs font-black tracking-widest mb-5" style={{ fontSize: 20, letterSpacing: '0.16em',  color: ORANGE }}>L'ADN DE JAVA</p>
       <h2 className="font-black text-center mb-10" style={{ fontSize:67, color:OW, letterSpacing:'-2px' }}>5 caractéristiques fondamentales</h2>
       <div className="flex gap-5 w-full max-w-5xl">
         {[
@@ -1229,7 +1226,7 @@ function SlideWriteOnce() {
     <div className="w-full h-full flex flex-col items-center justify-center relative" style={DARK_GRID}>
       <FsmCorner />
       <div className="absolute left-0 top-0 bottom-0 w-2" style={{ background: ORANGE }} />
-      <p className="mono font-black tracking-widest mb-5 text-center" style={{ fontSize:22, color: ORANGE }}>JAVA PHILOSOPHY</p>
+      <p className="mono font-black tracking-widest mb-5 text-center" style={{ fontSize: 24, color: ORANGE }}>JAVA PHILOSOPHY</p>
       <div className="font-black text-center leading-none"
         style={{ fontSize: 'clamp(67px, 9.72vw, 123px)', color:OW, letterSpacing:'-5px', lineHeight:0.95 }}>
         WRITE ONCE.<br />
@@ -1253,7 +1250,7 @@ function SlideEcosystem() {
     <div className="w-full h-full flex gap-10 px-12 py-10" style={{ ...BLUEPRINT }}>
       <FsmCorner dark={false} />
       <div className="flex-1">
-        <p className="mono text-xs font-black tracking-widest mb-3" style={{ fontSize: 16, letterSpacing: '0.16em',  color: BLUE }}>ARCHITECTURE</p>
+        <p className="mono text-xs font-black tracking-widest mb-3" style={{ fontSize: 20, letterSpacing: '0.16em',  color: BLUE }}>ARCHITECTURE</p>
         <h2 className="font-black mb-6" style={{ fontSize:62, color:LTEXT, letterSpacing:'-2px' }}>L'Écosystème Java</h2>
         <p className="text-2xl font-black mb-8" style={{ color:LTEXT }}>
           <span style={{ color:ORANGE }}>JAVA</span> = Langage + JVM + API
@@ -1296,7 +1293,7 @@ function SlideEditions() {
   return (
     <div className="w-full h-full flex flex-col px-12 py-10" style={DARK_GRID}>
       <FsmCorner />
-      <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em', color: ORANGE }}>ÉDITIONS</p>
+      <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em', color: ORANGE }}>ÉDITIONS</p>
       <h2 className="font-black mb-7" style={{ fontFamily: "'Syne', system-ui, sans-serif", fontSize: 56, color: OW }}>Les 3 éditions Java</h2>
       <div className="grid grid-cols-3 gap-5 flex-1">
         {[
@@ -1310,13 +1307,13 @@ function SlideEditions() {
               <TechMark label={e.mark} color={e.c} size={56} />
               <div>
                 <p className="font-black text-3xl" style={{ color: e.c }}>{e.n}</p>
-                <p className="mono mt-0.5" style={{ color: SUB, fontSize: 14 }}>{e.full}</p>
+                <p className="mono mt-0.5" style={{ color: SUB, fontSize: 18 }}>{e.full}</p>
               </div>
             </div>
-            <p style={{ color: SUB, fontSize: 18 }}>{e.desc}</p>
+            <p style={{ color: SUB, fontSize: 22 }}>{e.desc}</p>
             <ul className="flex flex-col gap-2 mt-auto">
               {e.items.map(item => (
-                <li key={item} className="flex gap-2" style={{ fontSize: 18 }}>
+                <li key={item} className="flex gap-2" style={{ fontSize: 22 }}>
                   <span style={{ color: e.c }}>›</span>
                   <span style={{ color: OW }}>{item}</span>
                 </li>
@@ -1341,7 +1338,7 @@ function SlideJavaToolchain() {
   return (
     <div className="w-full h-full flex flex-col px-12 py-10" style={DARK_GRID}>
       <FsmCorner />
-      <p className="mono font-black tracking-widest mb-3" style={{ fontSize: 15, letterSpacing: '0.16em', color: ORANGE }}>TOOLCHAIN</p>
+      <p className="mono font-black tracking-widest mb-3" style={{ fontSize: 20, letterSpacing: '0.16em', color: ORANGE }}>TOOLCHAIN</p>
       <h2 className="font-black mb-10 leading-tight"
         style={{ fontFamily: "'Syne', system-ui, sans-serif", fontSize: 44, color: OW, letterSpacing: '-0.03em', maxWidth: 900 }}>
         De quoi avons-nous besoin<br />pour coder en Java ?
@@ -1369,7 +1366,7 @@ function SlideJavaToolchain() {
                 {s.label}
               </p>
               <p className="font-black mono mb-1" style={{ color: OW, fontSize: s.dominant ? 28 : 22 }}>{s.file}</p>
-              <p style={{ color: SUB, fontSize: 15 }}>{s.sub}</p>
+              <p style={{ color: SUB, fontSize: 20 }}>{s.sub}</p>
             </div>
             {i < steps.length - 1 && (
               <div className="flex items-center shrink-0 px-0.5">
@@ -1386,7 +1383,7 @@ function SlideJavaToolchain() {
           <ToolLogo kind="jdk" size={56} compact />
           <div>
             <p className="font-black leading-none mb-1" style={{ fontFamily: "'Syne', system-ui, sans-serif", fontSize: 36, color: ORANGE }}>JDK</p>
-            <p className="font-bold" style={{ color: OW, fontSize: 22 }}>POUR DÉVELOPPER.</p>
+            <p className="font-bold" style={{ color: OW, fontSize: 24 }}>POUR DÉVELOPPER.</p>
           </div>
         </div>
         <div className="flex-1 rounded-2xl px-8 py-6 flex items-center gap-5"
@@ -1394,7 +1391,7 @@ function SlideJavaToolchain() {
           <ToolLogo kind="jvm" size={56} compact />
           <div>
             <p className="font-black leading-none mb-1" style={{ fontFamily: "'Syne', system-ui, sans-serif", fontSize: 36, color: EMERALD }}>JVM</p>
-            <p className="font-bold" style={{ color: OW, fontSize: 22 }}>POUR EXÉCUTER.</p>
+            <p className="font-bold" style={{ color: OW, fontSize: 24 }}>POUR EXÉCUTER.</p>
           </div>
         </div>
       </div>
@@ -1408,7 +1405,7 @@ function SlideDevEnvironment() {
     <div className="w-full h-full flex gap-8 px-10 py-9" style={DARK_GRID}>
       <FsmCorner />
       <div className="flex flex-col" style={{ width: '32%' }}>
-        <p className="mono font-black tracking-widest mb-3" style={{ fontSize: 15, letterSpacing: '0.16em', color: ORANGE }}>ENVIRONNEMENT</p>
+        <p className="mono font-black tracking-widest mb-3" style={{ fontSize: 20, letterSpacing: '0.16em', color: ORANGE }}>ENVIRONNEMENT</p>
         <h2 className="font-black mb-8 leading-tight"
           style={{ fontFamily: "'Syne', system-ui, sans-serif", fontSize: 42, color: OW, letterSpacing: '-0.03em' }}>
           Où allons-nous<br />coder ?
@@ -1419,21 +1416,21 @@ function SlideDevEnvironment() {
           <div className="flex items-center gap-4 mb-4">
             <ToolLogo kind="intellij" size={64} />
             <div>
-              <p className="font-black" style={{ color: OW, fontSize: 26 }}>INTELLIJ IDEA</p>
-              <p className="mono font-bold" style={{ color: ORANGE, fontSize: 14 }}>RECOMMANDÉ</p>
+              <p className="font-black" style={{ color: OW, fontSize: 28 }}>INTELLIJ IDEA</p>
+              <p className="mono font-bold" style={{ color: ORANGE, fontSize: 18 }}>RECOMMANDÉ</p>
             </div>
           </div>
-          <p style={{ color: SUB, fontSize: 18, lineHeight: 1.45 }}>
+          <p style={{ color: SUB, fontSize: 22, lineHeight: 1.45 }}>
             Environnement recommandé pour ce cours.
           </p>
         </div>
 
-        <p className="mono font-black tracking-widest mb-3" style={{ color: MUTED, fontSize: 12, letterSpacing: '0.14em' }}>
+        <p className="mono font-black tracking-widest mb-3" style={{ color: MUTED, fontSize: 18, letterSpacing: '0.14em' }}>
           POUR CE COURS · NOUS UTILISONS INTELLIJ IDEA
         </p>
 
         <div className="flex flex-col gap-2 mt-auto opacity-55">
-          <p className="mono mb-1" style={{ color: MUTED, fontSize: 13 }}>Alternatives (non prioritaires)</p>
+          <p className="mono mb-1" style={{ color: MUTED, fontSize: 18 }}>Alternatives (non prioritaires)</p>
           {[
             { k: 'eclipse', n: 'Eclipse' },
             { k: 'vscode', n: 'VS Code' },
@@ -1441,7 +1438,7 @@ function SlideDevEnvironment() {
             <div key={a.k} className="flex items-center gap-3 rounded-xl px-4 py-2.5"
               style={{ background: D2, border: `1px solid ${D4}` }}>
               <ToolLogo kind={a.k} size={32} />
-              <span className="font-semibold" style={{ color: SUB, fontSize: 16 }}>{a.n}</span>
+              <span className="font-semibold" style={{ color: SUB, fontSize: 20 }}>{a.n}</span>
             </div>
           ))}
         </div>
@@ -1451,15 +1448,15 @@ function SlideDevEnvironment() {
       <div className="flex-1 flex flex-col rounded-2xl overflow-hidden shadow-2xl"
         style={{ border: `1px solid ${E_BORD}`, background: E_BG }}>
         <div className="flex items-center h-10 px-4 shrink-0" style={{ background: '#161B22', borderBottom: `1px solid ${E_BORD}` }}>
-          <span style={{ color: '#FF5F57', fontSize: 11 }}>●</span>
-          <span className="ml-1" style={{ color: '#FFBD2E', fontSize: 11 }}>●</span>
-          <span className="ml-1" style={{ color: '#28CA41', fontSize: 11 }}>●</span>
-          <span className="mono ml-4" style={{ color: '#8B949E', fontSize: 13 }}>IntelliJ IDEA — POO-Java</span>
+          <span style={{ color: '#FF5F57', fontSize: 16 }}>●</span>
+          <span className="ml-1" style={{ color: '#FFBD2E', fontSize: 16 }}>●</span>
+          <span className="ml-1" style={{ color: '#28CA41', fontSize: 16 }}>●</span>
+          <span className="mono ml-4" style={{ color: '#8B949E', fontSize: 18 }}>IntelliJ IDEA — POO-Java</span>
         </div>
         <div className="flex flex-1 min-h-0">
           <div className="shrink-0 py-4 px-4" style={{ width: 200, background: '#0A0F1A', borderRight: `1px solid ${E_BORD}` }}>
-            <p className="mono font-bold mb-3" style={{ color: MUTED, fontSize: 12, letterSpacing: '0.1em' }}>PROJECT</p>
-            <div className="mono" style={{ color: '#D4D4D4', fontSize: 15, lineHeight: 1.7 }}>
+            <p className="mono font-bold mb-3" style={{ color: MUTED, fontSize: 18, letterSpacing: '0.1em' }}>PROJECT</p>
+            <div className="mono" style={{ color: '#D4D4D4', fontSize: 20, lineHeight: 1.7 }}>
               <div>Project</div>
               <div style={{ color: '#8B949E' }}>└── src</div>
               <div style={{ color: ORANGE, fontWeight: 700, paddingLeft: 24 }}>└── Main.java</div>
@@ -1529,10 +1526,10 @@ function SlideReadyToCode() {
       <div className="relative z-10 w-full max-w-3xl px-12">
         <div className="rounded-2xl overflow-hidden mb-10"
           style={{ background: '#0D1117', border: `1px solid ${E_BORD}`, boxShadow: '0 24px 64px rgba(0,0,0,0.45)' }}>
-          <div className="px-5 py-2.5 mono flex items-center gap-2" style={{ background: '#161B22', borderBottom: `1px solid ${E_BORD}`, color: '#8B949E', fontSize: 14 }}>
+          <div className="px-5 py-2.5 mono flex items-center gap-2" style={{ background: '#161B22', borderBottom: `1px solid ${E_BORD}`, color: '#8B949E', fontSize: 18 }}>
             <span style={{ color: EMERALD }}>▶</span> Terminal
           </div>
-          <div className="p-6 mono" style={{ fontSize: 22, lineHeight: 1.85 }}>
+          <div className="p-6 mono" style={{ fontSize: 24, lineHeight: 1.85 }}>
             <div style={show(1)}>
               <span style={{ color: EMERALD }}>$ </span>
               <span style={{ color: '#D4D4D4' }}>java --version</span>
@@ -1547,7 +1544,7 @@ function SlideReadyToCode() {
         </div>
 
         <div className="text-center" style={show(5)}>
-          <p className="mono font-black tracking-widest mb-4" style={{ color: '#94A3B8', fontSize: 16, letterSpacing: '0.2em' }}>
+          <p className="mono font-black tracking-widest mb-4" style={{ color: '#94A3B8', fontSize: 20, letterSpacing: '0.2em' }}>
             ENVIRONNEMENT PRÊT.
           </p>
           <p className="font-black leading-none"
@@ -1572,12 +1569,12 @@ function SlideProProject() {
   return (
     <div className="w-full h-full flex flex-col px-12 py-10" style={DARK_GRID}>
       <FsmCorner />
-      <p className="mono font-black tracking-widest mb-3" style={{ fontSize: 15, letterSpacing: '0.16em', color: ORANGE }}>PROJET PROFESSIONNEL</p>
+      <p className="mono font-black tracking-widest mb-3" style={{ fontSize: 20, letterSpacing: '0.16em', color: ORANGE }}>PROJET PROFESSIONNEL</p>
       <h2 className="font-black mb-4 leading-tight"
         style={{ fontFamily: "'Syne', system-ui, sans-serif", fontSize: 48, color: OW, letterSpacing: '-0.03em' }}>
         Du code au projet professionnel
       </h2>
-      <p className="mb-10" style={{ color: SUB, fontSize: 20, maxWidth: 720 }}>
+      <p className="mb-10" style={{ color: SUB, fontSize: 24, maxWidth: 720 }}>
         Après les classes et la structure de base — Git, Maven et Gradle entrent en scène.
       </p>
 
@@ -1588,7 +1585,7 @@ function SlideProProject() {
               style={{ background: D2, border: `2px solid ${s.c}55`, boxShadow: `0 8px 28px ${s.c}18` }}>
               <ToolLogo kind={s.icon} size={s.icon === 'jdk' || s.icon === 'jvm' ? 48 : 56} compact={s.icon === 'jdk' || s.icon === 'jvm'} />
               <p className="mono font-black mt-5 tracking-wider"
-                style={{ color: s.c, fontSize: 16, letterSpacing: '0.08em' }}>
+                style={{ color: s.c, fontSize: 20, letterSpacing: '0.08em' }}>
                 {s.label}
               </p>
             </div>
@@ -1716,10 +1713,10 @@ class Etudiant {
 
       <div className="flex items-center justify-between shrink-0 mb-3">
         <div>
-          <p className="mono font-black tracking-widest mb-1" style={{ fontSize: 15, letterSpacing: '0.16em', color: EMERALD }}>
+          <p className="mono font-black tracking-widest mb-1" style={{ fontSize: 20, letterSpacing: '0.16em', color: EMERALD }}>
             PREMIER PROGRAMME · OOP
           </p>
-          <p className="font-semibold" style={{ color: SUB, fontSize: 18 }}>
+          <p className="font-semibold" style={{ color: SUB, fontSize: 22 }}>
             <span className="mono font-black" style={{ color: n.color }}>{n.kicker}</span>
             <span style={{ color: MUTED }}> — </span>
             {n.note}
@@ -1745,10 +1742,10 @@ class Etudiant {
                 border: `1.5px solid ${c.show ? c.color : D4}`,
               }}>
               <p className="mono font-black tracking-wider"
-                style={{ color: c.show ? c.color : MUTED, fontSize: 13, letterSpacing: '0.08em' }}>
+                style={{ color: c.show ? c.color : MUTED, fontSize: 18, letterSpacing: '0.08em' }}>
                 {c.title}
               </p>
-              <p style={{ color: c.show ? SUB : MUTED, fontSize: 14, lineHeight: 1.3, marginTop: 2 }}>{c.cap}</p>
+              <p style={{ color: c.show ? SUB : MUTED, fontSize: 18, lineHeight: 1.3, marginTop: 2 }}>{c.cap}</p>
             </div>
           ))}
         </div>
@@ -1768,12 +1765,12 @@ class Etudiant {
             <div className="absolute z-10 pointer-events-none"
               style={{ right: 24, top: 96, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div className="mono font-black px-2.5 py-1 rounded"
-                style={{ background: ORANGE + '28', border: `2px solid ${ORANGE}`, color: ORANGE, fontSize: 15 }}>
+                style={{ background: ORANGE + '28', border: `2px solid ${ORANGE}`, color: ORANGE, fontSize: 20 }}>
                 new
               </div>
               <div style={{ width: 2, height: 16, background: ORANGE }} />
               <p className="mono font-bold text-center leading-tight"
-                style={{ color: ORANGE, fontSize: 12 }}>
+                style={{ color: ORANGE, fontSize: 18 }}>
                 ↓<br />création<br />de l&apos;objet
               </p>
             </div>
@@ -1785,29 +1782,29 @@ class Etudiant {
             <div className="flex flex-col items-center w-full">
               <div className="flex items-center gap-2 mb-3 w-full">
                 <div className="flex-1 h-px" style={{ background: `linear-gradient(90deg, transparent, ${ORANGE})` }} />
-                <span className="mono font-black" style={{ color: ORANGE, fontSize: 14 }}>→ e1</span>
+                <span className="mono font-black" style={{ color: ORANGE, fontSize: 18 }}>→ e1</span>
               </div>
-              <p className="mono font-black mb-2 self-start" style={{ color: ORANGE, fontSize: 22 }}>e1</p>
+              <p className="mono font-black mb-2 self-start" style={{ color: ORANGE, fontSize: 24 }}>e1</p>
               <div className="w-full rounded-xl overflow-hidden"
                 style={{ border: `2px solid ${ORANGE}`, boxShadow: `0 0 28px ${ORANGE}33`, background: D2 }}>
-                <div className="px-4 py-2 mono font-black text-white" style={{ background: ORANGE, fontSize: 18 }}>
+                <div className="px-4 py-2 mono font-black text-white" style={{ background: ORANGE, fontSize: 22 }}>
                   Etudiant
                 </div>
                 <div className="flex justify-between px-4 py-3" style={{ borderBottom: `1px solid ${D4}` }}>
-                  <span className="mono" style={{ color: BLUE, fontSize: 16 }}>nom</span>
-                  <span className="mono font-bold" style={{ color: OW, fontSize: 16 }}>&quot;Sarra&quot;</span>
+                  <span className="mono" style={{ color: BLUE, fontSize: 20 }}>nom</span>
+                  <span className="mono font-bold" style={{ color: OW, fontSize: 20 }}>&quot;Sarra&quot;</span>
                 </div>
                 <div className="flex justify-between px-4 py-3">
-                  <span className="mono" style={{ color: BLUE, fontSize: 16 }}>moyenne</span>
-                  <span className="mono font-bold" style={{ color: OW, fontSize: 16 }}>14.5</span>
+                  <span className="mono" style={{ color: BLUE, fontSize: 20 }}>moyenne</span>
+                  <span className="mono font-bold" style={{ color: OW, fontSize: 20 }}>14.5</span>
                 </div>
               </div>
-              <p className="mono mt-3 text-center" style={{ color: MUTED, fontSize: 13 }}>CODE → OBJET</p>
+              <p className="mono mt-3 text-center" style={{ color: MUTED, fontSize: 18 }}>CODE → OBJET</p>
             </div>
           ) : (
             <div className="w-full h-44 rounded-xl flex items-center justify-center"
               style={{ border: `1.5px dashed ${D4}`, background: D3 }}>
-              <p className="mono text-center" style={{ color: MUTED, fontSize: 14 }}>objet<br />à venir</p>
+              <p className="mono text-center" style={{ color: MUTED, fontSize: 18 }}>objet<br />à venir</p>
             </div>
           )}
         </div>
@@ -1815,7 +1812,7 @@ class Etudiant {
 
       <div className="shrink-0 flex items-center justify-between mt-3 gap-4">
         <p className="font-black tracking-tight"
-          style={{ fontFamily: "'Syne', system-ui, sans-serif", fontSize: 26, color: OW }}>
+          style={{ fontFamily: "'Syne', system-ui, sans-serif", fontSize: 28, color: OW }}>
           UNE <span style={{ color: BLUE }}>CLASSE</span> DÉCRIT.
           {' '}UN <span style={{ color: ORANGE }}>OBJET</span> EXISTE ET AGIT.
         </p>
@@ -1853,9 +1850,9 @@ function OopEditor({
       style={{ border: `1px solid ${E_BORD}` }}>
       <div className="flex items-center gap-0 shrink-0" style={{ background: '#161B22', borderBottom: `1px solid ${E_BORD}`, height: 40 }}>
         <div className="flex items-center gap-1.5 px-4">
-          <span style={{ color: '#FF5F57', fontSize: 12 }}>●</span>
-          <span style={{ color: '#FFBD2E', fontSize: 12 }}>●</span>
-          <span style={{ color: '#28CA41', fontSize: 12 }}>●</span>
+          <span style={{ color: '#FF5F57', fontSize: 18 }}>●</span>
+          <span style={{ color: '#FFBD2E', fontSize: 18 }}>●</span>
+          <span style={{ color: '#28CA41', fontSize: 18 }}>●</span>
         </div>
         <div className="px-3 py-1 text-sm mono flex items-center gap-2"
           style={{ background: E_BG, borderRight: `1px solid ${E_BORD}`, color: '#8B949E', borderBottom: `2px solid ${ORANGE}` }}>
@@ -1903,9 +1900,9 @@ function OopEditor({
           <div className="flex items-center gap-2 px-3 py-1.5 text-sm mono"
             style={{ borderBottom: `1px solid ${E_BORD}`, color: '#3B4252' }}>
             <span style={{ color: EMERALD }}>▶</span> Terminal
-            <span className="ml-auto mono font-bold" style={{ color: EMERALD, fontSize: 12 }}>✓ OK</span>
+            <span className="ml-auto mono font-bold" style={{ color: EMERALD, fontSize: 18 }}>✓ OK</span>
           </div>
-          <div className="px-4 py-2.5 mono" style={{ fontSize: 20, lineHeight: 1.5 }}>
+          <div className="px-4 py-2.5 mono" style={{ fontSize: 24, lineHeight: 1.5 }}>
             <div>
               <span style={{ color: EMERALD }}>&gt; </span>
               <span style={{ color: '#D4D4D4' }}>Run Main</span>
@@ -1934,7 +1931,7 @@ function SlidePipeline() {
     <div className="w-full h-full flex flex-col px-12 py-8" style={glowBg(ORANGE,'50%','80%')}>
       <FsmCorner />
       <div className="text-center mb-6 shrink-0">
-        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:ORANGE }}>SOUS LE CAPOT</p>
+        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:ORANGE }}>SOUS LE CAPOT</p>
         <h2 className="font-black" style={{ fontSize:58, color:OW, letterSpacing:'-2px' }}>
           Source → Bytecode → JVM
         </h2>
@@ -2032,7 +2029,7 @@ function SlideArchitecture() {
     <div className="w-full h-full flex gap-12 px-12 py-10" style={DARK_GRID}>
       <FsmCorner />
       <div className="flex-1">
-        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:ORANGE }}>ARCHITECTURE</p>
+        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:ORANGE }}>ARCHITECTURE</p>
         <h2 className="font-black mb-6" style={{ fontSize:62, color:OW, letterSpacing:'-2px' }}>Structure d'un projet Java</h2>
         <div className="flex flex-col gap-3 mb-5">
           {['Une application Java = ensemble de fichiers .java','Chaque fichier contient une ou plusieurs classes','Au plus une classe public par fichier .java'].map((r,i)=>(
@@ -2067,7 +2064,7 @@ function SlideIdentifiers() {
   return (
     <div className="w-full h-full flex flex-col px-12 py-10" style={{ ...BLUEPRINT }}>
       <FsmCorner dark={false} />
-      <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:BLUE }}>CONVENTIONS</p>
+      <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:BLUE }}>CONVENTIONS</p>
       <h2 className="font-black mb-7" style={{ fontSize:62, color:LTEXT, letterSpacing:'-2px' }}>Nommage en Java</h2>
       <div className="grid grid-cols-2 gap-5 flex-1">
         {[
@@ -2093,7 +2090,7 @@ function SlideComments() {
   return (
     <div className="w-full h-full flex flex-col px-12 py-10" style={DARK_GRID}>
       <FsmCorner />
-      <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:EMERALD }}>COMMENTAIRES</p>
+      <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:EMERALD }}>COMMENTAIRES</p>
       <h2 className="font-black mb-7" style={{ fontSize:62, color:OW }}>3 types de commentaires</h2>
       <div className="grid grid-cols-3 gap-5 flex-1">
         {[
@@ -2121,7 +2118,7 @@ function SlidePrimitiveTypes() {
   return (
     <div className="w-full h-full flex flex-col px-12 py-10" style={{ ...BLUEPRINT }}>
       <FsmCorner dark={false} />
-      <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:BLUE }}>TYPES PRIMITIFS</p>
+      <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:BLUE }}>TYPES PRIMITIFS</p>
       <h2 className="font-black mb-7" style={{ fontSize:62, color:LTEXT, letterSpacing:'-2px' }}>Les types de base Java</h2>
       <div className="grid grid-cols-3 gap-5 flex-1">
         {[
@@ -2153,7 +2150,7 @@ function SlideCasting() {
     <div className="w-full h-full flex gap-10 px-12 py-10" style={DARK_GRID}>
       <FsmCorner />
       <div className="flex-1">
-        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:BLUE }}>TRANSTYPAGE</p>
+        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:BLUE }}>TRANSTYPAGE</p>
         <h2 className="font-black mb-5" style={{ fontSize:58, color:OW }}>Conversion de types</h2>
         <div className="grid grid-cols-2 gap-4 mb-5">
           <div className="rounded-xl p-4" style={{ background:EMERALD+'10', border:`1.5px solid ${EMERALD}55` }}>
@@ -2203,7 +2200,7 @@ function SlideCh1Recap() {
     <div className="w-full h-full flex gap-10 px-12 py-10" style={{ ...BLUEPRINT }}>
       <FsmCorner dark={false} />
       <div className="flex-1">
-        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:ORANGE }}>RÉCAPITULATIF CH.1</p>
+        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:ORANGE }}>RÉCAPITULATIF CH.1</p>
         <h2 className="font-black mb-6" style={{ fontSize:58, color:LTEXT }}>5 choses à retenir</h2>
         {[
           { n:1, t:'Java compile vers du bytecode exécuté par la JVM', c:ORANGE },
@@ -2220,7 +2217,7 @@ function SlideCh1Recap() {
         ))}
       </div>
       <div className="w-52 flex flex-col gap-3 pt-10">
-        <p className="mono text-xs font-black tracking-widest" style={{ fontSize: 16, letterSpacing: '0.16em',  color:LSUB }}>QUIZ RAPIDE</p>
+        <p className="mono text-xs font-black tracking-widest" style={{ fontSize: 20, letterSpacing: '0.16em',  color:LSUB }}>QUIZ RAPIDE</p>
         {[{q:'Extension bytecode ?',a:'.class'},{q:'Commande javac ?',a:'javac'},{q:'Rôle JVM ?',a:'Exécuter'},{q:'int→byte ?',a:'Explicite'}].map(item=>(
           <div key={item.q} className="rounded-xl p-3 shadow-sm" style={{ background:LCARD, border:`1px solid ${LBORD}` }}>
             <p className="text-xs mb-1" style={{ color:LSUB }}>{item.q}</p>
@@ -2265,12 +2262,12 @@ function SlideCh2Opening() {
       </div>
       <div className="relative z-10 w-full h-full flex flex-col justify-center px-20">
         <div className="w-16 h-1.5 rounded mb-6" style={{ background: '#ffffffcc' }} />
-        <p className="mono font-black tracking-widest mb-4" style={{ color: '#ffffffcc', fontSize: 18, letterSpacing: '0.22em' }}>CHAPITRE 02</p>
+        <p className="mono font-black tracking-widest mb-4" style={{ color: '#ffffffcc', fontSize: 22, letterSpacing: '0.22em' }}>CHAPITRE 02</p>
         <h1 className="font-black mb-5 leading-none"
           style={{ fontFamily: "'Syne', system-ui, sans-serif", fontSize: 92, color: '#fff', letterSpacing: '-0.04em' }}>
           Classes &amp; Objets
         </h1>
-        <p style={{ color: '#ffffffee', maxWidth: 560, fontSize: 26, lineHeight: 1.45 }}>
+        <p style={{ color: '#ffffffee', maxWidth: 560, fontSize: 28, lineHeight: 1.45 }}>
           Du modèle à l&apos;instance — les fondations de la programmation orientée objet.
         </p>
       </div>
@@ -2283,7 +2280,7 @@ function SlideOopPillars() {
   return (
     <div className="w-full h-full flex flex-col px-12 py-10" style={DARK_GRID}>
       <FsmCorner />
-      <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:ORANGE }}>LES 4 PILIERS OOP</p>
+      <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:ORANGE }}>LES 4 PILIERS OOP</p>
       <h2 className="font-black mb-7" style={{ fontSize:62, color:OW }}>Programmation Orientée Objet</h2>
       <div className="grid grid-cols-4 gap-4 flex-1">
         {[
@@ -2313,7 +2310,7 @@ function SlideProblemFirst() {
     <div className="w-full h-full flex gap-12 px-12 py-10" style={DARK_GRID}>
       <FsmCorner />
       <div className="flex-1">
-        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:RED }}>LE PROBLÈME</p>
+        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:RED }}>LE PROBLÈME</p>
         <h2 className="font-black mb-5" style={{ fontSize:58, color:OW }}>Imaginez 500 étudiants…</h2>
         <div className="rounded-2xl p-5 mb-5" style={{ background:RED+'0a', border:`1.5px solid ${RED}44` }}>
           <p className="mono font-bold mb-3 text-sm" style={{ color:RED }}>SANS CLASSE — ingérable</p>
@@ -2348,7 +2345,7 @@ function SlideClassVsObject() {
       <FsmCorner />
       {/* Left — Blueprint */}
       <div className="flex-1 flex flex-col justify-center px-12 border-r" style={{ borderColor:D4 }}>
-        <p className="mono text-xs font-black tracking-widest mb-4" style={{ fontSize: 16, letterSpacing: '0.16em',  color:BLUE }}>CLASSE — BLUEPRINT</p>
+        <p className="mono text-xs font-black tracking-widest mb-4" style={{ fontSize: 20, letterSpacing: '0.16em',  color:BLUE }}>CLASSE — BLUEPRINT</p>
         <div className="rounded-2xl overflow-hidden shadow-2xl mono text-base"
           style={{ border:`2px solid ${BLUE}55`, maxWidth:280 }}>
           <div className="px-5 py-3 font-black text-xl text-center"
@@ -2378,7 +2375,7 @@ function SlideClassVsObject() {
 
       {/* Right — Instances */}
       <div className="flex-1 flex flex-col justify-center px-8">
-        <p className="mono text-xs font-black tracking-widest mb-5" style={{ fontSize: 16, letterSpacing: '0.16em',  color:ORANGE }}>OBJETS — INSTANCES</p>
+        <p className="mono text-xs font-black tracking-widest mb-5" style={{ fontSize: 20, letterSpacing: '0.16em',  color:ORANGE }}>OBJETS — INSTANCES</p>
         <div className="flex flex-col gap-4">
           {[
             { id:'p1', x:'3', y:'4', c:ORANGE },
@@ -2402,7 +2399,7 @@ function SlideAnatomy() {
     <div className="w-full h-full flex gap-10 px-12 py-10" style={DARK_GRID}>
       <FsmCorner />
       <div className="flex-1">
-        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:VIOLET }}>ANATOMIE</p>
+        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:VIOLET }}>ANATOMIE</p>
         <h2 className="font-black mb-5" style={{ fontSize:58, color:OW }}>Anatomie d'une classe Java</h2>
         <Editor code={`class Point {\n\n    int x;          // attribut\n    int y;          // attribut\n\n    void afficher() {\n        // méthode\n    }\n\n    void deplacer(int dx, int dy) {\n        x += dx;   y += dy;\n    }\n}`} filename="Point.java" highlight={[3,4,6,10]} large />
       </div>
@@ -2505,7 +2502,7 @@ function SlideConstructorHero() {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center" style={glowBg(BLUE,'50%','30%')}>
       <FsmCorner />
-      <p className="mono font-black tracking-widest mb-5" style={{ fontSize:22, color:BLUE }}>COMMENT UN OBJET PREND VIE</p>
+      <p className="mono font-black tracking-widest mb-5" style={{ fontSize: 24, color:BLUE }}>COMMENT UN OBJET PREND VIE</p>
       <div className="font-black text-center leading-none"
         style={{ fontSize: 'clamp(69px, 10.8vw, 132px)', color:OW, letterSpacing:'-5px' }}>
         CONSTRUCTOR
@@ -2530,7 +2527,7 @@ function SlideConstructors() {
     <div className="w-full h-full flex gap-10 px-12 py-10" style={DARK_GRID}>
       <FsmCorner />
       <div className="flex-1">
-        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:ORANGE }}>CONSTRUCTEUR</p>
+        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:ORANGE }}>CONSTRUCTEUR</p>
         <h2 className="font-black mb-5" style={{ fontSize:58, color:OW }}>Le constructeur</h2>
         <Editor code={`class Point {\n    int x, y;\n\n    // Constructeur\n    Point(int x, int y) {\n        this.x = x;\n        this.y = y;\n    }\n}`} filename="Point.java" highlight={[4,5,6,7,8]} large />
       </div>
@@ -2565,7 +2562,7 @@ function SlideMultipleConstructors() {
     <div className="w-full h-full flex gap-10 px-12 py-10" style={DARK_GRID}>
       <FsmCorner />
       <div className="flex-1">
-        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:BLUE }}>SURCHARGE</p>
+        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:BLUE }}>SURCHARGE</p>
         <h2 className="font-black mb-5" style={{ fontSize:58, color:OW }}>Constructeurs multiples</h2>
         <Editor code={`class Point {\n    int x, y;\n\n    Point() {                        // (0,0)\n        x = 0; y = 0;\n    }\n\n    Point(int x, int y) {            // paramétré\n        this.x = x; this.y = y;\n    }\n\n    Point(Point p) {                 // copie\n        this.x = p.x; this.y = p.y;\n    }\n}`} filename="Point.java" highlight={[4,8,12]} large />
       </div>
@@ -2608,7 +2605,7 @@ function SlideArrays() {
   return (
     <div className="w-full h-full flex flex-col px-12 py-10" style={DARK_GRID}>
       <FsmCorner />
-      <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:BLUE }}>ARRAY VISUALIZER</p>
+      <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:BLUE }}>ARRAY VISUALIZER</p>
       <h2 className="font-black mb-6" style={{ fontSize:58, color:OW }}>Les tableaux Java</h2>
       <div className="flex gap-10 flex-1">
         <div className="flex-1">
@@ -2639,7 +2636,7 @@ function SlideArrays() {
           </div>
         </div>
         <div className="w-52">
-          <p className="mono text-xs font-black tracking-widest mb-3" style={{ fontSize: 16, letterSpacing: '0.16em',  color:MUTED }}>UTILITAIRES</p>
+          <p className="mono text-xs font-black tracking-widest mb-3" style={{ fontSize: 20, letterSpacing: '0.16em',  color:MUTED }}>UTILITAIRES</p>
           {['Arrays.sort()','Arrays.fill()','Arrays.equals()','Arrays.copyOf()','Arrays.binarySearch()'].map(m=>(
             <div key={m} className="mono text-sm px-3 py-2.5 rounded-xl mb-1.5"
               style={{ background:D3, border:`1px solid ${D4}`, color:SUB }}>{m}</div>
@@ -2657,7 +2654,7 @@ function SlideString() {
       <FsmCorner />
       {/* Left — code */}
       <div className="flex-1 px-10 py-10 border-r" style={{ borderColor:D4 }}>
-        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:BLUE }}>STRING MEMORY</p>
+        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:BLUE }}>STRING MEMORY</p>
         <h2 className="font-black mb-5" style={{ fontSize:53, color:OW }}>La classe String</h2>
         <Editor code={`String s1 = "Bonjour";\nString s2 = "Bonjour";\n// s1 et s2 → même objet\n\nString s3 = new String("Bonjour");\n// s3 → NOUVEL objet`} filename="Strings.java" highlight={[1,2,5]} large />
         <div className="grid grid-cols-2 gap-4 mt-4">
@@ -2674,7 +2671,7 @@ function SlideString() {
       {/* Right — memory zones */}
       <div className="w-80 px-8 py-10 flex flex-col gap-5">
         <div className="rounded-2xl p-4" style={{ background:D3, border:`1.5px solid ${BLUE}55` }}>
-          <p className="mono text-xs font-black tracking-widest mb-3" style={{ fontSize: 16, letterSpacing: '0.16em',  color:BLUE }}>STRING POOL</p>
+          <p className="mono text-xs font-black tracking-widest mb-3" style={{ fontSize: 20, letterSpacing: '0.16em',  color:BLUE }}>STRING POOL</p>
           <div className="flex flex-col gap-2 mono text-sm">
             <div className="flex items-center gap-2"><span style={{ color:VIOLET }}>s1 ──┐</span></div>
             <div className="flex items-center gap-2 ml-6">
@@ -2685,7 +2682,7 @@ function SlideString() {
           </div>
         </div>
         <div className="rounded-2xl p-4" style={{ background:D3, border:`1.5px solid ${ORANGE}55` }}>
-          <p className="mono text-xs font-black tracking-widest mb-3" style={{ fontSize: 16, letterSpacing: '0.16em',  color:ORANGE }}>HEAP</p>
+          <p className="mono text-xs font-black tracking-widest mb-3" style={{ fontSize: 20, letterSpacing: '0.16em',  color:ORANGE }}>HEAP</p>
           <div className="flex flex-col gap-2 mono text-sm">
             <div className="flex items-center gap-2">
               <span style={{ color:VIOLET }}>s3 ──→</span>
@@ -2716,7 +2713,7 @@ function SlideStringImmutableHero() {
       <div className="font-black text-center mt-1" style={{ fontSize: 'clamp(46px, 5.4vw, 83px)', color:BLUE, letterSpacing:'-2px' }}>
         IS IMMUTABLE.
       </div>
-      <p className="mt-8 text-center" style={{ color:SUB, maxWidth:480, fontSize:25 }}>
+      <p className="mt-8 text-center" style={{ color:SUB, maxWidth:480, fontSize: 28 }}>
         Toute "modification" crée un <em>nouvel objet</em>.<br />L'original reste intact.
       </p>
       <div className="w-14 h-1 rounded mt-6" style={{ background:BLUE }} />
@@ -2791,7 +2788,7 @@ function SlideStringBuilder() {
     <div className="w-full h-full flex gap-8 px-12 py-8" style={DARK_GRID}>
       <FsmCorner />
       <div className="flex-1 flex flex-col min-w-0 min-h-0">
-        <p className="mono font-black tracking-widest mb-2 shrink-0" style={{ fontSize: 16, letterSpacing: '0.16em', color: BLUE }}>
+        <p className="mono font-black tracking-widest mb-2 shrink-0" style={{ fontSize: 20, letterSpacing: '0.16em', color: BLUE }}>
           STRINGBUILDER
         </p>
         <h2 className="font-black mb-4 shrink-0" style={{ fontSize: 48, color: OW, letterSpacing: '-1px' }}>
@@ -2799,12 +2796,12 @@ function SlideStringBuilder() {
         </h2>
         <div className="grid grid-cols-2 gap-4 mb-5 shrink-0">
           <div className="rounded-xl px-5 py-4" style={{ background: RED + '0a', border: `1.5px solid ${RED}44` }}>
-            <p className="mono font-bold mb-1" style={{ color: RED, fontSize: 18 }}>String — Immuable</p>
-            <p style={{ color: OW, fontSize: 18, lineHeight: 1.35 }}>Chaque concat = nouvel objet en mémoire</p>
+            <p className="mono font-bold mb-1" style={{ color: RED, fontSize: 22 }}>String — Immuable</p>
+            <p style={{ color: OW, fontSize: 22, lineHeight: 1.35 }}>Chaque concat = nouvel objet en mémoire</p>
           </div>
           <div className="rounded-xl px-5 py-4" style={{ background: EMERALD + '0a', border: `1.5px solid ${EMERALD}44` }}>
-            <p className="mono font-bold mb-1" style={{ color: EMERALD, fontSize: 18 }}>StringBuilder — Modifiable</p>
-            <p style={{ color: OW, fontSize: 18, lineHeight: 1.35 }}>Modifie le même buffer — efficace</p>
+            <p className="mono font-bold mb-1" style={{ color: EMERALD, fontSize: 22 }}>StringBuilder — Modifiable</p>
+            <p style={{ color: OW, fontSize: 22, lineHeight: 1.35 }}>Modifie le même buffer — efficace</p>
           </div>
         </div>
         <div className="flex-1 min-h-0">
@@ -2817,12 +2814,12 @@ function SlideStringBuilder() {
         </div>
       </div>
       <div className="w-52 shrink-0 flex flex-col justify-center gap-2">
-        <p className="mono font-black tracking-widest mb-2" style={{ color: MUTED, fontSize: 13, letterSpacing: '0.12em' }}>
+        <p className="mono font-black tracking-widest mb-2" style={{ color: MUTED, fontSize: 18, letterSpacing: '0.12em' }}>
           MÉTHODES
         </p>
         {['append()', 'insert()', 'replace()', 'delete()', 'reverse()', 'toString()'].map(m => (
           <div key={m} className="mono px-4 py-3 rounded-xl"
-            style={{ background: D2, border: `1.5px solid ${D4}`, color: SUB, fontSize: 18 }}>
+            style={{ background: D2, border: `1.5px solid ${D4}`, color: SUB, fontSize: 22 }}>
             {m}
           </div>
         ))}
@@ -2837,7 +2834,7 @@ function SlideOverloading() {
     <div className="w-full h-full flex gap-10 px-12 py-10" style={DARK_GRID}>
       <FsmCorner />
       <div className="flex-1">
-        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:BLUE }}>SURCHARGE</p>
+        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:BLUE }}>SURCHARGE</p>
         <h2 className="font-black mb-5" style={{ fontSize:58, color:OW }}>Surcharge de méthodes</h2>
         <Editor code={`class Point {\n\n    void deplacer(int dx, int dy) {\n        x += dx;\n        y += dy;\n    }\n\n    void deplacer(Point p) {\n        x += p.x;\n        y += p.y;\n    }\n}`} filename="Point.java" highlight={[3,8]} large />
       </div>
@@ -2880,7 +2877,7 @@ function SlideParameters() {
   return (
     <div className="w-full h-full flex flex-col px-12 py-10" style={{ ...BLUEPRINT }}>
       <FsmCorner dark={false} />
-      <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:BLUE }}>PASSAGE DE PARAMÈTRES</p>
+      <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:BLUE }}>PASSAGE DE PARAMÈTRES</p>
       <h2 className="font-black mb-6" style={{ fontSize:58, color:LTEXT }}>Comment Java passe les paramètres</h2>
       <div className="grid grid-cols-2 gap-6 flex-1">
         <div className="rounded-2xl p-5 shadow-sm flex flex-col gap-3" style={{ background:LCARD, border:`2px solid ${BLUE}55` }}>
@@ -2904,7 +2901,7 @@ function SlidePackages() {
     <div className="w-full h-full flex gap-10 px-12 py-10" style={DARK_GRID}>
       <FsmCorner />
       <div className="flex-1">
-        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:BLUE }}>PACKAGES</p>
+        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:BLUE }}>PACKAGES</p>
         <h2 className="font-black mb-5" style={{ fontSize:58, color:OW }}>Organisation par packages</h2>
         <Editor code={`package vehicule;\n\nimport java.util.ArrayList;\nimport java.util.*;        // tout le package\n\npublic class Voiture {\n    // ...\n}`} filename="Voiture.java" highlight={[1,3,4]} large />
       </div>
@@ -2947,7 +2944,7 @@ function SlideEncapsulation() {
       <FsmCorner />
       {/* Left — toggle */}
       <div className="flex flex-col justify-center items-center px-8 border-r" style={{ width:200, borderColor:D4 }}>
-        <p className="mono text-xs font-black tracking-widest mb-4" style={{ fontSize: 16, letterSpacing: '0.16em',  color:ORANGE }}>ENCAPSULATION</p>
+        <p className="mono text-xs font-black tracking-widest mb-4" style={{ fontSize: 20, letterSpacing: '0.16em',  color:ORANGE }}>ENCAPSULATION</p>
         <button onClick={()=>setPhase(p=>p==='broken'?'fixed':'broken')}
           className="px-5 py-2.5 rounded-xl mono font-bold text-sm mb-3"
           style={{ background:phase==='fixed'?EMERALD:RED, color:'#fff' }}>
@@ -2980,9 +2977,9 @@ function SlideEncapsulation() {
             </div>
             <div className="w-56 flex flex-col items-center gap-2">
               <div className="rounded-xl px-4 py-2 mono text-sm" style={{ background:D3, border:`1px solid ${D4}`, color:SUB }}>setRho(5)</div>
-              <div style={{ color:ORANGE, fontSize:27 }}>↓</div>
+              <div style={{ color:ORANGE, fontSize: 30 }}>↓</div>
               <div className="rounded-xl px-4 py-2 mono text-sm" style={{ background:ORANGE+'18', border:`1.5px solid ${ORANGE}44`, color:ORANGE }}>validation gate</div>
-              <div style={{ color:EMERALD, fontSize:27 }}>↓</div>
+              <div style={{ color:EMERALD, fontSize: 30 }}>↓</div>
               <HeapObj label="Point" fields={[{k:'rho',v:'5',changed:true}]} color={EMERALD} glow large />
               <p className="mono text-sm font-bold mt-2" style={{ color:EMERALD }}>STATE SAFE</p>
             </div>
@@ -2998,7 +2995,7 @@ function SlideVisibility() {
   return (
     <div className="w-full h-full flex flex-col px-12 py-10" style={{ ...BLUEPRINT }}>
       <FsmCorner dark={false} />
-      <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:BLUE }}>MODIFICATEURS D'ACCÈS</p>
+      <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:BLUE }}>MODIFICATEURS D'ACCÈS</p>
       <h2 className="font-black mb-6" style={{ fontSize:58, color:LTEXT }}>Visibilité des membres</h2>
       <div className="flex-1 rounded-2xl overflow-hidden shadow-lg" style={{ border:`1.5px solid ${LBORD}` }}>
         <div className="grid grid-cols-5 text-xs mono font-black uppercase tracking-widest px-8 py-4"
@@ -3032,7 +3029,7 @@ function SlideGettersSetters() {
     <div className="w-full h-full flex gap-10 px-12 py-10" style={DARK_GRID}>
       <FsmCorner />
       <div className="flex-1">
-        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:BLUE }}>GETTERS & SETTERS</p>
+        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:BLUE }}>GETTERS & SETTERS</p>
         <h2 className="font-black mb-5" style={{ fontSize:58, color:OW }}>Accès contrôlé</h2>
         <Editor code={`class Point {\n    private int x;\n    private int y;\n\n    public int getX() { return x; }\n    public int getY() { return y; }\n\n    public void setX(int value) {\n        if (value >= 0) this.x = value;\n    }\n}`} filename="Point.java" highlight={[5,6,8,9,10]} large />
       </div>
@@ -3045,7 +3042,7 @@ function SlideGettersSetters() {
             <p className="mono text-xs font-bold mb-3" style={{ color:section.color }}>{section.t}</p>
             {section.items.map((item,i)=>(
               <div key={i}>
-                {i>0 && <div className="flex justify-center my-0.5"><span style={{ color:section.color, fontSize:22 }}>↓</span></div>}
+                {i>0 && <div className="flex justify-center my-0.5"><span style={{ color:section.color, fontSize: 24 }}>↓</span></div>}
                 <div className="rounded-xl px-3 py-2 mono text-xs text-center"
                   style={{ background:section.color+'12', color:section.color }}>{item}</div>
               </div>
@@ -3062,7 +3059,7 @@ function SlideEncapsulationBenefit() {
   return (
     <div className="w-full h-full flex flex-col px-12 py-10" style={{ ...BLUEPRINT }}>
       <FsmCorner dark={false} />
-      <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:EMERALD }}>COUPLAGE RÉDUIT</p>
+      <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:EMERALD }}>COUPLAGE RÉDUIT</p>
       <h2 className="font-black mb-5" style={{ fontSize:53, color:LTEXT }}>Interface stable, implémentation flexible</h2>
       <div className="grid grid-cols-2 gap-5 mb-5">
         <div className="rounded-2xl p-5 flex flex-col gap-3 shadow-sm" style={{ background:LCARD, border:`2px solid ${BLUE}55` }}>
@@ -3103,7 +3100,7 @@ function SlideCampusHud() {
       <FsmCorner />
       {/* Architecture diagram */}
       <div className="flex-1 flex flex-col">
-        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:ORANGE }}>MINI-PROJET</p>
+        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:ORANGE }}>MINI-PROJET</p>
         <h2 className="font-black mb-6" style={{ fontSize:58, color:OW }}>CAMPUS JAVA</h2>
         <div className="flex-1 relative">
           {/* SVG connections */}
@@ -3134,7 +3131,7 @@ function SlideCampusHud() {
       </div>
       {/* Progress */}
       <div className="w-64 flex flex-col justify-center">
-        <p className="mono text-xs font-black tracking-widest mb-3" style={{ fontSize: 16, letterSpacing: '0.16em',  color:ORANGE }}>PROGRESSION</p>
+        <p className="mono text-xs font-black tracking-widest mb-3" style={{ fontSize: 20, letterSpacing: '0.16em',  color:ORANGE }}>PROGRESSION</p>
         <div className="h-2 rounded-full mb-4" style={{ background:D4 }}>
           <div className="h-full rounded-full" style={{ background:`linear-gradient(to right,${ORANGE},${BLUE})`, width:`${(done.length/all.length)*100}%` }} />
         </div>
@@ -3143,7 +3140,7 @@ function SlideCampusHud() {
           return (
             <div key={item} className="flex items-center gap-3 rounded-xl px-4 py-3 mb-2"
               style={{ background:D3, border:`1.5px solid ${isDone?ORANGE+55:D4}` }}>
-              <span style={{ color:isDone?ORANGE:MUTED, fontSize:25 }}>{isDone?'✓':'○'}</span>
+              <span style={{ color:isDone?ORANGE:MUTED, fontSize: 28 }}>{isDone?'✓':'○'}</span>
               <span className="text-sm" style={{ color:isDone?OW:MUTED }}>{item}</span>
             </div>
           )
@@ -3159,7 +3156,7 @@ function SlideCh2Recap() {
     <div className="w-full h-full flex gap-10 px-12 py-10" style={{ ...BLUEPRINT }}>
       <FsmCorner dark={false} />
       <div className="flex-1">
-        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:ORANGE }}>CARTE CONCEPTUELLE CH.2</p>
+        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:ORANGE }}>CARTE CONCEPTUELLE CH.2</p>
         <h2 className="font-black mb-5" style={{ fontSize:53, color:LTEXT }}>Les connexions essentielles</h2>
         {[
           {from:'CLASS',arrow:'→ crée',to:'OBJECT',cf:BLUE,ct:ORANGE},
@@ -3178,7 +3175,7 @@ function SlideCh2Recap() {
         ))}
       </div>
       <div className="w-48 pt-10">
-        <p className="mono text-xs font-black tracking-widest mb-3" style={{ fontSize: 16, letterSpacing: '0.16em',  color:LSUB }}>MOTS-CLÉS</p>
+        <p className="mono text-xs font-black tracking-widest mb-3" style={{ fontSize: 20, letterSpacing: '0.16em',  color:LSUB }}>MOTS-CLÉS</p>
         <div className="flex flex-wrap gap-2">
           {['class','new','this','private','public','static','void','return'].map(k=>(
             <span key={k} className="mono text-sm px-3 py-1 rounded-full font-bold"
@@ -3204,7 +3201,7 @@ function SlideFinalChallenge() {
     <div className="w-full h-full flex gap-10 px-12 py-10" style={DARK_GRID}>
       <FsmCorner />
       <div className="flex-1">
-        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:EMERALD }}>MISSION</p>
+        <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:EMERALD }}>MISSION</p>
         <h2 className="font-black mb-1" style={{ fontSize:62, color:OW, letterSpacing:'-2px' }}>BUILD</h2>
         <h2 className="font-black mb-5" style={{ fontSize:62, color:ORANGE, letterSpacing:'-2px' }}>ETUDIANT.JAVA</h2>
         {/* Progress */}
@@ -3230,7 +3227,7 @@ function SlideFinalChallenge() {
         </div>
       </div>
       <div className="w-56 flex flex-col justify-center">
-        <p className="mono text-xs font-black tracking-widest mb-3" style={{ fontSize: 16, letterSpacing: '0.16em',  color:EMERALD }}>PROGRESS</p>
+        <p className="mono text-xs font-black tracking-widest mb-3" style={{ fontSize: 20, letterSpacing: '0.16em',  color:EMERALD }}>PROGRESS</p>
         <div className="text-center rounded-2xl p-6 mb-4"
           style={{ background:D3, border:`2px solid ${completed.length===tasks.length?EMERALD:D4}ss` }}>
           <span className="mono font-black" style={{ fontSize:74, color:completed.length===tasks.length?EMERALD:OW, lineHeight:1 }}>
@@ -3251,7 +3248,7 @@ function SlideFinalAnswer() {
   return (
     <div className="w-full h-full flex flex-col px-12 py-10" style={DARK_GRID}>
       <FsmCorner />
-      <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 16, letterSpacing: '0.16em',  color:EMERALD }}>SOLUTION COMPLÈTE</p>
+      <p className="mono text-xs font-black tracking-widest mb-2" style={{ fontSize: 20, letterSpacing: '0.16em',  color:EMERALD }}>SOLUTION COMPLÈTE</p>
       <h2 className="font-black mb-5" style={{ fontSize:53, color:OW }}>Etudiant.java — correction</h2>
       <div className="flex-1">
         <Editor code={`public class Etudiant {\n    private String nom;\n    private double moyenne;\n    static int count = 0;\n\n    public Etudiant(String nom, double moyenne) {\n        this.nom = nom;\n        this.moyenne = moyenne;\n        count++;\n    }\n\n    public String getNom() { return nom; }\n    public double getMoyenne() { return moyenne; }\n    public void setMoyenne(double m) { if (m >= 0) this.moyenne = m; }\n\n    public void afficher() {\n        System.out.println(nom + " : " + moyenne);\n    }\n}`} filename="Etudiant.java" highlight={[2,3,4,6,12,13,14]} large />
@@ -3272,11 +3269,11 @@ function SlideEnd() {
             style={{ fontFamily: "'Syne', system-ui, sans-serif", fontSize: 120, color: OW, letterSpacing: '-0.05em' }}>
             JAVA
           </div>
-          <p className="mb-8" style={{ color: SUB, fontSize: 26 }}>
+          <p className="mb-8" style={{ color: SUB, fontSize: 28 }}>
             Comprendre. Modéliser. Coder.
           </p>
           <div className="mb-8">
-            <p className="mono font-black tracking-widest mb-4" style={{ color: MUTED, fontSize: 15, letterSpacing: '0.16em' }}>
+            <p className="mono font-black tracking-widest mb-4" style={{ color: MUTED, fontSize: 20, letterSpacing: '0.16em' }}>
               VOUS SAVEZ MAINTENANT
             </p>
             <div className="grid grid-cols-2 gap-x-10 gap-y-3">
@@ -3290,20 +3287,20 @@ function SlideEnd() {
                 'Encapsuler l\'état',
                 'Utiliser les membres static',
               ].map(s => (
-                <div key={s} className="flex items-center gap-3" style={{ fontSize: 22 }}>
+                <div key={s} className="flex items-center gap-3" style={{ fontSize: 24 }}>
                   <span style={{ color: EMERALD, fontWeight: 800 }}>›</span>
                   <span style={{ color: OW }}>{s}</span>
                 </div>
               ))}
             </div>
           </div>
-          <p className="mono font-black tracking-widest mb-3" style={{ color: MUTED, fontSize: 14, letterSpacing: '0.14em' }}>
+          <p className="mono font-black tracking-widest mb-3" style={{ color: MUTED, fontSize: 18, letterSpacing: '0.14em' }}>
             À SUIVRE
           </p>
           <div className="flex gap-3 flex-wrap mb-10">
             {['Héritage', 'Polymorphisme', 'Interfaces', 'Exceptions'].map(t => (
               <span key={t} className="mono font-bold px-5 py-2 rounded-full"
-                style={{ background: BLUE + '14', color: BLUE, border: `1.5px solid ${BLUE}44`, fontSize: 18 }}>
+                style={{ background: BLUE + '14', color: BLUE, border: `1.5px solid ${BLUE}44`, fontSize: 22 }}>
                 {t}
               </span>
             ))}
@@ -3314,10 +3311,10 @@ function SlideEnd() {
         </div>
         <div className="w-56 flex flex-col items-center gap-4">
           <img src={fsmLogo} alt="FSM" className="w-36 h-36 object-contain" />
-          <p className="text-center font-semibold" style={{ color: SUB, fontSize: 16 }}>
+          <p className="text-center font-semibold" style={{ color: SUB, fontSize: 20 }}>
             Faculté des Sciences<br />de Monastir
           </p>
-          <p className="text-center mono" style={{ color: MUTED, fontSize: 14 }}>Licence GLSI 2 · 2026–2027</p>
+          <p className="text-center mono" style={{ color: MUTED, fontSize: 18 }}>Licence GLSI 2 · 2026–2027</p>
         </div>
       </div>
     </div>
@@ -3325,67 +3322,190 @@ function SlideEnd() {
 }
 
 // ─── Slide registry ───────────────────────────────────────────────────────
-const SLIDES: { component: React.FC; chapter: string }[] = [
-  { component: SlideTitle, chapter: 'Accueil' },
-  ...OPENING_SLIDES,
-  { component: SlideCh1Opener, chapter: '01 Introduction' },
-  { component: SlideWhyJava, chapter: '01 Introduction' },
-  { component: SlideHistory, chapter: '01 Introduction' },
-  { component: SlideJavaDna, chapter: '01 Introduction' },
-  { component: SlideWriteOnce, chapter: '01 Introduction' },
-  { component: SlideEcosystem, chapter: '01 Introduction' },
-  { component: SlideEditions, chapter: '01 Introduction' },
-  { component: SlidePipeline, chapter: '01 Introduction' },
-  { component: SlideArchitecture, chapter: '01 Introduction' },
-  { component: SlideJavaToolchain, chapter: '01 Introduction' },
-  { component: SlideDevEnvironment, chapter: '01 Introduction' },
-  { component: SlideReadyToCode, chapter: '01 Introduction' },
-  { component: SlideFirstProgram, chapter: '01 Introduction' },
-  { component: SlideIdentifiers, chapter: '01 Introduction' },
-  { component: SlideComments, chapter: '01 Introduction' },
-  { component: SlidePrimitiveTypes, chapter: '01 Introduction' },
-  { component: SlideCasting, chapter: '01 Introduction' },
-  { component: SlideCastChallenge, chapter: '01 Introduction' },
-  { component: SlideCh1Recap, chapter: '01 Introduction' },
-  { component: SlideTransition, chapter: 'Transition' },
-  { component: SlideCh2Opening, chapter: '02 Classes & Objets' },
-  { component: SlideOopPillars, chapter: '02 Classes & Objets' },
-  { component: SlideProblemFirst, chapter: '02 Classes & Objets' },
-  { component: SlideClassVsObject, chapter: '02 Classes & Objets' },
-  { component: SlideAnatomy, chapter: '02 Classes & Objets' },
-  { component: SlideObjectCreation, chapter: '02 Classes & Objets' },
-  { component: SlideNewHero, chapter: '02 Classes & Objets' },
-  { component: SlideReferences, chapter: '02 Classes & Objets' },
-  { component: SlideTwoRefsHero, chapter: '02 Classes & Objets' },
-  { component: SlideRefChallenge, chapter: '02 Classes & Objets' },
-  { component: SlideConstructorHero, chapter: '02 Classes & Objets' },
-  { component: SlideConstructors, chapter: '02 Classes & Objets' },
-  { component: SlideMultipleConstructors, chapter: '02 Classes & Objets' },
-  { component: SlideThisHero, chapter: '02 Classes & Objets' },
-  { component: SlideThis, chapter: '02 Classes & Objets' },
-  { component: SlideArrays, chapter: '02 Classes & Objets' },
-  { component: SlideString, chapter: '02 Classes & Objets' },
-  { component: SlideStringImmutableHero, chapter: '02 Classes & Objets' },
-  { component: SlideEqualsHero, chapter: '02 Classes & Objets' },
-  { component: SlideStringChallenge, chapter: '02 Classes & Objets' },
-  { component: SlideStringBuilder, chapter: '02 Classes & Objets' },
-  { component: SlideOverloading, chapter: '02 Classes & Objets' },
-  { component: SlideStaticHero, chapter: '02 Classes & Objets' },
-  { component: SlideStatic, chapter: '02 Classes & Objets' },
-  { component: SlideParameters, chapter: '02 Classes & Objets' },
-  { component: SlidePackages, chapter: '02 Classes & Objets' },
-  { component: SlideProProject, chapter: '02 Classes & Objets' },
-  { component: SlidePrivateHero, chapter: '02 Classes & Objets' },
-  { component: SlideEncapsulation, chapter: '02 Classes & Objets' },
-  { component: SlideVisibility, chapter: '02 Classes & Objets' },
-  { component: SlideGettersSetters, chapter: '02 Classes & Objets' },
-  { component: SlideEncapsulationBenefit, chapter: '02 Classes & Objets' },
-  { component: SlideCampusHud, chapter: '02 Classes & Objets' },
-  { component: SlideCh2Recap, chapter: '02 Classes & Objets' },
-  { component: SlideFinalChallenge, chapter: '02 Classes & Objets' },
-  { component: SlideFinalAnswer, chapter: '02 Classes & Objets' },
-  { component: SlideEnd, chapter: 'Fin' },
-]
+type AppSlide = {
+  component: React.FC
+  chapter: string
+  id?: string
+  notes?: TeachingNote
+}
+
+function withNotes(slides: AppSlide[]): AppSlide[] {
+  return slides.map(s => {
+    if (!s.id) return s
+    const fromCatalog = NOTES_BY_ID[s.id]
+    if (!fromCatalog) return s
+    const { id: _id, chapter: _ch, slideNumber: _n, ...note } = fromCatalog
+    return { ...s, notes: s.notes ?? note }
+  })
+}
+
+const SLIDES: AppSlide[] = withNotes([
+  { component: SlideTitle, chapter: 'Accueil', id: 'title' },
+  ...AI_INTRO_PRE,
+  ...OPENING_EARLY,
+  ...AI_INTRO_MID,
+  ...OPENING_LATE,
+  { component: SlideCh1Opener, chapter: '01 Introduction', id: 'ch1-opener' },
+  { component: SlideWhyJava, chapter: '01 Introduction', id: 'ch1-why-java' },
+  { component: SlideHistory, chapter: '01 Introduction', id: 'ch1-history' },
+  { component: SlideJavaDna, chapter: '01 Introduction', id: 'ch1-dna' },
+  { component: SlideWriteOnce, chapter: '01 Introduction', id: 'ch1-write-once' },
+  { component: SlideEcosystem, chapter: '01 Introduction', id: 'ch1-ecosystem' },
+  { component: SlideEditions, chapter: '01 Introduction', id: 'ch1-editions' },
+  { component: SlidePipeline, chapter: '01 Introduction', id: 'ch1-pipeline' },
+  { component: SlideArchitecture, chapter: '01 Introduction', id: 'ch1-architecture' },
+  { component: SlideJavaToolchain, chapter: '01 Introduction', id: 'ch1-toolchain' },
+  { component: SlideDevEnvironment, chapter: '01 Introduction', id: 'ch1-devenv' },
+  { component: SlideReadyToCode, chapter: '01 Introduction', id: 'ch1-ready' },
+  { component: SlideFirstProgram, chapter: '01 Introduction', id: 'ch1-first-program' },
+  { component: SlideIdentifiers, chapter: '01 Introduction', id: 'ch1-identifiers' },
+  { component: SlideComments, chapter: '01 Introduction', id: 'ch1-comments' },
+  { component: SlidePrimitiveTypes, chapter: '01 Introduction', id: 'ch1-primitives' },
+  { component: SlideCasting, chapter: '01 Introduction', id: 'ch1-casting' },
+  { component: SlideCastChallenge, chapter: '01 Introduction', id: 'ch1-cast-challenge' },
+  { component: SlideCh1Recap, chapter: '01 Introduction', id: 'ch1-recap' },
+  { component: SlideTransition, chapter: 'Transition', id: 'transition' },
+  { component: SlideCh2Opening, chapter: '02 Classes & Objets', id: 'ch2-opener' },
+  { component: SlideOopPillars, chapter: '02 Classes & Objets', id: 'ch2-pillars' },
+  { component: SlideProblemFirst, chapter: '02 Classes & Objets', id: 'ch2-problem-first' },
+  { component: SlideClassVsObject, chapter: '02 Classes & Objets', id: 'ch2-class-vs-object' },
+  { component: SlideAnatomy, chapter: '02 Classes & Objets', id: 'ch2-anatomy' },
+  { component: SlideObjectCreation, chapter: '02 Classes & Objets', id: 'ch2-object-creation' },
+  { component: SlideNewHero, chapter: '02 Classes & Objets', id: 'ch2-new-hero' },
+  { component: SlideReferences, chapter: '02 Classes & Objets', id: 'ch2-references' },
+  { component: SlideTwoRefsHero, chapter: '02 Classes & Objets', id: 'ch2-two-refs' },
+  { component: SlideRefChallenge, chapter: '02 Classes & Objets', id: 'ch2-ref-challenge' },
+  { component: SlideConstructorHero, chapter: '02 Classes & Objets', id: 'ch2-ctor-hero' },
+  { component: SlideConstructors, chapter: '02 Classes & Objets', id: 'ch2-constructors' },
+  { component: SlideMultipleConstructors, chapter: '02 Classes & Objets', id: 'ch2-multi-ctors' },
+  { component: SlideThisHero, chapter: '02 Classes & Objets', id: 'ch2-this-hero' },
+  { component: SlideThis, chapter: '02 Classes & Objets', id: 'ch2-this' },
+  { component: SlideArrays, chapter: '02 Classes & Objets', id: 'ch2-arrays' },
+  { component: SlideString, chapter: '02 Classes & Objets', id: 'ch2-string' },
+  { component: SlideStringImmutableHero, chapter: '02 Classes & Objets', id: 'ch2-string-immutable' },
+  { component: SlideEqualsHero, chapter: '02 Classes & Objets', id: 'ch2-equals' },
+  { component: SlideStringChallenge, chapter: '02 Classes & Objets', id: 'ch2-string-challenge' },
+  { component: SlideStringBuilder, chapter: '02 Classes & Objets', id: 'ch2-stringbuilder' },
+  { component: SlideOverloading, chapter: '02 Classes & Objets', id: 'ch2-overloading' },
+  { component: SlideStaticHero, chapter: '02 Classes & Objets', id: 'ch2-static-hero' },
+  { component: SlideStatic, chapter: '02 Classes & Objets', id: 'ch2-static' },
+  { component: SlideParameters, chapter: '02 Classes & Objets', id: 'ch2-parameters' },
+  { component: SlidePackages, chapter: '02 Classes & Objets', id: 'ch2-packages' },
+  { component: SlideProProject, chapter: '02 Classes & Objets', id: 'ch2-pro-project' },
+  { component: SlidePrivateHero, chapter: '02 Classes & Objets', id: 'ch2-private-hero' },
+  { component: SlideEncapsulation, chapter: '02 Classes & Objets', id: 'ch2-encapsulation' },
+  { component: SlideVisibility, chapter: '02 Classes & Objets', id: 'ch2-visibility' },
+  { component: SlideGettersSetters, chapter: '02 Classes & Objets', id: 'ch2-getters-setters' },
+  { component: SlideEncapsulationBenefit, chapter: '02 Classes & Objets', id: 'ch2-encap-benefit' },
+  { component: SlideCampusHud, chapter: '02 Classes & Objets', id: 'ch2-campus-hud' },
+  { component: SlideCh2Recap, chapter: '02 Classes & Objets', id: 'ch2-recap' },
+  { component: SlideFinalChallenge, chapter: '02 Classes & Objets', id: 'ch2-final-challenge' },
+  { component: SlideFinalAnswer, chapter: '02 Classes & Objets', id: 'ch2-final-answer' },
+  { component: SlideEnd, chapter: 'Fin', id: 'end' },
+])
+
+function downloadText(filename: string, content: string, mime = 'text/markdown;charset=utf-8') {
+  const blob = new Blob([content], { type: mime })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+// ─── Teacher notes panel ──────────────────────────────────────────────────
+function TeacherNotesPanel({ notes, slideIndex, slideId, onClose }: {
+  notes: TeachingNote; slideIndex: number; slideId?: string; onClose: () => void
+}) {
+  const entry = slideId ? NOTES_BY_ID[slideId] : undefined
+  const downloadThis = () => {
+    if (entry) {
+      downloadText(
+        `slide-${String(slideIndex + 1).padStart(2, '0')}-${entry.id}.md`,
+        noteToMarkdown(entry, slideIndex),
+      )
+    } else {
+      downloadText(`slide-${String(slideIndex + 1).padStart(2, '0')}.md`, [
+        `# ${notes.title}`, '', notes.teachingGoal, '', notes.speakerNotes, '',
+        notes.question, '', notes.expectedAnswer, '', notes.transition,
+      ].join('\n'))
+    }
+  }
+  const downloadAll = () => {
+    downloadText('notes-enseignant-poo-java.md', notesToMarkdown(ALL_SLIDE_NOTES))
+  }
+
+  return (
+    <aside
+      className="print-hidden fixed top-4 right-4 z-[80] w-[min(420px,92vw)] max-h-[min(78vh,800px)] overflow-y-auto rounded-2xl p-5 shadow-2xl"
+      style={{ background: D2, border: `2px solid ${ORANGE}`, color: OW }}
+      role="dialog"
+      aria-label="Notes enseignant"
+    >
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <div>
+          <p className="mono font-black tracking-widest" style={{ fontFamily: "'JetBrains Mono', monospace", color: ORANGE, fontSize: 16, letterSpacing: '0.14em' }}>
+            MODE ENSEIGNANT · {TEACHER_SHORTCUT} · SLIDE {String(slideIndex + 1).padStart(2, '0')}
+          </p>
+          <p className="font-black mt-1" style={{ fontSize: 22 }}>{notes.title}</p>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="w-9 h-9 rounded-xl mono font-bold"
+          style={{ background: D3, border: `1px solid ${D4}`, color: SUB }}
+          aria-label="Fermer les notes"
+        >
+          ×
+        </button>
+      </div>
+      <div className="flex flex-wrap gap-2 mb-4">
+        <button type="button" onClick={downloadThis}
+          className="px-3 py-2 rounded-xl mono text-[11px] font-bold"
+          style={{ background: BLUE, color: '#fff', border: `1px solid ${BLUE}` }}>
+          Télécharger cette fiche
+        </button>
+        <button type="button" onClick={downloadAll}
+          className="px-3 py-2 rounded-xl mono text-[11px] font-bold"
+          style={{ background: ORANGE, color: '#fff', border: `1px solid ${ORANGE}` }}>
+          Toutes les notes (.md)
+        </button>
+        <a
+          href="/notes/notes-enseignant-slides.zip"
+          download
+          className="px-3 py-2 rounded-xl mono text-[11px] font-bold"
+          style={{ background: D3, color: SUB, border: `1px solid ${D4}`, textDecoration: 'none' }}
+        >
+          ZIP (1 fichier / slide)
+        </a>
+      </div>
+      <div className="flex flex-col gap-3 text-sm leading-snug">
+        <div>
+          <p className="mono font-black mb-1" style={{ color: BLUE, fontSize: 16, letterSpacing: '0.1em' }}>OBJECTIF</p>
+          <p style={{ color: SUB }}>{notes.teachingGoal}</p>
+        </div>
+        <div>
+          <p className="mono font-black mb-1" style={{ color: BLUE, fontSize: 16, letterSpacing: '0.1em' }}>NOTES</p>
+          <p style={{ color: SUB }}>{notes.speakerNotes}</p>
+        </div>
+        <div>
+          <p className="mono font-black mb-1" style={{ color: ORANGE, fontSize: 16, letterSpacing: '0.1em' }}>QUESTION ORALE</p>
+          <p style={{ color: OW }}>{notes.question}</p>
+        </div>
+        <div>
+          <p className="mono font-black mb-1" style={{ color: EMERALD, fontSize: 16, letterSpacing: '0.1em' }}>RÉPONSE ATTENDUE</p>
+          <p style={{ color: SUB }}>{notes.expectedAnswer}</p>
+        </div>
+        <div>
+          <p className="mono font-black mb-1" style={{ color: MUTED, fontSize: 16, letterSpacing: '0.1em' }}>TRANSITION</p>
+          <p style={{ color: SUB }}>{notes.transition}</p>
+        </div>
+        <p className="mono" style={{ color: MUTED, fontSize: 18 }}>≈ {notes.estimatedMinutes} min</p>
+      </div>
+    </aside>
+  )
+}
 
 // ─── NavBar ───────────────────────────────────────────────────────────────
 function NavBar({ current, total, chapter, isFullscreen, onPrev, onNext, onPdf, onOverview, onFullscreen }: {
@@ -3422,7 +3542,7 @@ function NavBar({ current, total, chapter, isFullscreen, onPrev, onNext, onPdf, 
               <span
                 className="mono font-bold px-2 py-0.5 rounded-md shrink-0"
                 style={{
-                  fontSize: 10,
+                  fontSize: 16,
                   letterSpacing: '0.06em',
                   background: AMBER + '22',
                   color: '#B45309',
@@ -3555,10 +3675,12 @@ export default function App() {
   const [printing, setPrinting] = useState(false)
   const [showOverview, setShowOverview] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [teacherMode, setTeacherMode] = useState(false)
   const total = SLIDES.length
   const scale = useStageScale()
   const chapters = buildChapterSections(SLIDES)
   const shellRef = useRef<HTMLDivElement>(null)
+  const currentNotes = SLIDES[current]?.notes
 
   const go = useCallback((dir: number) => {
     setCurrent(c => Math.min(Math.max(c + dir, 0), total - 1))
@@ -3595,8 +3717,16 @@ export default function App() {
           return
         }
       }
+      if (e.key === 'n' || e.key === 'N') {
+        if (!e.metaKey && !e.ctrlKey && !e.altKey) {
+          e.preventDefault()
+          setTeacherMode(v => !v)
+          return
+        }
+      }
       if (e.key === 'o' || e.key === 'O') { setShowOverview(v => !v); return }
       if (showOverview) { if (e.key === 'Escape') setShowOverview(false); return }
+      if (teacherMode && e.key === 'Escape') { setTeacherMode(false); return }
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
         e.preventDefault()
         go(1)
@@ -3608,7 +3738,7 @@ export default function App() {
     }
     window.addEventListener('keydown', h)
     return () => window.removeEventListener('keydown', h)
-  }, [go, printing, showOverview, toggleFullscreen])
+  }, [go, printing, showOverview, teacherMode, toggleFullscreen])
 
   useEffect(() => {
     if (printing || showOverview) return
@@ -3705,6 +3835,15 @@ export default function App() {
           chapters={chapters}
           onClose={() => setShowOverview(false)}
           onGoto={(i) => { setCurrent(i); setShowOverview(false) }}
+        />
+      )}
+
+      {teacherMode && currentNotes && (
+        <TeacherNotesPanel
+          notes={currentNotes}
+          slideIndex={current}
+          slideId={SLIDES[current]?.id}
+          onClose={() => setTeacherMode(false)}
         />
       )}
 
