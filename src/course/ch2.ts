@@ -1,9 +1,55 @@
-import type { Slide } from './types'
+import type { Block, Slide } from './types'
 
 /* ════════════════════════════════════════════════════════════════════
    CHAPITRE 2 — Classes et objets en Java
    ════════════════════════════════════════════════════════════════════ */
 const C = 'ch2'
+
+/* Diapo « protéger un point polaire » : le code apparaît étape par étape. */
+const POINT = `
+public class Point {
+    private double rho;    // distance à l'origine : toujours ≥ 0
+    private double theta;  // angle en radians
+
+    public Point(double rho, double theta) {
+        setRho(rho);
+        this.theta = theta;
+    }
+
+    public double getRho()   { return rho; }
+    public double getTheta() { return theta; }
+
+    public void setRho(double rho) {
+        if (rho < 0)
+            throw new IllegalArgumentException("rho < 0");
+        this.rho = rho;
+    }
+}`
+
+const range = (a: number, b: number) => Array.from({ length: b - a + 1 }, (_, i) => a + i)
+
+const POINT_STEPS: { label: string; hidden: number[]; highlight: number[]; box: Block }[] = [
+  {
+    label: 'Attributs privés', hidden: range(4, 17), highlight: [2, 3],
+    box: { k: 'box', tone: 'attention', title: 'Sans encapsulation', text: 'Si `rho` était accessible :\n`p.rho = -1;` → donnée **aberrante**.' },
+  },
+  {
+    label: 'Constructeur', hidden: range(9, 17), highlight: [5, 6, 7, 8],
+    box: { k: 'box', tone: 'info', text: 'Le constructeur **réutilise** `setRho` : la règle `rho ≥ 0` est écrite **une seule fois**.' },
+  },
+  {
+    label: 'Consultation', hidden: range(12, 17), highlight: [10, 11],
+    box: { k: 'box', tone: 'info', text: 'Les **getters** **lisent** `rho` et `theta`, **sans** les modifier.' },
+  },
+  {
+    label: 'Modification contrôlée', hidden: [], highlight: [13, 14, 15, 16, 17],
+    box: { k: 'box', tone: 'info', text: '`setRho` **refuse** une valeur négative. Pas de `setTheta` : pas prévu.' },
+  },
+  {
+    label: 'Invariant', hidden: [], highlight: [2, 14, 15],
+    box: { k: 'box', tone: 'retenir', title: 'Invariant : rho ≥ 0, toujours', text: '`p.rho = -1;` → **ne compile pas**\n`p.setRho(-1);` → **refusé**' },
+  },
+]
 
 export const CH2: Slide[] = [
   {
@@ -1111,256 +1157,722 @@ public static void main(String[] args) {
   },
   {
     kind: 'content', chapter: C, section: '8. Les paquetages', title: 'Les paquetages (`package`)',
-    blocks: [
-      {
-        k: 'list', items: [
-          'Un paquetage **regroupe des classes** (comme un dossier / une bibliothèque).',
-          'Intérêt : **organiser** par fonctionnalité et **protéger** attributs et méthodes.',
-          'Convention : nom **toujours en minuscules**.',
-        ],
-      },
-      {
-        k: 'table', small: true,
-        head: ['Importer…', 'Syntaxe'],
-        rows: [
-          ['**une classe**', '`import java.util.ArrayList;`'],
-          ['**toutes** les classes d\'un paquetage', '`import java.util.*;`'],
-          ['un membre **static** (JDK 5+)', '`import static java.lang.Math.PI;`  → on écrit `PI * 2.3`'],
-          ['tous les membres **static**', '`import static java.lang.Math.*;`  → on écrit `cos(PI)`'],
-        ],
-      },
-    ],
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Pourquoi ?', blocks: [
+            { k: 'p', text: 'Un **package** (paquetage) **regroupe logiquement** des types Java (classes, interfaces…) et définit un **espace de noms**.' },
+            {
+              k: 'cards', items: [
+                { title: 'Organiser', text: 'ranger les classes **par thème**' },
+                { title: 'Éviter les conflits', text: 'deux classes `Client` peuvent **coexister**' },
+                { title: 'Réutiliser', text: 'importer des packages **existants** (`java.util`)' },
+                { title: 'Contrôler l\'accès', text: 'visibilité *par défaut* = **même package**' },
+              ],
+            },
+            { k: 'box', tone: 'question', text: 'Que se passe-t-il si **deux développeurs** créent chacun une classe appelée `Client` ?' },
+          ],
+        },
+        {
+          label: 'Sans / avec packages', blocks: [{
+            k: 'cols', ratio: 0.85,
+            left: [
+              {
+                k: 'tree', tone: 'ko', title: 'Sans packages : un seul dossier',
+                nodes: [
+                  { name: 'src/', depth: 0 },
+                  { name: 'Client.java', depth: 1, note: 'développeur A' },
+                  { name: 'Client.java', depth: 1, bad: true, note: 'développeur B' },
+                  { name: 'Compte.java', depth: 1 },
+                  { name: 'Produit.java', depth: 1 },
+                  { name: 'Commande.java', depth: 1 },
+                  { name: 'Main.java', depth: 1 },
+                ],
+              },
+              { k: 'box', tone: 'retenir', text: 'Avec des packages, les deux `Client` ont des **noms complets** différents :\n`tn.banque.model.Client`\n`tn.boutique.model.Client`' },
+            ],
+            right: [{
+              k: 'tree', tone: 'ok', title: 'Avec packages : un dossier par package',
+              nodes: [
+                { name: 'src/', depth: 0 },
+                { name: 'tn/', depth: 1 },
+                { name: 'banque/', depth: 2 },
+                { name: 'model/', depth: 3, note: '`tn.banque.model`' },
+                { name: 'Client.java', depth: 4 },
+                { name: 'Compte.java', depth: 4 },
+                { name: 'app/', depth: 3, note: '`tn.banque.app`' },
+                { name: 'Main.java', depth: 4 },
+                { name: 'boutique/', depth: 2 },
+                { name: 'model/', depth: 3, note: '`tn.boutique.model`' },
+                { name: 'Client.java', depth: 4 },
+                { name: 'Produit.java', depth: 4 },
+                { name: 'Commande.java', depth: 4 },
+              ],
+            }],
+          }],
+        },
+        {
+          label: 'Package ≠ dossier', blocks: [{
+            k: 'cols', ratio: 1.1,
+            left: [
+              {
+                k: 'list', items: [
+                  '**Package** : une notion du **langage**, un **nom** → `tn.banque.model`',
+                  '**Dossier** : un rangement **sur le disque** → `tn/banque/model/`',
+                  'Par **convention**, l\'arborescence **reflète** le nom : chaque `.` devient un `/`.',
+                  'Noms **en minuscules**, souvent le **domaine inversé** de l\'organisation : `fsm.tn` → `tn.fsm`',
+                ],
+              },
+            ],
+            right: [
+              { k: 'code', file: 'Terminal', small: true, code: 'javac -d bin src/tn/banque/model/Compte.java' },
+              {
+                k: 'tree', title: 'Sur le disque',
+                nodes: [
+                  { name: 'src/tn/banque/model/', depth: 0 },
+                  { name: 'Compte.java', depth: 1, note: 'source' },
+                  { name: 'bin/tn/banque/model/', depth: 0 },
+                  { name: 'Compte.class', depth: 1, note: 'créé par `javac -d`' },
+                ],
+              },
+            ],
+          }],
+        },
+      ],
+    }],
   },
   {
     kind: 'content', chapter: C, section: '8. Les paquetages', title: 'Ranger une classe dans un paquetage',
-    blocks: [
-      { k: 'p', text: 'On écrit **`package nom;`** en **première ligne** du fichier source.' },
-      {
-        k: 'cols',
-        left: [{
-          k: 'code', small: true, file: 'Voiture.java', code: `
-package vehicule;
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Deux fichiers, deux packages', blocks: [{
+            k: 'cols', ratio: 0.8,
+            left: [
+              {
+                k: 'code', small: true, file: 'src/tn/banque/model/Compte.java',
+                notes: { 1: 'déclaration du package', 3: 'déclaration de la classe' },
+                code: `
+package tn.banque.model;
 
-public class Voiture { ... }
-class Moto { ... }`,
-        }],
-        right: [{
-          k: 'code', small: true, file: 'VoitureEssence.java', code: `
-package vehicule.voiture;
+public class Compte {
+    public String titulaire = "Amira";
+}`,
+              },
+              { k: 'box', tone: 'info', text: '`package` : **première instruction** du fichier. Le chemin du fichier **reflète** le nom du package.' },
+            ],
+            right: [{
+              k: 'code', small: true, file: 'src/tn/banque/app/Main.java', output: 'Amira',
+              notes: { 1: 'déclaration du package', 3: 'instruction import', 7: 'objet d\'un autre package' },
+              code: `
+package tn.banque.app;
 
-public class VoitureEssence { ... }
-class VoitureDiesel { ... }`,
-        }],
-      },
-      {
-        k: 'table', small: true, head: ['Classe', 'Emplacement du `.class`'],
-        rows: [
-          ['`Voiture`, `Moto`', '`vehicule/Voiture.class`, `vehicule/Moto.class`'],
-          ['`VoitureEssence`, `VoitureDiesel`', '`vehicule/voiture/VoitureEssence.class`, …'],
-        ],
-      },
-      { k: 'code', code: 'javac -d rep_racine Voiture.java   // range le .class dans rep_racine/vehicule/', small: true },
-    ],
+import tn.banque.model.Compte;
+
+public class Main {
+    public static void main(String[] args) {
+        Compte c = new Compte();
+        System.out.println(c.titulaire);
+    }
+}`,
+            }],
+          }],
+        },
+        {
+          label: 'Nom complet et `import`', blocks: [
+            {
+              k: 'table', small: true, head: ['', '`package`', '`import`'],
+              rows: [
+                ['**Rôle**', 'dit **où** est rangée **ma** classe', 'permet d\'utiliser le **nom court** d\'une classe d\'un **autre** package'],
+                ['**Combien ?**', '**au plus un**, en **1ʳᵉ** instruction', 'autant que nécessaire, **après** `package`'],
+                ['**Effet**', 'range la classe dans le package', '**ne crée aucun objet**, **ne copie aucune** classe'],
+              ],
+            },
+            {
+              k: 'list', items: [
+                'Nom **complètement qualifié** : `tn.banque.model.Compte`. Avec l\'`import`, on écrit simplement `Compte`.',
+                '`java.lang` est importé **implicitement** : `String`, `System`, `Math`…',
+              ],
+            },
+            { k: 'box', tone: 'attention', text: 'Un **sous-package** est un package **différent** : `tn.banque.model.util` n\'a **pas** accès aux membres *par défaut* de `tn.banque.model`.' },
+          ],
+        },
+        {
+          label: 'Mini-quiz', blocks: [{
+            k: 'quiz', verify: true,
+            question: 'Peut-on utiliser `Compte` dans `Main` en **supprimant** l\'`import` ?',
+            codeFile: 'Main.java (sans import)', errorLine: 5,
+            code: `
+package tn.banque.app;
+
+public class Main {
+    public static void main(String[] args) {
+        Compte c = new Compte();
+        System.out.println(c.titulaire);
+    }
+}`,
+            options: [
+              'Oui, sans rien changer',
+              'Oui, car `Compte` est `public`',
+              'Pas avec `Compte` seul : il faut le **nom complet**',
+              'Non, c\'est impossible sans `import`',
+            ],
+            correct: 2,
+            explication: 'Sans `import`, `javac` ne trouve pas `Compte` (*cannot find symbol*). Deux solutions : **rétablir l\'`import`**, ou écrire le **nom complètement qualifié** :\n`tn.banque.model.Compte c = new tn.banque.model.Compte();`',
+          }],
+        },
+        {
+          label: 'Variantes d\'`import`', blocks: [
+            {
+              k: 'table', small: true,
+              head: ['Importer…', 'Syntaxe'],
+              rows: [
+                ['**une classe**', '`import java.util.ArrayList;`'],
+                ['**toutes** les classes d\'un paquetage', '`import java.util.*;`'],
+                ['un membre **static** (JDK 5+)', '`import static java.lang.Math.PI;`  → on écrit `PI * 2.3`'],
+                ['tous les membres **static**', '`import static java.lang.Math.*;`  → on écrit `cos(PI)`'],
+              ],
+            },
+            { k: 'box', tone: 'info', text: '`import java.util.*;` importe les classes de `java.util`, **pas** celles de ses sous-packages (`java.util.function`…).' },
+          ],
+        },
+      ],
+    }],
   },
   {
     kind: 'content', chapter: C, section: '9. Encapsulation', title: 'L\'**encapsulation** : cacher les données',
-    blocks: [
-      {
-        k: 'list', items: [
-          'But : **séparer** la façon dont les données sont **stockées** de la façon dont elles sont **utilisées**.',
-          'On **cache l\'implémentation** ; les autres classes passent par des **méthodes**.',
-        ],
-      },
-      {
-        k: 'table',
-        head: ['Modificateur', 'Qui a accès ?'],
-        rows: [
-          ['**`private`**', 'Seulement la **classe** où le membre est déclaré'],
-          ['*(rien)* **par défaut**', 'Les classes du **même paquetage**'],
-          ['**`protected`**', 'Voir chapitre 3 (héritage)'],
-          ['**`public`**', '**Toutes** les classes'],
-        ],
-      },
-    ],
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Le problème', blocks: [{
+            k: 'cols',
+            left: [
+              {
+                k: 'code', file: 'Compte.java', code: `
+public class Compte {
+    public double solde = 100;
+}`,
+              },
+              {
+                k: 'code', file: 'Main.java (extrait)', bad: [2], output: '-5000.0', code: `
+Compte c = new Compte();
+c.solde = -5000;
+System.out.println(c.solde);`,
+              },
+            ],
+            right: [
+              { k: 'box', tone: 'question', text: 'Pourquoi est-ce **problématique** de laisser **toutes les classes** modifier directement le `solde` ?' },
+              { k: 'p', text: 'Le code **compile** : rien n\'empêche un solde **aberrant**.' },
+            ],
+          }],
+        },
+        {
+          label: 'La solution', blocks: [{
+            k: 'cols', ratio: 1.35,
+            left: [{
+              k: 'code', small: true, file: 'Compte.java', highlight: [9],
+              notes: { 2: 'état interne caché', 4: 'consulter', 8: 'opération contrôlée' },
+              code: `
+public class Compte {
+    private double solde = 100;
+
+    public double getSolde() {
+        return solde;
+    }
+
+    public boolean retirer(double montant) {
+        if (montant > 0 && montant <= solde) {
+            solde -= montant;
+            return true;
+        }
+        return false;
+    }
+}`,
+            }],
+            right: [
+              {
+                k: 'list', items: [
+                  '`solde` est **`private`** : seul le code de `Compte` le modifie.',
+                  'Les autres classes passent par l\'**interface publique** : `getSolde()`, `retirer(...)`.',
+                  '`retirer` **vérifie** avant de modifier.',
+                ],
+              },
+              {
+                k: 'code', small: true, status: 'ko', bad: [2], code: `
+c.retirer(5000);   // false : refusé
+c.solde = -5000;   // erreur`,
+              },
+            ],
+          }],
+        },
+        {
+          label: 'Les idées clés', blocks: [
+            {
+              k: 'flow', steps: [
+                { label: 'État interne', sub: 'attributs `private`' },
+                { label: 'Interface publique', sub: 'méthodes `public`' },
+                { label: 'Invariant préservé', sub: '`solde ≥ 0`, toujours' },
+              ],
+            },
+            {
+              k: 'list', items: [
+                'But : **séparer** la façon dont les données sont **stockées** de la façon dont elles sont **utilisées**.',
+                '**Invariant** : règle **toujours vraie** pour un objet valide. Chaque modification passe par un **contrôle**.',
+              ],
+            },
+            { k: 'box', tone: 'attention', text: 'Encapsuler, ce n\'est **pas** seulement « tout mettre en `private` » : c\'est **protéger les règles métier** de l\'objet.' },
+          ],
+        },
+      ],
+    }],
   },
   {
     kind: 'content', chapter: C, section: '9. Encapsulation', title: 'Quiz : attribut **private**',
     blocks: [{
-      k: 'quiz', question: 'Que se passe-t-il à la compilation de `Test` ?',
+      k: 'quiz', verify: true,
+      question: 'On compile puis on exécute `Test`. Que se passe-t-il ?',
+      codeFile: 'Test.java', errorLine: 8,
       code: `
-class Point {
-    private int x;
+class Etudiant {
+    private int note = 15;
 }
 
-class Test {
+public class Test {
     public static void main(String[] args) {
-        Point p = new Point();
-        p.x = 5;
+        Etudiant e = new Etudiant();
+        System.out.println(e.note);
     }
 }`,
-      options: [
-        'Ça compile : `x` vaut `5`',
-        '**Erreur de compilation** : `x` est `private`',
-        "Erreur à l'exécution",
-        'Ça compile, mais `x` reste à `0`',
-      ],
-      correct: 1,
-      explication: 'Un attribut **`private`** n\'est accessible que **dans sa classe**. Depuis `Test`, il faut passer par un **setter**.',
+      options: ['Affiche `15`', 'Affiche `0`', 'Erreur de compilation', 'Erreur à l\'exécution'],
+      correct: 2,
+      explication: '`note` est **`private`** : seul le code de `Etudiant` y accède. `javac` **refuse** `Test` : le programme ne **démarre jamais**.',
+      error: 'Test.java:8: error: note has private access in Etudiant',
+      detail: '**Compilation** : `javac` vérifie le code **avant** l\'exécution. En cas d\'erreur, on ne peut pas lancer le programme.\n**Exécution** : le code compile, démarre, **puis** échoue (ex. division par zéro).',
     }],
   },
   {
     kind: 'content', chapter: C, section: '9. Encapsulation', title: 'Getters et setters',
-    blocks: [
-      {
-        k: 'list', items: [
-          'Autant que possible, les **attributs** sont **`private`**.',
-          '**Lire** un attribut → un **accesseur** : `getXxx()`',
-          '**Modifier** un attribut → un **modificateur** : `setXxx(...)`, qui peut **vérifier** la valeur.',
-        ],
-      },
-      {
-        k: 'code', code: `
-class Compte {
-    private double solde;
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Getter, setter et `this`', blocks: [{
+            k: 'cols', ratio: 1.05,
+            left: [{
+              k: 'code', small: true, file: 'Personne.java', highlight: [9],
+              notes: { 4: 'getter : consulter', 8: 'setter : demander', 10: 'attribut ← paramètre' },
+              code: `
+public class Personne {
+    private int age;
 
-    public double getSolde() { return solde; }
+    public int getAge() {
+        return age;
+    }
 
-    public void setSolde(double s) {
-        if (s < 0) throw new IllegalArgumentException("solde négatif");
-        solde = s;
+    public void setAge(int age) {
+        if (age >= 0) {
+            this.age = age;
+        }
     }
 }`,
-      },
-    ],
+            }],
+            right: [
+              {
+                k: 'list', items: [
+                  '**Getter** (accesseur) : **consulter** un état.',
+                  '**Setter** (modificateur) : **demander** une modification. Il peut **refuser** une valeur invalide.',
+                ],
+              },
+              { k: 'box', tone: 'info', title: 'Le mot-clé this', text: '`this` = l\'**objet courant**.\nDans `setAge`, `this.age` est l\'**attribut**, `age` est le **paramètre**.' },
+            ],
+          }],
+        },
+        {
+          label: 'Lecture seule ou modifiable ?', blocks: [{
+            k: 'cols', ratio: 1.05,
+            left: [{
+              k: 'code', small: true, file: 'Etudiant.java', notes: { 8: 'getter seul' },
+              code: `
+public class Etudiant {
+    private String matricule;
+
+    public Etudiant(String matricule) {
+        this.matricule = matricule;
+    }
+
+    public String getMatricule() {
+        return matricule;
+    }
+}`,
+            }],
+            right: [
+              {
+                k: 'list', items: [
+                  '**Lecture seule** : un getter, **pas de setter**. Le matricule est fixé à la **construction**.',
+                  '**Librement modifiable** : un setter **sans contrôle** par attribut ≈ attributs `public` déguisés.',
+                ],
+              },
+              { k: 'box', tone: 'retenir', text: 'Une classe encapsulée **n\'a pas nécessairement** besoin d\'un setter **pour chaque attribut**.' },
+            ],
+          }],
+        },
+        {
+          label: '`setSolde` ou `deposer` ?', blocks: [
+            {
+              k: 'cols',
+              left: [
+                { k: 'box', tone: 'attention', title: 'Contourne les règles', text: '`setSolde(double valeur)` : n\'importe quelle valeur est **acceptée**.' },
+                {
+                  k: 'code', bad: [2], code: `
+public void setSolde(double valeur) {
+    solde = valeur;   // -5000 ? accepté
+}`,
+                },
+              ],
+              right: [
+                { k: 'box', tone: 'retenir', title: 'Opération métier contrôlée', text: '`deposer(double montant)` : le montant est **vérifié**.' },
+                {
+                  k: 'code', highlight: [2], code: `
+public boolean deposer(double montant) {
+    if (montant > 0) {
+        solde += montant;
+        return true;
+    }
+    return false;
+}`,
+                },
+              ],
+            },
+            { k: 'p', text: 'Préférer des **méthodes métier** (`deposer`, `retirer`) qui **appliquent les règles**.' },
+          ],
+        },
+      ],
+    }],
   },
   {
     kind: 'content', chapter: C, section: '9. Encapsulation', title: 'Les **niveaux de visibilité**',
-    blocks: [
-      {
-        k: 'table',
-        head: ['Modificateur', 'Même classe', 'Même paquetage', 'Classe fille (autre paquetage)', 'Partout'],
-        rows: [
-          ['`public`', '✓', '✓', '✓', '✓'],
-          ['`protected`', '✓', '✓', '✓', '✗'],
-          ['*aucun* (par défaut)', '✓', '✓', '✗', '✗'],
-          ['`private`', '✓', '✗', '✗', '✗'],
-        ],
-      },
-      { k: 'box', tone: 'retenir', text: 'Plus on **restreint** l\'accès, plus la classe est **protégée**. Règle de base : attributs **`private`**, méthodes utiles **`public`**.' },
-    ],
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Le tableau', blocks: [
+            {
+              k: 'table', marks: true, small: true,
+              head: ['Accès depuis…', '`public`', '`protected`', '*défaut*', '`private`'],
+              rows: [
+                ['la **même classe**', 'Oui', 'Oui', 'Oui', 'Oui'],
+                ['le **même package**', 'Oui', 'Oui', 'Oui', 'Non'],
+                ['une **sous-classe**, autre package', 'Oui', 'Oui*', 'Non', 'Non'],
+                ['une **autre classe**, autre package', 'Oui', 'Non', 'Non', 'Non'],
+              ],
+            },
+            { k: 'box', tone: 'attention', title: 'Oui* : protected hors du package', text: 'La sous-classe accède au membre **hérité** via `this`, **pas** via une référence `Compte` quelconque.\n`protected` ≠ « accessible partout dès qu\'il existe une sous-classe ».' },
+            { k: 'box', tone: 'retenir', text: 'Règle de base : attributs **`private`**, méthodes utiles **`public`**.' },
+          ],
+        },
+        {
+          label: 'Tester : compile ou pas ?', blocks: [{
+            k: 'access',
+            declFile: 'tn/banque/model/Compte.java',
+            decl: `
+package tn.banque.model;
+
+public class Compte {
+    {MOD}double solde = 100;
+}`,
+            mods: [
+              { label: '`public`', kw: 'public ' },
+              { label: '`protected`', kw: 'protected ' },
+              { label: '*défaut*', kw: '' },
+              { label: '`private`', kw: 'private ' },
+            ],
+            contexts: [
+              {
+                label: 'Même classe', file: 'tn/banque/model/Compte.java', line: 7, same: true, code: `
+package tn.banque.model;
+
+public class Compte {
+    {MOD}double solde = 100;
+
+    void afficher() {
+        System.out.println(solde);
+    }
+}`,
+              },
+              {
+                label: 'Même package', file: 'tn/banque/model/Banque.java', line: 5, code: `
+package tn.banque.model;
+
+class Banque {
+    void afficher(Compte c) {
+        System.out.println(c.solde);
+    }
+}`,
+              },
+              {
+                label: 'Sous-classe (`this`)', file: 'tn/banque/epargne/CompteEpargne.java', line: 7, code: `
+package tn.banque.epargne;
+
+import tn.banque.model.Compte;
+
+public class CompteEpargne extends Compte {
+    void afficher() {
+        System.out.println(this.solde);
+    }
+}`,
+              },
+              {
+                label: 'Sous-classe (réf. `Compte`)', file: 'tn/banque/epargne/CompteEpargne.java', line: 7, code: `
+package tn.banque.epargne;
+
+import tn.banque.model.Compte;
+
+public class CompteEpargne extends Compte {
+    void afficher(Compte autre) {
+        System.out.println(autre.solde);
+    }
+}`,
+              },
+              {
+                label: 'Autre package', file: 'tn/banque/app/Main.java', line: 7, code: `
+package tn.banque.app;
+
+import tn.banque.model.Compte;
+
+public class Main {
+    void afficher(Compte c) {
+        System.out.println(c.solde);
+    }
+}`,
+              },
+            ],
+            results: [
+              [
+                { ok: true, text: 'Dans **sa propre classe**, un membre est **toujours** accessible.' },
+                { ok: true, text: 'Dans **sa propre classe**, un membre est **toujours** accessible.' },
+                { ok: true, text: 'Dans **sa propre classe**, un membre est **toujours** accessible.' },
+                { ok: true, text: 'Même `private` : on est **dans** la classe `Compte`.' },
+              ],
+              [
+                { ok: true, text: '`public` : accessible **partout**.' },
+                { ok: true, text: '`protected` inclut le **même package**.' },
+                { ok: true, text: '*Défaut* = **même package** : `Banque` et `Compte` sont dans `tn.banque.model`.' },
+                { ok: false, text: '`private` : **seulement dans `Compte`**, même pour une classe du même package.', error: 'solde has private access in Compte' },
+              ],
+              [
+                { ok: true, text: '`public` : accessible **partout**.' },
+                { ok: true, text: 'La sous-classe accède au `solde` **hérité**, via `this`.' },
+                { ok: false, text: '*Défaut* : la sous-classe est dans un **autre package**. L\'héritage n\'y change rien.', error: 'solde is not public in Compte; cannot be accessed from outside package' },
+                { ok: false, text: '`private` : même une **sous-classe** n\'y a pas accès.', error: 'solde has private access in Compte' },
+              ],
+              [
+                { ok: true, text: '`public` : accessible **partout**.' },
+                { ok: false, text: 'Hors du package, `protected` passe **par l\'héritage** (`this`), pas par une référence `Compte` quelconque.', error: 'solde has protected access in Compte' },
+                { ok: false, text: '*Défaut* : **autre package** → refusé.', error: 'solde is not public in Compte; cannot be accessed from outside package' },
+                { ok: false, text: '`private` : **seulement dans `Compte`**.', error: 'solde has private access in Compte' },
+              ],
+              [
+                { ok: true, text: '`public` : accessible **partout** (ici grâce à l\'`import`).' },
+                { ok: false, text: '`Main` n\'est **ni** dans le package, **ni** une sous-classe.', error: 'solde has protected access in Compte' },
+                { ok: false, text: '*Défaut* : **autre package** → refusé.', error: 'solde is not public in Compte; cannot be accessed from outside package' },
+                { ok: false, text: '`private` : **seulement dans `Compte`**.', error: 'solde has private access in Compte' },
+              ],
+            ],
+          }],
+        },
+      ],
+    }],
   },
   {
     kind: 'content', chapter: C, section: '9. Encapsulation', title: 'La visibilité d\'une **classe**',
-    blocks: [
-      {
-        k: 'table',
-        head: ['Déclaration', 'Effet'],
-        rows: [
-          ['`public class A`', 'accessible **partout** ; le fichier s\'appelle **`A.java`**'],
-          ['`class A` (sans modificateur)', 'accessible **seulement** dans son **paquetage**'],
-          ['`final class A`', '**aucune** classe fille possible'],
-          ['`abstract class A`', '**non instanciable** (voir chapitre 3)'],
-        ],
-      },
-      { k: 'box', tone: 'attention', text: '**Une seule** classe `public` par fichier `.java`. Une classe de premier niveau ne peut **pas** être `private`.' },
-    ],
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Classe ou membre ?', blocks: [
+            { k: 'p', text: 'Deux niveaux d\'accès : la **classe** (le type), puis ses **membres** (attributs, méthodes).' },
+            {
+              k: 'cols', ratio: 0.62,
+              left: [{
+                k: 'code', small: true, file: 'Client.java',
+                notes: { 1: 'visible partout', 4: 'son package' },
+                code: `
+public class Client {
+}
+
+class ClientInterne {
+}`,
+              }],
+              right: [{
+                k: 'table', small: true,
+                head: ['Classe de premier niveau', 'Effet'],
+                rows: [
+                  ['`public class A`', '**partout** ; une seule par fichier : **`A.java`**'],
+                  ['`class A` *(rien)*', '**dans son package** seulement'],
+                  ['`private` ou `protected`', '**interdit** (erreur de compilation)'],
+                  ['`final class A`', '**aucune** classe fille'],
+                  ['`abstract class A`', '**non instanciable** (chapitre 3)'],
+                ],
+              }],
+            },
+            { k: 'box', tone: 'info', text: 'Une classe **imbriquée** (déclarée **dans** une autre classe) peut, elle, être `private` ou `protected`.' },
+          ],
+        },
+        {
+          label: 'Exemple : deux packages', blocks: [
+            {
+              k: 'cols', ratio: 0.85,
+              left: [{
+                k: 'code', small: true, file: 'tn/banque/model/Client.java', highlight: [8], code: `
+package tn.banque.model;
+
+public class Client {
+    public String nom = "Amira";
+}
+
+class ClientInterne {
+    public String code = "X42";
+}`,
+              }],
+              right: [{
+                k: 'code', small: true, file: 'tn/banque/app/Main.java', status: 'ko', bad: [4], highlight: [8, 9], code: `
+package tn.banque.app;
+
+import tn.banque.model.Client;
+import tn.banque.model.ClientInterne; // ✗
+
+public class Main {
+    public static void main(String[] args) {
+        Client c = new Client();       // ✓
+        System.out.println(c.nom);     // ✓
+    }
+}`,
+              }],
+            },
+            { k: 'box', tone: 'retenir', text: '`code` est `public`… mais `ClientInterne` ne l\'est pas : un membre `public` **reste inaccessible** si sa **classe** ne l\'est pas.' },
+          ],
+        },
+      ],
+    }],
   },
   {
     kind: 'content', chapter: C, section: '9. Encapsulation', title: 'Exemple : protéger un point polaire',
-    blocks: [
-      {
-        k: 'cols',
-        left: [
-          { k: 'box', tone: 'attention', title: 'Sans encapsulation', text: 'N\'importe qui peut écrire `p.rho = -1;` → donnée **aberrante** (un rayon est ≥ 0).' },
-          { k: 'code', small: true, code: `
-class Point {
-    double rho;
-    double theta;
-}
-
-// ailleurs :
-p.rho = -1;     // accepté !` },
-        ],
-        right: [
-          { k: 'box', tone: 'retenir', title: 'Avec encapsulation', text: 'Les attributs sont **`private`** ; le **setter refuse** les valeurs invalides.' },
-          { k: 'code', small: true, code: `
-class Point {
-    private double rho;
-    private double theta;
-
-    void setRho(double r) {
-        if (r < 0)
-            throw new IllegalArgumentException();
-        rho = r;
-    }
-}
-// p.rho = -1;  → ne compile pas
-p.setRho(5.0);  // OK` },
-        ],
-      },
-    ],
+    blocks: [{
+      k: 'steps', items: POINT_STEPS.map(s => ({
+        label: s.label,
+        blocks: [{
+          k: 'cols' as const, ratio: 0.68,
+          left: [{ k: 'polar' as const }, s.box],
+          right: [{ k: 'code' as const, small: true, file: 'Point.java', code: POINT, hidden: s.hidden, highlight: s.highlight }],
+        }],
+      })),
+    }],
   },
   {
     kind: 'content', chapter: C, section: '9. Encapsulation', title: 'Exemple : changer l\'implémentation sans rien casser',
-    blocks: [
-      {
-        k: 'cols',
-        left: [
-          { k: 'p', text: '**Version 1** : deux attributs' },
-          { k: 'code', small: true, code: `
-class Segment {
-    private Point p1, p2;
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Deux implémentations', blocks: [
+            {
+              k: 'cols', ratio: 0.88,
+              left: [{
+                k: 'code', small: true, file: 'A · Point.java (extrait)', highlight: [2, 3, 6, 7, 10, 11], code: `
+public class Point {
+    private double rho;
+    private double theta;
 
-    Segment(Point p1, Point p2) {
-        this.p1 = p1;
-        this.p2 = p2;
+    public Point(double rho, double theta) {
+        setRho(rho);
+        this.theta = theta;
     }
 
-    public void setFstPoint(int x, int y) {
-        p1.x = x;
-        p1.y = y;
-    }
-}` },
-        ],
-        right: [
-          { k: 'p', text: '**Version 2** : un tableau' },
-          { k: 'code', small: true, code: `
-class Segment {
-    private Point[] tab;
+    public double getRho()   { return rho; }
+    public double getTheta() { return theta; }
 
-    Segment(Point p1, Point p2) {
-        tab = new Point[2];
-        tab[0] = p1;
-        tab[1] = p2;
+    // setRho(...) : refuse rho < 0
+}`,
+              }],
+              right: [{
+                k: 'code', small: true, file: 'B · Point.java (extrait)', highlight: [2, 3, 6, 7, 8, 11, 12], code: `
+public class Point {
+    private double x;
+    private double y;
+
+    public Point(double rho, double theta) {
+        x = Math.cos(theta);
+        y = Math.sin(theta);
+        setRho(rho);
     }
 
-    public void setFstPoint(int x, int y) {
-        tab[0].x = x;
-        tab[0].y = y;
+    public double getRho()   { return Math.hypot(x, y); }
+    public double getTheta() { return Math.atan2(y, x); }
+
+    // setRho(...) : refuse rho < 0, garde l'angle
+}`,
+              }],
+            },
+            { k: 'p', text: '**A** stocke `rho`, `theta` ; **B** stocke `x`, `y` et **calcule** distance et angle. **Même interface publique.**' },
+          ],
+        },
+        {
+          label: 'Le client ne change pas', blocks: [{
+            k: 'cols', ratio: 0.55,
+            left: [
+              { k: 'polar', cartesian: true },
+              { k: 'box', tone: 'retenir', text: 'Avec **A** comme avec **B** : même sortie. L\'**API** est stable → le code client **reste inchangé**.' },
+            ],
+            right: [
+              {
+                k: 'code', small: true, file: 'Main.java', output: '5.0\n0.7853981633974483', code: `
+public class Main {
+    public static void main(String[] args) {
+        Point p = new Point(2, Math.PI / 4);
+        p.setRho(5);
+        System.out.println(p.getRho());
+        System.out.println(p.getTheta());
     }
-}` },
-        ],
-      },
-      { k: 'box', tone: 'retenir', text: 'Les classes qui utilisent `Segment` appellent `setFstPoint(...)` : **elles ne changent pas**.' },
-    ],
+}`,
+              },
+            ],
+          }],
+        },
+        {
+          label: 'Attention aux détails', blocks: [
+            {
+              k: 'table', small: true,
+              head: ['Appel', '**A** (`rho`, `theta`)', '**B** (`x`, `y`)'],
+              rows: [
+                ['`new Point(3, 1.0).getTheta()`', '`1.0`', '`0.9999999999999999`'],
+                ['`new Point(1, 3 * Math.PI).getTheta()`', '`9.42477796076938`', '`3.1415926535897927`'],
+                ['`new Point(0, 1.0)`, puis `setRho(4)`, puis `getTheta()`', '`1.0`', '`0.0`'],
+              ],
+            },
+            { k: 'box', tone: 'attention', title: 'Pas d\'équivalence parfaite garantie', text: '**Arrondis**, angle **ramené** dans ]−π, π], angle **perdu** quand `rho = 0` : le comportement observable **change**.' },
+            { k: 'box', tone: 'retenir', text: 'L\'encapsulation rend le changement **possible** ; respecter le **contrat** des méthodes le rend **sans risque**.' },
+          ],
+        },
+      ],
+    }],
   },
   {
     kind: 'content', chapter: C, title: 'Chapitre 2 — À retenir',
     blocks: [
       {
-        k: 'list', items: [
-          '**Classe** = modèle ; **objet** = instance créée avec **`new`**.',
-          'Une variable objet contient une **référence** : `p2 = p1` ne copie **pas** l\'objet.',
-          '**Constructeur** : même nom que la classe, **sans type de retour** ; `this(...)` en 1ʳᵉ ligne.',
-          '`String` est **immuable** ; on compare avec **`equals`**, jamais `==`.',
-          '**Surcharge** : même nom, **paramètres différents**.',
-          '**`static`** = partagé par la classe, **sans `this`**.',
-          'Passage **par valeur** : on peut modifier l\'**objet**, pas la **variable** de l\'appelant.',
-          'Attributs **`private`** + **getters / setters**.',
-          '**Tableaux** : taille fixe ; `ArrayList` : **redimensionnable**. Un tableau passé en paramètre est **modifiable** par la méthode.',
-          '**Visibilité** : `public`, `protected`, par défaut, `private`.',
+        k: 'cards', items: [
+          { title: 'Packages', text: 'regrouper les classes ; un **espace de noms** : `tn.banque.model`' },
+          { title: '`package` / `import`', text: '`package` : **où** est ma classe ; `import` : **nom court** d\'une autre' },
+          { title: 'Encapsulation', text: 'état **`private`** + méthodes qui **protègent les invariants**' },
+          { title: 'Getters, setters, métier', text: '**consulter** / **demander** ; pas de setter **par réflexe**' },
+          { title: 'Visibilité', text: '`public`, `protected`, *défaut*, `private`' },
         ],
       },
+      {
+        k: 'qa', items: [
+          { q: 'Différence entre `package` et `import` ?', a: '`package` **déclare** le package de la classe du fichier ; `import` permet d\'utiliser le **nom court** d\'une classe d\'un **autre** package.' },
+          { q: 'Pourquoi utiliser `private` ?', a: 'Pour que **seule la classe** modifie son état et **garantisse ses invariants** (ex. `solde ≥ 0`).' },
+          { q: 'Un setter est-il toujours nécessaire ?', a: '**Non** : seulement si la modification a un **sens métier**. Sinon : lecture seule ou méthode métier (`deposer`).' },
+          { q: 'Différence entre `protected` et *défaut* ?', a: 'Les deux : **même package**. `protected` ajoute les **sous-classes** des autres packages, via l\'**héritage**.' },
+        ],
+      },
+      { k: 'p', text: '**Chapitre 3** : l\'**héritage** — réutiliser une classe avec `extends`… et voir `protected` en action.' },
     ],
   },
 ]

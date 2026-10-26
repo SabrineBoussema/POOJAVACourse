@@ -269,54 +269,179 @@ export const NOTES: Record<string, SlideNotes> = {
     "duree": 3
   },
   "ch2|Les paquetages (package)": {
-    "objectif": "Organisation en espaces de noms ; import.",
-    "question": "À quoi sert package ?",
-    "reponse": "Structurer et éviter les collisions de noms.",
-    "transition": "Projet pro / structure.",
-    "conseil": "Convention reverse-domain.",
-    "duree": 2
+    "objectif": "Comprendre pourquoi les packages existent (organisation, conflits de noms, réutilisation, visibilité) avant la syntaxe.",
+    "question": "Que se passe-t-il si deux développeurs créent chacun une classe Client ?",
+    "reponse": "Sans package : conflit (même nom, même dossier). Avec packages : tn.banque.model.Client ≠ tn.boutique.model.Client, les deux coexistent.",
+    "conseil": "Poser la question à l’étape 1, laisser répondre, puis → pour l’étape 2 (arborescences). Étape 3 : insister sur package = nom du langage, dossier = rangement physique.",
+    "transition": "Comment déclarer concrètement le package d’une classe ?",
+    "duree": 4
   },
   "ch2|Ranger une classe dans un paquetage": {
-    "objectif": "Montrer une organisation réaliste de dossiers/sources.",
-    "question": "Où placer les sources Java typiquement ?",
-    "reponse": "src/main/java (Maven) ou src selon le projet pédagogique.",
-    "transition": "private / encapsulation (hero).",
-    "conseil": "Relier à ce que l’IDE attend.",
-    "duree": 2
+    "objectif": "Lire package, import et nom complètement qualifié sur un exemple à deux fichiers.",
+    "question": "Mini-quiz (étape 3) : peut-on utiliser Compte dans Main sans import ?",
+    "reponse": "C : pas sous son nom simple. Rétablir l’import ou écrire tn.banque.model.Compte c = new tn.banque.model.Compte();",
+    "conseil": "Étape 1 : lire les étiquettes dans l’ordre (package, classe, import, objet). Étape 2 : import ne crée rien, ne copie rien ; java.lang implicite ; sous-package = autre package. Étape 4 : variantes d’import (diapo d’origine).",
+    "transition": "Les packages servent aussi à contrôler l’accès : place à l’encapsulation.",
+    "duree": 5
   },
   "ch2|L'encapsulation : cacher les données": {
-    "objectif": "Cacher l’état + exposer un comportement sûr.",
-    "question": "Encapsulation = seulement private ?",
-    "reponse": "Non : private + méthodes publiques bien conçues.",
-    "conseil": "Relier aux getters/setters avec validation.",
+    "objectif": "Encapsuler = protéger les invariants métier, pas seulement « mettre private ».",
+    "question": "Pourquoi est-ce problématique de laisser toutes les classes modifier directement le solde ?",
+    "reponse": "N’importe quel code peut mettre le compte dans un état invalide (solde = -5000) ; aucune règle n’est vérifiée et l’erreur est difficile à localiser.",
+    "conseil": "Étape 1 : faire remarquer que le code COMPILE. Étape 2 : suivre retirer(5000) → false. Étape 3 : définir « invariant ».",
+    "transition": "Vérifions : que dit le compilateur face à un attribut private ?",
+    "duree": 4
+  },
+  "ch2|Quiz : attribut private": {
+    "objectif": "Distinguer erreur de compilation et erreur à l’exécution.",
+    "question": "On compile puis on exécute Test : que se passe-t-il ?",
+    "reponse": "C — Erreur de compilation : note has private access in Etudiant (ligne 8). Le programme ne démarre jamais.",
+    "conseil": "Vote à main levée A/B/C/D, puis cliquer la réponse majoritaire et « Vérifier » (ou touche S). « Réinitialiser » pour un autre groupe.",
     "duree": 3
   },
   "ch2|Getters et setters": {
-    "objectif": "Accès contrôlé ; validation dans setX.",
-    "question": "Un setter doit-il toujours accepter toute valeur ?",
-    "reponse": "Non : il peut refuser / corriger selon les règles métier.",
-    "conseil": "Éviter les setters vides « pour la forme ».",
-    "duree": 2
+    "objectif": "Getter = consulter, setter = demander une modification (qui peut être refusée) ; rôle de this.",
+    "question": "Faut-il un setter pour chaque attribut ?",
+    "reponse": "Non. Lecture seule si l’état ne doit pas changer ; méthode métier (deposer, retirer) plutôt que setSolde.",
+    "conseil": "Étape 1 : this.age (attribut) vs age (paramètre). Étape 3 : comparer setSolde(-5000) accepté et deposer(-10) refusé.",
+    "transition": "Qui a le droit d’appeler ces méthodes ? Les niveaux de visibilité.",
+    "duree": 4
+  },
+  "ch2|Les niveaux de visibilité": {
+    "objectif": "Maîtriser public / protected / défaut / private, et la nuance de protected hors package.",
+    "question": "Une sous-classe d’un autre package peut-elle lire autre.solde (protected) via une référence Compte ?",
+    "reponse": "Non : solde has protected access in Compte. Elle n’y accède que via l’héritage (this.solde).",
+    "conseil": "Étape 2 : faire prédire « compile / ne compile pas » avant chaque clic. Combinaisons utiles : private + même package, défaut + sous-classe, protected + sous-classe (this puis réf. Compte).",
+    "duree": 5
+  },
+  "ch2|La visibilité d'une classe": {
+    "objectif": "Séparer visibilité de la classe et visibilité des membres.",
+    "question": "ClientInterne a un attribut public code : Main (autre package) peut-il le lire ?",
+    "reponse": "Non : la classe ClientInterne n’est pas public, donc rien de ce qu’elle contient n’est accessible hors de tn.banque.model.",
+    "conseil": "Erreur javac réelle : ClientInterne is not public in tn.banque.model; cannot be accessed from outside package.",
+    "duree": 3
   },
   "ch2|Exemple : protéger un point polaire": {
-    "objectif": "Protéger l’état ; contrôler les modifications.",
-    "question": "Que risque un attribut public balance ?",
-    "reponse": "Modification invalide (négatif, incohérent).",
-    "conseil": "Reprendre BankAccount : balance public = danger.",
-    "duree": 2
+    "objectif": "Construire pas à pas une classe qui garantit son invariant (rho ≥ 0).",
+    "question": "Que risque-t-on si rho est accessible directement ?",
+    "reponse": "Un rayon négatif : donnée aberrante. Avec private + setRho, impossible.",
+    "conseil": "Une flèche → par élément du code : attributs, constructeur, getters, setRho, invariant.",
+    "transition": "Puisque personne ne voit rho et theta… peut-on changer la représentation ?",
+    "duree": 4
   },
   "ch2|Exemple : changer l'implémentation sans rien casser": {
-    "objectif": "Maintenabilité, invariants, évolution sans casser les clients.",
-    "question": "Si je change la représentation interne, que se passe-t-il pour le client ?",
-    "reponse": "Rien si l’API publique reste stable.",
-    "conseil": "Exemple avant/après.",
-    "duree": 2
+    "objectif": "Montrer qu’une API stable permet de changer la représentation interne, en respectant le contrat.",
+    "question": "Si je stocke x et y au lieu de rho et theta, le code client change-t-il ?",
+    "reponse": "Non, le client reste identique (même sortie ici). Mais attention : arrondis, angle normalisé, angle perdu si rho = 0.",
+    "conseil": "Autre exemple possible (ancienne version de la diapo) : Segment stocké avec deux attributs Point p1, p2 puis avec un tableau Point[2], setFstPoint inchangé.",
+    "duree": 4
   },
   "ch2|Chapitre 2 — À retenir": {
-    "objectif": "Checklist mentale : classe, objet, new, this, String, static, encapsulation.",
-    "question": "Différence clé classe / objet ?",
-    "reponse": "Modèle vs instance.",
-    "conseil": "Quiz oral 5 questions rapides.",
+    "objectif": "Réviser packages, import, encapsulation, getters/setters et visibilité.",
+    "question": "Les 4 questions de la diapo (Q1 à Q4).",
+    "reponse": "Corrections au clic sur chaque question ou toutes avec S.",
+    "conseil": "Poser chaque question à l’oral avant d’afficher la correction. Rappel du reste du chapitre : classe/objet, références, constructeurs, String, static, passage par valeur.",
+    "transition": "Chapitre 3 : l’héritage (extends), où protected prend tout son sens.",
+    "duree": 4
+  },
+  "ch3|Le problème : adapter une classe existante": {
+    "objectif": "Motiver l’héritage par un besoin concret (Point → point coloré) avant toute syntaxe.",
+    "question": "Copier-coller : on corrige un bug dans Point. Et la copie dans PointColore ?",
+    "reponse": "Elle garde le bug : il faut corriger deux fois (et on oublie souvent). Avec l’héritage, la correction profite à la fille.",
+    "transition": "Vocabulaire : classe mère, classe fille.",
+    "duree": 2
+  },
+  "ch3|Classe mère, classe fille": {
+    "objectif": "Ce que contient une fille ; nuance private / constructeurs ; un objet fille = partie mère + partie fille.",
+    "question": "La fille peut-elle lire directement un attribut private de la mère ?",
+    "reponse": "Non : l’attribut existe dans l’objet, mais seul le code de la mère y accède (méthodes, super(...)).",
+    "conseil": "Étape 2 : lire le diagramme UML (flèche vers la mère), puis le schéma mémoire : UN seul objet.",
+    "transition": "La syntaxe Java : extends.",
     "duree": 3
+  },
+  "ch3|L'héritage en Java : extends": {
+    "objectif": "extends, héritage simple, relation est-un, Object racine.",
+    "question": "D hérite-t-il de A ?",
+    "reponse": "Oui, indirectement (D → B → A → Object) : un D est un A.",
+    "duree": 2
+  },
+  "ch3|Appeler le constructeur de la mère : super(...)": {
+    "objectif": "Comprendre POURQUOI super(...) : la fille ne peut pas initialiser les attributs private de la mère.",
+    "question": "Étape 3 : compléter les deux constructeurs de Cercle.",
+    "reponse": "super(\"cercle\") puis this(1.0).",
+    "conseil": "Étape 2 : le code fautif a aussi une 2e erreur (super() implicite, Point n’a pas de constructeur sans paramètre) : c’est la diapo suivante. Nuance hors programme : Java 25 autorise des instructions avant super(...) si elles n’utilisent pas this ; garder la règle « 1re ligne ».",
+    "transition": "Et si on n’écrit pas super(...) ?",
+    "duree": 4
+  },
+  "ch3|Le super() implicite": {
+    "objectif": "super() implicite et l’erreur classique quand la mère n’a pas de constructeur sans paramètre.",
+    "question": "Comment corriger B ?",
+    "reponse": "B() { super(0); } ou ajouter A() dans A.",
+    "duree": 3
+  },
+  "ch3|Exemple : la méthode equals": {
+    "objectif": "Redéfinition vs surcharge sur un cas réel ; le choix de surcharge se fait sur le type statique.",
+    "question": "Étape 2 : p.equals(o) avec o de type Object, dans chaque version ?",
+    "reponse": "Version 1 (surcharge) : false. Version 2 (redéfinition) : true.",
+    "conseil": "Faire voter avant d’afficher. Relier à la diapo « Polymorphisme statique ou dynamique ? ».",
+    "duree": 4
+  },
+  "ch3|Redéfinir toString() et utiliser @Override": {
+    "objectif": "toString et l’intérêt concret de @Override.",
+    "question": "Étape 2 : le code avec tostring compile-t-il ?",
+    "reponse": "Non, grâce à @Override. Sans l’annotation : il compile, et le bug est silencieux.",
+    "duree": 3
+  },
+  "ch3|Le mot-clé super": {
+    "objectif": "super.m() appelle la version de la mère, un seul niveau.",
+    "question": "Étape 2 : que vaut new C().m(3) ?",
+    "reponse": "507 = 1 + (500 + 3 × 2).",
+    "duree": 3
+  },
+  "ch3|L'opérateur instanceof": {
+    "objectif": "instanceof teste l’objet réel et ses ancêtres ; null → false.",
+    "question": "Étape 2 : les 4 affirmations Vrai / Faux.",
+    "reponse": "Vrai, Vrai, Faux, Faux.",
+    "duree": 3
+  },
+  "ch3|Type statique et type dynamique": {
+    "objectif": "Distinguer type de la variable et classe de l’objet ; un appel est vérifié puis exécuté.",
+    "question": "Pourquoi f.getRayon() est refusé alors que l’objet est un Cercle ?",
+    "reponse": "Le compilateur ne connaît que le type statique Figure, qui ne déclare pas getRayon().",
+    "conseil": "Étape 2 : montrer la flèche du schéma, puis lire le flux compilation → exécution.",
+    "duree": 4
+  },
+  "ch3|Polymorphisme statique ou dynamique ?": {
+    "objectif": "Surcharge = choix à la compilation (type statique des arguments) ; redéfinition = choix à l’exécution.",
+    "question": "Étape 2 : qu’affiche le programme ?",
+    "reponse": "« surcharge Figure » puis « Cercle ».",
+    "conseil": "Piège classique : beaucoup répondent « surcharge Cercle ».",
+    "duree": 4
+  },
+  "ch3|Le mot-clé final": {
+    "objectif": "final sur classe, méthode, variable ; pour un objet, final fige la référence.",
+    "question": "Étape 2 : quelles lignes compilent ?",
+    "reponse": "p.x = 5 compile ; p = new Point(0, 0) est refusé.",
+    "duree": 3
+  },
+  "ch3|Les classes abstraites": {
+    "objectif": "Classe non instanciable, méthodes sans corps imposées aux filles ; lecture UML.",
+    "conseil": "Étape 2 : montrer l’italique et {abstract} dans le diagramme.",
+    "transition": "Ce qui est permis et interdit.",
+    "duree": 3
+  },
+  "ch3|Implémenter une interface : implements": {
+    "objectif": "implements, plusieurs interfaces, interface = type.",
+    "question": "Étape 2 : compléter la classe Bois.",
+    "reponse": "implements, puis public (obligatoire : on ne réduit pas la visibilité).",
+    "duree": 3
+  },
+  "ch3|Chapitre 3 — À retenir": {
+    "objectif": "Réviser : notions, couples à ne pas confondre, erreurs fréquentes, exemple récapitulatif, questions.",
+    "question": "Les 4 questions de l’étape 5.",
+    "reponse": "Corrections au clic ou avec S.",
+    "conseil": "Étape 4 : faire repérer interface, classe abstraite, super(...), @Override et polymorphisme dans l’exemple.",
+    "transition": "Chapitre 4 : les exceptions (ClassCastException en est une).",
+    "duree": 6
   }
 }

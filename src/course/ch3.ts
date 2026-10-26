@@ -25,6 +25,7 @@ export const CH3: Slide[] = [
     kind: 'content', chapter: C, section: '1. Héritage', title: 'Le problème : adapter une classe existante',
     blocks: [
       { k: 'p', text: 'Une classe `A` nous convient **presque** : on veut changer **quelques détails** ou **ajouter** une fonctionnalité.' },
+      { k: 'p', text: '**Exemple** : on a déjà une classe `Point` (`x`, `y`, `dessineToi()`). On veut un **point coloré** : la même chose, **plus une couleur**.' },
       {
         k: 'cols',
         left: [
@@ -34,48 +35,89 @@ export const CH3: Slide[] = [
           { k: 'box', tone: 'retenir', title: 'Solution 2 : hériter de A', text: '• On écrit une classe `B` qui se comporte **comme `A`**, avec quelques **différences**.\n• Il suffit du **code compilé** de `A`.' },
         ],
       },
+      { k: 'box', tone: 'question', text: 'Copier-coller : on corrige un bug dans `Point`. Et la copie dans `PointColore` ?' },
     ],
   },
   {
     kind: 'content', chapter: C, section: '1. Héritage', title: 'Classe **mère**, classe **fille**',
-    blocks: [
-      { k: 'p', text: 'L\'**héritage** permet de **spécialiser** une classe existante. La classe **fille** (sous-classe) hérite de la classe **mère** (super-classe).' },
-      {
-        k: 'p', text: 'Dans la classe fille, on trouve :',
-      },
-      {
-        k: 'list', items: [
-          'les **attributs** et **méthodes** de la classe mère ;',
-          'de **nouveaux** attributs et de **nouvelles** méthodes ;',
-          'des méthodes **redéfinies** (*overriding*) : **même signature**, code différent.',
-        ],
-      },
-    ],
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Définition', blocks: [
+            { k: 'p', text: 'L\'**héritage** permet de **spécialiser** une classe existante. La classe **fille** (sous-classe) hérite de la classe **mère** (super-classe).' },
+            {
+              k: 'p', text: 'Dans la classe fille, on trouve :',
+            },
+            {
+              k: 'list', items: [
+                'les **attributs** et **méthodes** de la classe mère ;',
+                'de **nouveaux** attributs et de **nouvelles** méthodes ;',
+                'des méthodes **redéfinies** (*overriding*) : **même signature**, code différent.',
+              ],
+            },
+            {
+              k: 'box', tone: 'info',
+              text: 'Les **constructeurs** ne s\'héritent pas. Les attributs **`private`** de la mère **existent** dans l\'objet fille, mais la fille **ne peut pas** y accéder directement.',
+            },
+          ],
+        },
+        {
+          label: 'Schéma', blocks: [{
+            k: 'cols', ratio: 0.55,
+            left: [{
+              k: 'uml', width: 480, height: 440,
+              caption: 'Diagramme UML : la flèche à **triangle vide** se lit « **hérite de** ».',
+              classes: [
+                { id: 'p', name: 'Point', x: 40, y: 0, w: 400, attrs: ['- x : int', '- y : int'], ops: ['+ Point(x, y)', '+ dessineToi()'] },
+                { id: 'pc', name: 'PointColore', x: 40, y: 290, w: 400, attrs: ['- couleur : Color'], ops: ['+ PointColore(x, y, c)'] },
+              ],
+              links: [{ from: 'pc', to: 'p' }],
+            }],
+            right: [{
+              k: 'memory', title: 'En mémoire : un seul objet',
+              stack: [{ name: 'pc', ref: 'o' }],
+              heap: [{ id: 'o', type: 'PointColore', fields: [['x', '1'], ['y', '2'], ['couleur', 'RED']], changed: ['couleur'] }],
+              caption: '`x`, `y` : partie **héritée** de `Point` · en orange : partie **ajoutée** par la fille.',
+            }],
+          }],
+        },
+      ],
+    }],
   },
   {
     kind: 'content', chapter: C, section: '1. Héritage', title: 'L\'héritage en Java : `extends`',
     blocks: [
       {
         k: 'cols',
+        ratio: 1.15,
         left: [
           { k: 'code', code: `
-class B extends A { ... }
-class C extends A { ... }
-class D extends B { ... }
+class A { }
+class B extends A { }
+class C extends A { }
+class D extends B { }
 
 A a = new B();   // OK : un B "est-un" A` },
-        ],
-        right: [
           {
             k: 'list', items: [
-              'Chaque classe a **une seule** classe mère.',
+              'Chaque classe a **une seule** mère **directe** (sauf `Object`, qui n\'en a pas).',
               '`B` est un **sous-type** de `A` : partout où on attend un `A`, on peut mettre un `B`.',
-              'Relation **« est-un »** : un `B` **est un** `A`.',
             ],
           },
         ],
+        right: [{
+          k: 'uml', width: 640, height: 560,
+          caption: 'La classe **`Object`** est la **mère de toutes les classes** Java.',
+          classes: [
+            { id: 'o', name: 'Object', x: 210, y: 0, w: 220 },
+            { id: 'a', name: 'A', x: 210, y: 165, w: 220 },
+            { id: 'b', name: 'B', x: 30, y: 330, w: 220 },
+            { id: 'c', name: 'C', x: 390, y: 330, w: 220 },
+            { id: 'd', name: 'D', x: 30, y: 495, w: 220 },
+          ],
+          links: [{ from: 'a', to: 'o' }, { from: 'b', to: 'a' }, { from: 'c', to: 'a' }, { from: 'd', to: 'b' }],
+        }],
       },
-      { k: 'box', tone: 'retenir', text: 'La classe **`Object`** est la **mère de toutes les classes** Java.' },
     ],
   },
   {
@@ -85,7 +127,7 @@ A a = new B();   // OK : un B "est-un" A` },
         k: 'table',
         head: ['Méthode', 'Version par défaut', 'À redéfinir pour…'],
         rows: [
-          ['`toString()`', 'nom de la classe + `@` + un **code** (ex. `Point@1b6d3586`)', 'une **description lisible**'],
+          ['`toString()`', 'nom de la classe + `@` + `hashCode()` en **hexadécimal** (ex. `Point@1b6d3586`)', 'une **description lisible**'],
           ['`equals(o)`', 'compare les **références** (comme `==`)', 'comparer l\'**état** des objets'],
           ['`hashCode()`', 'un **entier** calculé à partir de l\'objet', 'rester **cohérent** avec `equals`'],
         ],
@@ -102,11 +144,14 @@ System.out.println(p);      // Point@1b6d3586  (le nombre change d'une exécutio
   /* ── 2. Constructeurs ───────────────────────────────────────────── */
   {
     kind: 'content', chapter: C, section: '2. Constructeur de sous-classe', title: 'Appeler le constructeur de la mère : `super(...)`',
-    blocks: [
-      {
-        k: 'cols', ratio: 0.9,
-        left: [{
-          k: 'code', small: true, code: `
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Le code', blocks: [
+            {
+              k: 'cols', ratio: 0.9,
+              left: [{
+                k: 'code', small: true, code: `
 class Point {
     private int x, y;
 
@@ -119,9 +164,11 @@ class Point {
         System.out.println("Point");
     }
 }`,
-        }],
-        right: [{
-          k: 'code', small: true, code: `
+              }],
+              right: [{
+                k: 'code', small: true, code: `
+import java.awt.Color;
+
 class PointColore extends Point {
     private Color couleur;
 
@@ -134,13 +181,57 @@ class PointColore extends Point {
         this(x, y, Color.BLACK); // autre constructeur
     }
 }`,
-        }],
-      },
-      {
-        k: 'box', tone: 'attention',
-        text: '**Première instruction** d\'un constructeur : `this(...)` (même classe) **ou** `super(...)` (classe mère).',
-      },
-    ],
+              }],
+            },
+            {
+              k: 'box', tone: 'attention',
+              text: '**Première instruction** d\'un constructeur : `this(...)` (même classe) **ou** `super(...)` (classe mère).',
+            },
+          ],
+        },
+        {
+          label: 'Pourquoi `super` ?', blocks: [
+            { k: 'p', text: '`x` et `y` sont **`private`** dans `Point` : `PointColore` **ne peut pas** les initialiser elle-même.' },
+            {
+              k: 'code', small: true, status: 'ko', bad: [2, 3], code: `
+PointColore(int xx, int yy, Color c) {
+    this.x = xx;   // error: x has private access in Point
+    this.y = yy;   // idem pour y
+    couleur = c;
+}`,
+            },
+            { k: 'p', text: 'Elle **délègue** donc cette partie au constructeur de la mère. Pour `new PointColore(1, 2, Color.RED)` :' },
+            {
+              k: 'flow', steps: [
+                { label: '`super(1, 2)`', sub: '`Point` initialise **sa** partie : `x`, `y`' },
+                { label: '`couleur = c`', sub: '`PointColore` initialise **sa** partie' },
+                { label: 'Objet prêt', sub: 'la mère **d\'abord**, la fille **ensuite**' },
+              ],
+            },
+          ],
+        },
+        {
+          label: 'À vous', blocks: [{
+            k: 'fill', small: true, file: 'Figure.java',
+            prompt: 'Complétez les deux constructeurs de `Cercle`.',
+            code: `
+class Figure {
+    private String nom;
+    Figure(String nom) { this.nom = nom; }
+}
+class Cercle extends Figure {
+    private double rayon;
+    Cercle(double rayon) {
+        [[super]]("cercle");
+        this.rayon = rayon;
+    }
+    Cercle() { [[this]](1.0); }   // rayon par défaut : 1
+}`,
+            explication: '`super(...)` : constructeur de la **mère** · `this(...)` : autre constructeur de la **même** classe.',
+          }],
+        },
+      ],
+    }],
   },
   {
     kind: 'content', chapter: C, section: '2. Constructeur de sous-classe', title: 'Le `super()` **implicite**',
@@ -148,14 +239,20 @@ class PointColore extends Point {
       { k: 'p', text: 'Si la 1ʳᵉ instruction n\'est **ni `super(...)` ni `this(...)`**, le compilateur ajoute **`super();`**' },
       {
         k: 'cols',
-        left: [{ k: 'code', code: `
+        left: [
+          { k: 'code', small: true, code: `
 // ce que vous écrivez :
 Salarie(int s) { salaire = s; }
 
 // ce que le compilateur comprend :
-Salarie(int s) { super(); salaire = s; }` }],
+Salarie(int s) { super(); salaire = s; }` },
+          {
+            k: 'box', tone: 'info',
+            text: 'Une classe **sans** constructeur reçoit `B() { super(); }` : même règle.',
+          },
+        ],
         right: [
-          { k: 'code', code: `
+          { k: 'code', small: true, status: 'ko', bad: [7], code: `
 class A {
     private int i;
     A(int i) { this.i = i; }
@@ -167,15 +264,15 @@ class B extends A {
         ],
       },
       {
-        k: 'box', tone: 'attention',
-        text: 'Pourquoi l\'erreur ? `B()` appelle `super()`, mais `A` **n\'a pas** de constructeur **sans paramètre**.',
+        k: 'box', tone: 'attention', title: 'Erreur de compilation attendue',
+        text: '`B()` appelle `super()`, mais `A` **n\'a pas** de constructeur **sans paramètre** : `constructor A in class A cannot be applied to given types`.\n**Corrections** : `B() { super(0); }`, ou ajouter `A()` dans `A`.',
       },
     ],
   },
   {
     kind: 'content', chapter: C, section: '2. Constructeur de sous-classe', title: 'Quiz : ordre des **constructeurs**',
     blocks: [{
-      k: 'quiz', question: 'Que s\'affiche quand on exécute `new B();` ?',
+      k: 'quiz', verify: true, question: 'Que s\'affiche quand on exécute `new B();` ?',
       code: `
 class A {
     A() { System.out.println("A"); }
@@ -191,7 +288,7 @@ class B extends A {
         'Erreur de compilation',
       ],
       correct: 1,
-      explication: 'Le constructeur de `B` commence par un **`super();` implicite** : celui de la **mère** s\'exécute **d\'abord**.',
+      explication: 'Le constructeur de `B` commence par un **`super();` implicite** : `A()` s\'exécute **d\'abord** (lui-même après `Object()`), **puis** la suite de `B()`.',
     }],
   },
 
@@ -206,16 +303,17 @@ class B extends A {
           ['Où ?', 'Dans une **classe fille**', 'Dans la même classe (ou une fille)'],
           ['Nom', 'Même nom', 'Même nom'],
           ['Paramètres', '**Identiques** (même signature)', '**Différents**'],
+          ['Type de retour', 'Identique (ou **sous-type**)', 'Libre'],
           ['But', '**Remplacer** le code hérité', '**Ajouter** une variante'],
         ],
       },
       {
-        k: 'code', code: `
+        k: 'code', small: true, code: `
 class PointColore extends Point {
     @Override
     public void dessineToi() {
         super.dessineToi();   // réutilise le code de Point
-        changerCouleur();     // puis ajoute un comportement
+        System.out.println("couleur : " + couleur);   // puis complète
     }
 }`,
       },
@@ -226,8 +324,9 @@ class PointColore extends Point {
     blocks: [
       {
         k: 'cols', ratio: 1.5,
-        left: [{
-          k: 'code', code: `
+        left: [
+          {
+            k: 'code', status: 'ko', bad: [6], code: `
 class A {
     public void f() { }
 }
@@ -235,7 +334,9 @@ class A {
 class B extends A {
     void f() { }    // ERREUR : accès réduit
 }`,
-        }],
+          },
+          { k: 'code', plain: true, small: true, code: 'error: f() in B cannot override f() in A\n  attempting to assign weaker access privileges; was public' },
+        ],
         right: [{
           k: 'table', small: true,
           head: ['Dans la mère', 'Redéfinition possible en'],
@@ -243,7 +344,7 @@ class B extends A {
             ['`public`', '`public`'],
             ['`protected`', '`protected` ou `public`'],
             ['*par défaut*', 'par défaut, `protected` ou `public`'],
-            ['`private`', '**impossible** (non héritée)'],
+            ['`private`', '**pas de redéfinition** : une méthode de même nom dans la fille est une **nouvelle** méthode'],
           ],
         }],
       },
@@ -283,24 +384,33 @@ new Voiture().avancer();`, output: "j'avance vite",
           },
         ],
       },
-      { k: 'box', tone: 'retenir', text: 'Java cherche d\'abord la méthode dans la **classe de l\'objet**, puis **remonte** vers la classe **mère**.' },
+      {
+        k: 'flow', steps: [
+          { label: '`new Voiture().avancer()`', sub: 'objet de classe `Voiture`' },
+          { label: 'Cherche dans `Voiture`', sub: 'trouvée ? elle est **exécutée**' },
+          { label: 'Sinon dans `Vehicule`', sub: 'puis `Object` : on **remonte**' },
+        ],
+      },
     ],
   },
   {
     kind: 'content', chapter: C, section: '3. Redéfinition', title: 'Exemple : la méthode `equals`',
-    blocks: [
-      {
-        k: 'p', text: 'Par défaut, `equals` (héritée de `Object`) compare les **adresses** :',
-      },
-      { k: 'code', code: `
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Deux versions', blocks: [
+            {
+              k: 'p', text: 'Par défaut, `equals` (héritée de `Object`) compare les **références** :',
+            },
+            { k: 'code', code: `
 Object o1 = new Point(1, 2);
 Object o2 = new Point(1, 2);
 o1.equals(o2);   // false : deux objets différents en mémoire`, small: true },
-      {
-        k: 'cols',
-        left: [
-          { k: 'p', text: '**Redéfinition** ✔ (même signature)' },
-          { k: 'code', small: true, code: `
+            {
+              k: 'cols',
+              left: [
+                { k: 'p', text: '**Redéfinition** ✔ (même signature)' },
+                { k: 'code', small: true, code: `
 @Override
 public boolean equals(Object o) {
     if (o == null || o.getClass() != this.getClass())
@@ -308,42 +418,74 @@ public boolean equals(Object o) {
     Point p = (Point) o;
     return x == p.x && y == p.y;
 }` },
-        ],
-        right: [
-          { k: 'p', text: '**Surcharge** (paramètre différent)' },
-          { k: 'code', small: true, code: `
+              ],
+              right: [
+                { k: 'p', text: '**Surcharge** (paramètre différent)' },
+                { k: 'code', small: true, code: `
 public boolean equals(Point p) {
     if (p == null) return false;
     return x == p.x && y == p.y;
 }` },
-          { k: 'box', tone: 'attention', text: 'La surcharge **n\'est pas utilisée** quand l\'objet est vu comme un `Object` (ex. dans les listes).' },
-        ],
-      },
-    ],
+                { k: 'box', tone: 'attention', text: 'La surcharge **n\'est pas utilisée** quand l\'objet est vu comme un `Object` (ex. dans les listes).' },
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Comparer', blocks: [{
+            k: 'reveal', tag: 'Comparer',
+            prompt: 'Avec `Point p = new Point(1, 2);` et `Object o = new Point(1, 2);`, que vaut `p.equals(o)` dans chaque version ?',
+            blocks: [{
+              k: 'cols',
+              left: [{ k: 'code', small: true, file: 'Version 1 : surcharge', code: `
+public boolean equals(Point p) {
+    if (p == null) return false;
+    return x == p.x && y == p.y;
+}` }],
+              right: [{ k: 'code', small: true, file: 'Version 2 : redéfinition', code: `
+@Override
+public boolean equals(Object o) {
+    if (o == null || o.getClass() != getClass())
+        return false;
+    Point p = (Point) o;
+    return x == p.x && y == p.y;
+}` }],
+            }],
+            answer: [
+              { k: 'p', text: 'Version 1 : **`false`** · Version 2 : **`true`**.' },
+              { k: 'p', text: 'Le **type statique** de `o` est `Object` : Java choisit `equals(Object)`. En version 1, c\'est celle **héritée** de `Object`, qui compare les **références**.' },
+            ],
+          }],
+        },
+      ],
+    }],
   },
   {
     kind: 'content', chapter: C, section: '3. Redéfinition', title: 'Redéfinir `toString()` et utiliser `@Override`',
-    blocks: [
-      {
-        k: 'cols', ratio: 0.75,
-        left: [
-          {
-            k: 'list', items: [
-              '`toString()` renvoie une **description courte** de l\'objet.',
-              'Conseillé de la **redéfinir dans toutes vos classes**.',
-              '`println(p)` appelle **automatiquement** `p.toString()`.',
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Redéfinir `toString()`', blocks: [{
+            k: 'cols', ratio: 0.75,
+            left: [
+              {
+                k: 'list', items: [
+                  '`toString()` renvoie une **description courte** de l\'objet.',
+                  'Conseillé de la **redéfinir dans toutes vos classes**.',
+                  '`println(p)` appelle **automatiquement** `p.toString()`.',
+                ],
+              },
+              {
+                k: 'box', tone: 'retenir', title: '@Override',
+                text: 'Annotation à mettre sur une méthode redéfinie : **plus lisible**, et le compilateur **détecte les fautes** (si rien n\'est redéfini → erreur).',
+              },
             ],
-          },
-          {
-            k: 'box', tone: 'retenir', title: '@Override',
-            text: 'Annotation à mettre sur une méthode redéfinie : **plus lisible**, et le compilateur **détecte les fautes** (si rien n\'est redéfini → erreur).',
-          },
-        ],
-        right: [{
-          k: 'code', code: `
+            right: [{
+              k: 'code', small: true, code: `
 class Point {
     private int x, y;
-    ...
+    Point(int x, int y) { this.x = x; this.y = y; }
+
     @Override
     public String toString() {
         return "Point : x = " + x + ", y = " + y;
@@ -352,45 +494,94 @@ class Point {
 
 Point p = new Point(2, 3);
 System.out.println(p);`, output: 'Point : x = 2, y = 3',
-        }],
-      },
-    ],
+            }],
+          }],
+        },
+        {
+          label: 'À quoi sert `@Override` ?', blocks: [{
+            k: 'quiz', verify: true,
+            question: 'Ce code **compile-t-il** ?',
+            codeFile: 'Point.java', errorLine: 2,
+            code: `
+class Point {
+    @Override
+    public String tostring() {
+        return "un point";
+    }
+}`,
+            options: [
+              'Oui',
+              'Oui, mais `println(p)` affiche `Point@…`',
+              'Non : erreur sur `@Override`',
+            ],
+            correct: 2,
+            explication: 'Faute de frappe : `tostring` ≠ `toString`. Rien n\'est redéfini, et `@Override` le **signale**.',
+            error: 'Point.java:2: error: method does not override\n  or implement a method from a supertype',
+            detail: '**Sans** `@Override`, ça **compile**, mais `println(p)` affiche `Point@…` : bug **silencieux**.',
+          }],
+        },
+      ],
+    }],
   },
   {
     kind: 'content', chapter: C, section: '3. Redéfinition', title: 'Le mot-clé `super`',
-    blocks: [
-      { k: 'p', text: '`super.membre` désigne un membre (méthode ou attribut) de la **classe mère**.' },
-      {
-        k: 'cols',
-        left: [{ k: 'code', code: `
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Principe', blocks: [
+            { k: 'p', text: '`super.membre` désigne un membre (méthode ou attribut) de la **classe mère**.' },
+            {
+              k: 'cols',
+              left: [{ k: 'code', code: `
 class A {
     int m(int i) {
         return i * 2;
     }
 }` }],
-        right: [{ k: 'code', code: `
+              right: [{ k: 'code', code: `
 class B extends A {
     @Override
     int m(int i) {
         return 500 + super.m(i);
     }
 }` }],
-      },
-      {
-        k: 'list', items: [
-          '`super.super.m()` est **interdit** : on ne remonte que d\'**un seul niveau**.',
-          'Redéfinir un **attribut** est possible mais **déconseillé** (deux attributs de même nom).',
-          'Une méthode **`static`** ne se redéfinit pas : elle est **cachée**.',
-        ],
-      },
-    ],
+            },
+            {
+              k: 'list', items: [
+                '`super.super.m()` est **interdit** : on ne remonte que d\'**un seul niveau**.',
+                'Un **attribut** de même nom dans la fille ne redéfinit pas : il **masque** celui de la mère (**déconseillé**).',
+                'Une méthode **`static`** ne se redéfinit pas : elle est **cachée**.',
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Prédiction', blocks: [{
+            k: 'reveal', tag: 'Prédiction', prompt: 'On ajoute une classe `C`. Qu\'affiche ce programme ?',
+            blocks: [{ k: 'code', code: `
+class A { int m(int i) { return i * 2; } }
+class B extends A {
+    @Override int m(int i) { return 500 + super.m(i); }
+}
+class C extends B {
+    @Override int m(int i) { return 1 + super.m(i); }
+}
+// dans main :
+System.out.println(new C().m(3));` }],
+            answer: [
+              { k: 'p', text: '**`507`** : `C` ajoute **1**, son `super.m` appelle la version de **`B`** (+ **500**), qui appelle celle de **`A`** (3 × 2 = **6**). Chaque `super` remonte d\'**un seul** niveau.' },
+            ],
+          }],
+        },
+      ],
+    }],
   },
 
   /* ── 4. Casts d'objets ──────────────────────────────────────────── */
   {
     kind: 'content', chapter: C, section: '4. Transtypage', title: '**Upcast** et **downcast**',
     blocks: [
-      { k: 'p', text: 'Pour les objets, seuls les casts entre **classe mère** et **classe fille** sont autorisés. Notation : `(C) o`' },
+      { k: 'p', text: 'Pour les objets, un cast n\'est accepté qu\'entre types **liés par l\'héritage** (ancêtre ↔ descendant). Notation : `(C) o`' },
       {
         k: 'cols',
         left: [
@@ -406,15 +597,18 @@ Figure f1 = new Cercle(p, 10);
 Point c = ((Cercle) f1).getCentre();` },
         ],
       },
-      { k: 'p', text: 'Le downcast sert à appeler une méthode qui **n\'existe que dans la classe fille**.' },
+      { k: 'p', text: 'Le downcast sert à appeler une méthode qui **n\'existe que dans la classe fille**. Un cast entre classes **sans lien** (ex. `(String) f`) est refusé **dès la compilation**.' },
     ],
   },
   {
     kind: 'content', chapter: C, section: '4. Transtypage', title: 'L\'opérateur `instanceof`',
-    blocks: [
-      { k: 'p', text: '`o instanceof C` renvoie **`true`** si `o` est une instance de `C` **ou d\'une de ses sous-classes** (ou interfaces).' },
-      {
-        k: 'code', code: `
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Principe', blocks: [
+            { k: 'p', text: '`o instanceof C` renvoie **`true`** si `o` est une instance de `C` **ou d\'une de ses sous-classes** (ou interfaces).' },
+            {
+              k: 'code', code: `
 Personne john = new Employe();
 
 if (john instanceof Employe) {
@@ -422,18 +616,34 @@ if (john instanceof Employe) {
 } else {
     // proposer un stage
 }`,
-      },
-      {
-        k: 'box', tone: 'attention',
-        text: 'Pour tester **exactement la même classe**, utilisez `o != null && o.getClass() == this.getClass()` et non `instanceof`.',
-      },
-    ],
+            },
+            {
+              k: 'box', tone: 'attention',
+              text: 'Pour tester **exactement la même classe**, utilisez `o != null && o.getClass() == this.getClass()` et non `instanceof`.',
+            },
+          ],
+        },
+        {
+          label: 'Vrai ou faux ?', blocks: [
+            { k: 'p', text: '`Employe` et `Etudiant` héritent de `Personne`. On écrit `Personne p = new Employe();`' },
+            {
+              k: 'qa', items: [
+                { q: '`p instanceof Personne` vaut `true`.', a: '**Vrai** : un `Employe` **est une** `Personne`.' },
+                { q: '`p instanceof Employe` vaut `true`.', a: '**Vrai** : le test porte sur l\'**objet réel**, pas sur le type de `p`.' },
+                { q: '`p instanceof Etudiant` vaut `true`.', a: '**Faux** : l\'objet est un `Employe`, pas un `Etudiant`.' },
+                { q: 'Si `p = null`, `p instanceof Personne` vaut `true`.', a: '**Faux** : `instanceof` renvoie **toujours** `false` pour `null`.' },
+              ],
+            },
+          ],
+        },
+      ],
+    }],
   },
   {
     kind: 'content', chapter: C, section: '4. Transtypage', title: 'Downcast : appeler une méthode de la **fille**',
     blocks: [
       {
-        k: 'code', code: `
+        k: 'code', bad: [2], code: `
 Figure f = new Cercle();
 f.getRayon();                // ERREUR de compilation : cannot find symbol
 ((Cercle) f).getRayon();     // OK : downcast explicite`,
@@ -450,7 +660,9 @@ f.getRayon();                // ERREUR de compilation : cannot find symbol
   {
     kind: 'content', chapter: C, section: '4. Transtypage', title: 'Quiz : **downcast**',
     blocks: [{
-      k: 'quiz', question: 'Que se passe-t-il ?',
+      k: 'quiz', verify: true, question: 'Que se passe-t-il ?', errorLine: 2,
+      error: 'Exception in thread "main" java.lang.ClassCastException:\n  class Figure cannot be cast to class Cercle',
+      detail: '**Compilation** : types **liés** → cast accepté.\n**Exécution** : l\'objet réel est une `Figure` → **exception**.',
       code: `
 Figure f = new Figure();
 Cercle c = (Cercle) f;`,
@@ -461,7 +673,7 @@ Cercle c = (Cercle) f;`,
         '`c` vaut `null`',
       ],
       correct: 2,
-      explication: 'Le **downcast** est **accepté** à la compilation, mais `f` est un `Figure` et **pas** un `Cercle` : erreur **à l\'exécution**. On vérifie avec `instanceof`.',
+      explication: 'Cast **accepté** par `javac`, mais l\'objet n\'est **pas** un `Cercle` : erreur **à l\'exécution**. Vérifier avec `instanceof`.',
     }],
   },
   {
@@ -495,6 +707,7 @@ f = new Poire();  f.quiEstTu();`,
   {
     kind: 'content', chapter: C, section: '5. Polymorphisme', title: 'Le **polymorphisme**',
     blocks: [
+      { k: 'p', text: '*Poly* = plusieurs, *morphe* = formes : **un même code**, **plusieurs comportements**.' },
       {
         k: 'table',
         head: ['Type', 'Signification'],
@@ -528,32 +741,84 @@ for (int i = 0; i < nbFigures; i++)
   },
   {
     kind: 'content', chapter: C, section: '5. Polymorphisme', title: 'Type **statique** et type **dynamique**',
-    blocks: [
-      { k: 'code', code: 'Figure f = new Cercle();' },
-      {
-        k: 'table',
-        head: ['', 'Type statique : `Figure`', 'Type dynamique : `Cercle`'],
-        rows: [
-          ['**C\'est**', 'le type **déclaré** de la variable', 'la classe **réelle** de l\'objet'],
-          ['**Connu**', 'à la **compilation**', 'à l\'**exécution**'],
-          ['**Sert à**', 'vérifier que la méthode **existe**', 'choisir **quelle version** exécuter'],
-        ],
-      },
-    ],
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Deux types', blocks: [
+            { k: 'code', code: 'Figure f = new Cercle();' },
+            {
+              k: 'table',
+              head: ['', 'Type statique : `Figure`', 'Type dynamique : `Cercle`'],
+              rows: [
+                ['**C\'est**', 'le type **déclaré** de la variable', 'la classe **réelle** de l\'objet'],
+                ['**Connu**', 'à la **compilation**', 'à l\'**exécution**'],
+                ['**Sert à**', 'vérifier que la méthode **existe**', 'choisir **quelle version** exécuter'],
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Schéma', blocks: [{
+            k: 'cols',
+            left: [{
+              k: 'memory',
+              stack: [{ name: 'f : Figure', ref: 'c' }],
+              heap: [{ id: 'c', type: 'Cercle', fields: [['rayon', '1.0']] }],
+              caption: 'La **variable** est de type `Figure` ; l\'**objet** est un `Cercle`.',
+            }],
+            right: [
+              { k: 'code', small: true, bad: [3], code: `
+Figure f = new Cercle();
+f.dessineToi();   // OK
+f.getRayon();     // ERREUR de compilation` },
+              {
+                k: 'flow', steps: [
+                  { label: '1. Compilation', sub: '`Figure` déclare-t-elle `dessineToi()` ? **Oui** → accepté' },
+                  { label: '2. Exécution', sub: 'objet réel `Cercle` → version de **`Cercle`**' },
+                ],
+              },
+              { k: 'p', text: '`getRayon()` n\'existe pas dans `Figure` : refusé, **même si** l\'objet est un `Cercle`.' },
+            ],
+          }],
+        },
+      ],
+    }],
   },
   {
     kind: 'content', chapter: C, section: '5. Polymorphisme', title: 'Polymorphisme **statique** ou **dynamique** ?',
-    blocks: [
-      {
-        k: 'table',
-        head: ['', 'Surcharge', 'Redéfinition'],
-        rows: [
-          ['**Polymorphisme**', '**statique** (à la compilation)', '**dynamique** (à l\'exécution)'],
-          ['**Principe**', 'même nom, **paramètres différents**', 'même signature, dans la classe **fille**'],
-          ['**Le choix dépend**', 'des **arguments** de l\'appel', 'du **type réel** de l\'objet'],
-        ],
-      },
-    ],
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Comparaison', blocks: [{
+            k: 'table',
+            head: ['', 'Surcharge', 'Redéfinition'],
+            rows: [
+              ['**Polymorphisme**', '**statique** (à la compilation)', '**dynamique** (à l\'exécution)'],
+              ['**Principe**', 'même nom, **paramètres différents**', 'même signature, dans la classe **fille**'],
+              ['**Le choix dépend**', 'du **type statique** des arguments', 'du **type réel** de l\'objet'],
+            ],
+          }],
+        },
+        {
+          label: 'Le piège', blocks: [{
+            k: 'reveal', tag: 'Prédiction', prompt: '`Cercle` hérite de `Figure` et redéfinit `nom()`. Qu\'affiche ce programme ?',
+            blocks: [{ k: 'code', small: true, code: `
+class Figure { String nom() { return "Figure"; } }
+class Cercle extends Figure { @Override String nom() { return "Cercle"; } }
+static void afficher(Figure f) { System.out.println("surcharge Figure"); }
+static void afficher(Cercle c) { System.out.println("surcharge Cercle"); }
+// dans main :
+Figure f = new Cercle();
+afficher(f);
+System.out.println(f.nom());` }],
+            answer: [
+              { k: 'code', plain: true, small: true, code: 'surcharge Figure\nCercle' },
+              { k: 'p', text: '**Surcharge** : choisie à la **compilation**, avec le type **statique** de `f` (`Figure`). **Redéfinition** : choisie à l\'**exécution**, avec le type **réel** (`Cercle`).' },
+            ],
+          }],
+        },
+      ],
+    }],
   },
   {
     kind: 'content', chapter: C, section: '5. Polymorphisme', title: 'Polymorphisme et **extensibilité**',
@@ -609,7 +874,7 @@ d.dessiner(new Rectangle(p2, p3));`,
   {
     kind: 'content', chapter: C, section: '5. Polymorphisme', title: 'Quiz : **polymorphisme**',
     blocks: [{
-      k: 'quiz', question: 'Que s\'affiche ?',
+      k: 'quiz', verify: true, question: 'Que s\'affiche ?',
       code: `
 class Figure {
     void dessineToi() { System.out.println("Figure"); }
@@ -666,6 +931,9 @@ class Poisson extends Animal {
             ['3. *par défaut*', 'paquetage'],
             ['4. **`private`**', 'la classe seule'],
           ],
+        }, {
+          k: 'box', tone: 'info',
+          text: 'Un attribut `protected` est visible par **toutes** les filles : l\'encapsulation est **affaiblie**. Souvent : attribut `private` + méthodes d\'accès.',
         }],
       },
     ],
@@ -676,7 +944,8 @@ class Poisson extends Animal {
       { k: 'p', text: '`m` est `protected` dans `A`, et `B extends A`. Dans le code de `B` (paquetage **différent**) :' },
       {
         k: 'cols',
-        left: [{ k: 'code', code: `
+        left: [
+          { k: 'code', status: 'ko', bad: [5], code: `
 class B extends A {
     public int m2() {
         int i = m();     // OK : m hérité
@@ -684,7 +953,9 @@ class B extends A {
         i += a.m();      // REFUSÉ
         return i;
     }
-}` }],
+}` },
+          { k: 'code', plain: true, small: true, code: 'error: m() has protected access in A' },
+        ],
         right: [
           { k: 'box', tone: 'retenir', text: '`B` accède à `m` **en tant que fille** (sur `this` ou un autre `B`)…' },
           { k: 'box', tone: 'attention', text: '… mais **pas en tant que cliente** de `A` : `a.m()` est refusé (sauf si `A` et `B` sont dans le **même paquetage**).' },
@@ -716,45 +987,69 @@ a.m();   b.m();   c.m();   d.m();`,
   },
   {
     kind: 'content', chapter: C, section: '6. Visibilité', title: 'Le mot-clé `final`',
-    blocks: [
-      {
-        k: 'table',
-        head: ['`final` sur…', 'Effet', 'Exemple'],
-        rows: [
-          ['une **classe**', '**Aucune classe fille** possible', '`String`, `Math`'],
-          ['une **méthode**', 'Ne peut **pas être redéfinie**', 'vérification d\'un mot de passe'],
-          ['une **variable**', 'Valeur **constante**', '`final double PI = 3.14;`'],
-        ],
-      },
-      {
-        k: 'list', items: [
-          '**Standardiser** un traitement.',
-          '**Sécurité** : personne ne peut modifier un code sensible.',
-          'Classe ne contenant que des méthodes `static` → `final` pour un **message clair**.',
-          '**Efficacité** : optimisations possibles par la JVM.',
-        ],
-      },
-    ],
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Trois usages', blocks: [
+            {
+              k: 'table',
+              head: ['`final` sur…', 'Effet', 'Exemple'],
+              rows: [
+                ['une **classe**', '**Aucune classe fille** possible', '`String`, `Math`'],
+                ['une **méthode**', 'Ne peut **pas être redéfinie**', 'vérification d\'un mot de passe'],
+                ['une **variable**', 'Affectée **une seule fois**', '`final double PI = 3.14;`'],
+              ],
+            },
+            {
+              k: 'list', items: [
+                '**Standardiser** un traitement.',
+                '**Sécurité** : personne ne peut modifier un code sensible.',
+                'Classe ne contenant que des méthodes `static` → `final` pour un **message clair**.',
+                '**Efficacité** : la JVM *peut* optimiser (gain souvent faible aujourd\'hui).',
+              ],
+            },
+          ],
+        },
+        {
+          label: '`final` et objets', blocks: [{
+            k: 'reveal', tag: 'Compile ?', prompt: 'Quelles lignes sont acceptées par `javac` ?',
+            blocks: [{ k: 'code', code: `
+final Point p = new Point(1, 2);
+p.x = 5;               // ?
+p = new Point(0, 0);   // ?` }],
+            answer: [
+              { k: 'code', small: true, status: 'ko', highlight: [2], bad: [3], code: `
+final Point p = new Point(1, 2);
+p.x = 5;               // OK : l'objet reste modifiable
+p = new Point(0, 0);   // error: cannot assign a value to final variable p` },
+              { k: 'p', text: '`final` fige la **référence** (la flèche), **pas** l\'objet pointé.' },
+            ],
+          }],
+        },
+      ],
+    }],
   },
 
   /* ── 7. Classes abstraites ──────────────────────────────────────── */
   {
     kind: 'content', chapter: C, section: '7. Classes abstraites', title: 'Les classes **abstraites**',
-    blocks: [
-      {
-        k: 'cols',
-        left: [
-          {
-            k: 'list', items: [
-              'Classe **partiellement** écrite → **on ne peut pas l\'instancier** (`new` interdit).',
-              'Contient en général des méthodes **abstraites** : **sans corps**.',
-              'Les **classes filles** doivent écrire ces méthodes.',
-              'Une méthode `static` ne peut **pas** être abstraite.',
-            ],
-          },
-        ],
-        right: [{
-          k: 'code', code: `
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Définition', blocks: [
+            {
+              k: 'cols',
+              left: [
+                {
+                  k: 'list', items: [
+                    'Classe **partiellement** écrite → **on ne peut pas l\'instancier** (`new` interdit).',
+                    'Contient en général des méthodes **abstraites** : **sans corps**.',
+                    'Les **classes filles** doivent écrire ces méthodes.',
+                  ],
+                },
+              ],
+              right: [{
+                k: 'code', code: `
 abstract class GraphicObject {
     int x, y;
 
@@ -766,13 +1061,28 @@ abstract class GraphicObject {
     abstract void draw();     // pas de corps
     abstract void resize();
 }`,
-        }],
-      },
-      {
-        k: 'box', tone: 'retenir', title: 'Intérêt',
-        text: '**Partager le code commun** aux sous-classes, et fixer la **structure globale** en laissant les **détails** aux filles.',
-      },
-    ],
+              }],
+            },
+            {
+              k: 'box', tone: 'retenir', title: 'Intérêt',
+              text: 'Partager le **code commun** et fixer la **structure**, en laissant les **détails** aux filles.',
+            },
+          ],
+        },
+        {
+          label: 'En UML', blocks: [{
+            k: 'uml', width: 1000, height: 450,
+            caption: 'Nom en *italique* = classe **abstraite** · `{abstract}` = méthode **sans corps**, que chaque fille **doit** écrire.',
+            classes: [
+              { id: 'g', name: 'GraphicObject', kind: 'abstract', x: 280, y: 0, w: 440, attrs: ['x, y : int'], ops: ['moveTo(newX, newY)', 'draw() {abstract}', 'resize() {abstract}'] },
+              { id: 'c', name: 'Circle', x: 60, y: 310, w: 340, ops: ['draw()', 'resize()'] },
+              { id: 'r', name: 'Rectangle', x: 600, y: 310, w: 340, ops: ['draw()', 'resize()'] },
+            ],
+            links: [{ from: 'c', to: 'g' }, { from: 'r', to: 'g' }],
+          }],
+        },
+      ],
+    }],
   },
   {
     kind: 'content', chapter: C, section: '7. Classes abstraites', title: 'Classes abstraites : **permis** et **interdit**',
@@ -783,16 +1093,21 @@ abstract class GraphicObject {
         rows: [
           ['`new Employe()` si `Employe` est abstraite', '`Employe e = new Permanent();` (une **variable** de type abstrait)'],
           ['`abstract` **et** `final` ensemble', 'des méthodes **non abstraites** dans une classe abstraite'],
-          ['une méthode abstraite **`private`** ou **`static`**', 'une méthode abstraite **`public`** ou **`protected`**'],
+          ['une méthode abstraite **`private`** ou **`static`**', 'une méthode abstraite **`public`**, **`protected`** ou *par défaut*'],
         ],
       },
       { k: 'box', tone: 'retenir', text: 'Une classe qui déclare **une** méthode abstraite doit elle-même être **`abstract`**.' },
+      {
+        k: 'box', tone: 'info',
+        text: 'Une classe abstraite peut avoir des **constructeurs** : les filles les appellent avec `super(...)`. Elle peut aussi n\'avoir **aucune** méthode abstraite.',
+      },
     ],
   },
   {
     kind: 'content', chapter: C, section: '7. Classes abstraites', title: 'Quiz : classe **abstraite**',
     blocks: [{
-      k: 'quiz', question: 'Que se passe-t-il à la compilation ?',
+      k: 'quiz', verify: true, question: 'Que se passe-t-il à la compilation ?', errorLine: 5,
+      error: 'error: Figure is abstract; cannot be instantiated',
       code: `
 abstract class Figure {
     abstract void dessineToi();
@@ -845,7 +1160,7 @@ for (Figure f : figures)
   {
     kind: 'content', chapter: C, section: '8. Interfaces', title: 'Les **interfaces**',
     blocks: [
-      { k: 'p', text: 'Une interface est une sorte de classe dont **toutes les méthodes sont abstraites et publiques** : c\'est un **contrat**.' },
+      { k: 'p', text: 'Une interface est un **contrat** : la liste des méthodes qu\'une classe s\'engage à fournir. Ces méthodes sont **abstraites** et **publiques**.' },
       {
         k: 'cols',
         left: [{ k: 'code', code: `
@@ -861,6 +1176,8 @@ public interface MonInterface {
               '`public`, `static`, `final` sont **implicites** pour les constantes.',
               '`public abstract` est **implicite** pour les méthodes.',
               'Visibilité de l\'interface : `public` ou **par défaut**.',
+              'Ni **attribut d\'instance**, ni **constructeur** : `new MonInterface()` est interdit.',
+              'Depuis **Java 8** : aussi des méthodes **`default`** et **`static`**, avec un corps (voir plus loin).',
             ],
           },
         ],
@@ -869,35 +1186,59 @@ public interface MonInterface {
   },
   {
     kind: 'content', chapter: C, section: '8. Interfaces', title: 'Implémenter une interface : `implements`',
-    blocks: [
-      {
-        k: 'code', code: `
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Règles', blocks: [
+            {
+              k: 'code', code: `
 public class C extends Mere implements I1, I2 {
     ...
 }`,
-      },
-      {
-        k: 'list', items: [
-          'Une classe **hérite d\'une seule** classe, mais peut **implémenter plusieurs** interfaces.',
-          {
-            text: 'Deux cas possibles **seulement** :',
-            sub: [
-              '`C` écrit **toutes** les méthodes de l\'interface ;',
-              'sinon `C` doit être déclarée **`abstract`** (ses filles finiront le travail).',
-            ],
-          },
-        ],
-      },
-      {
-        k: 'box', tone: 'retenir', title: 'Une interface est un type',
-        text: 'Si `C` implémente `I`, alors `C` est un **sous-type** de `I` (et ses filles aussi) : `I x = new C();` est valide et `x instanceof I` vaut `true`.',
-      },
-    ],
+            },
+            {
+              k: 'list', items: [
+                'Une classe **hérite d\'une seule** classe, mais peut **implémenter plusieurs** interfaces.',
+                {
+                  text: 'Deux cas possibles **seulement** :',
+                  sub: [
+                    '`C` écrit **toutes** les méthodes de l\'interface ;',
+                    'sinon `C` doit être déclarée **`abstract`** (ses filles finiront le travail).',
+                  ],
+                },
+              ],
+            },
+            {
+              k: 'box', tone: 'retenir', title: 'Une interface est un type',
+              text: 'Si `C` implémente `I`, alors `C` est un **sous-type** de `I` (et ses filles aussi) : `I x = new C();` est valide et `x instanceof I` vaut `true`.',
+            },
+          ],
+        },
+        {
+          label: 'À vous', blocks: [{
+            k: 'fill', file: 'Bois.java',
+            prompt: 'Complétez pour que `Bois` respecte le contrat `Inflammable`.',
+            code: `
+interface Inflammable {
+    void enflammer();
+}
+class Bois [[implements]] Inflammable {
+    @Override
+    [[public]] void enflammer() {
+        System.out.println("Je brûle");
+    }
+}`,
+            explication: '`implements` relie la classe au contrat. `public` est **obligatoire** : on ne peut pas **réduire** la visibilité.',
+          }],
+        },
+      ],
+    }],
   },
   {
     kind: 'content', chapter: C, section: '8. Interfaces', title: 'Quiz : **implements**',
     blocks: [{
-      k: 'quiz', question: 'Que se passe-t-il à la compilation ?',
+      k: 'quiz', verify: true, question: 'Que se passe-t-il à la compilation ?', codeFile: 'Papier.java', errorLine: 5,
+      error: 'Papier.java:5: error: Papier is not abstract and does not\n  override abstract method enflammer() in Inflammable',
       code: `
 interface Inflammable {
     void enflammer();
@@ -947,7 +1288,16 @@ Inflammable[] tab = {
 for (Inflammable i : tab)
     i.enflammer();`, output: 'Je brûle et fais des braises\nYouhouhou !',
           },
-          { k: 'box', tone: 'retenir', text: '`Bois` et `Dancefloor` n\'ont **aucun lien d\'héritage**, mais on les traite **de la même façon**.' },
+          {
+            k: 'uml', width: 640, height: 250,
+            caption: 'Flèche **pointillée** = « **implémente** ». `Bois` et `Dancefloor` n\'ont **aucun lien d\'héritage**, mais on les traite **de la même façon**.',
+            classes: [
+              { id: 'i', name: 'Inflammable', kind: 'interface', x: 170, y: 0, w: 300, ops: ['enflammer()'] },
+              { id: 'b', name: 'Bois', x: 0, y: 190, w: 260 },
+              { id: 'd', name: 'Dancefloor', x: 380, y: 190, w: 260 },
+            ],
+            links: [{ from: 'b', to: 'i', kind: 'implements' }, { from: 'd', to: 'i', kind: 'implements' }],
+          },
         ],
       },
     ],
@@ -963,12 +1313,14 @@ for (Inflammable i : tab)
         ],
       },
       {
-        k: 'table',
+        k: 'table', small: true,
         head: ['', 'Classe abstraite', 'Interface'],
         rows: [
           ['Mot-clé', '`extends`', '`implements`'],
           ['Combien ?', '**Une seule** mère', '**Plusieurs** interfaces'],
-          ['Contient', 'Attributs + méthodes concrètes et abstraites', '**Constantes** + méthodes **abstraites**'],
+          ['Contient', 'Attributs + méthodes concrètes et abstraites', '**Constantes** + méthodes **abstraites** (+ `default` / `static` depuis Java 8)'],
+          ['Attributs d\'instance', 'Oui', 'Non'],
+          ['Constructeur', 'Oui (appelé par `super(...)`)', 'Non'],
           ['Idée', 'Une famille **« est-un »**', 'Une **capacité** (« sait faire »)'],
         ],
       },
@@ -1023,9 +1375,10 @@ System.out.println(Maximize.max(p1, p2));`, output: 'size: 173',
         k: 'cols',
         left: [
           { k: 'code', code: `
-public interface Comparable {
-    int compareTo(Object o);
+public interface Comparable<T> {
+    int compareTo(T o);
 }` },
+          { k: 'p', text: '`T` = le type comparé (ex. `Comparable<Point>`). Les **génériques** sont détaillés au **chapitre 5**.' },
           {
             k: 'table', small: true, head: ['`a.compareTo(b)` renvoie', 'si…'],
             rows: [['un nombre **< 0**', '`a` avant `b`'], ['**0**', '`a` égal à `b`'], ['un nombre **> 0**', '`a` après `b`']],
@@ -1085,20 +1438,20 @@ Collections.sort(l);
       {
         k: 'cols', ratio: 1.3,
         left: [{ k: 'code', small: true, code: `
-class PointComparator implements Comparator<Point> {
+class ComparateurParY implements Comparator<Point> {
     @Override
     public int compare(Point p1, Point p2) {
-        if (p1.x < p2.x) return -1;
-        if (p1.x > p2.x) return 1;
-        if (p1.y < p2.y) return -1;
-        if (p1.y > p2.y) return 1;
-        return 0;
+        if (p1.y != p2.y) return Integer.compare(p1.y, p2.y);
+        return Integer.compare(p1.x, p2.x);
     }
 }` }],
         right: [
           { k: 'code', small: true, code: `
-Collections.sort(liste,
-        new PointComparator());` },
+// l : (2,5) (1,9) (2,1)
+Collections.sort(l);
+// par x : (1,9) (2,1) (2,5)
+Collections.sort(l, new ComparateurParY());
+// par y : (2,1) (2,5) (1,9)` },
           { k: 'box', tone: 'retenir', text: '`sort(liste)` → ordre de `compareTo`.\n`sort(liste, comparateur)` → ordre du **comparateur**.' },
         ],
       },
@@ -1144,7 +1497,7 @@ public interface Orderable<T> extends Comparable<T> {
   {
     kind: 'content', chapter: C, section: '8. Interfaces', title: 'Le problème du **diamant**',
     blocks: [
-      { k: 'p', text: 'Une classe implémente **deux interfaces** qui ont **la même méthode `default`** : laquelle choisir ?' },
+      { k: 'p', text: 'Une classe implémente **deux interfaces** qui ont **la même méthode `default`** : laquelle choisir ? (On parle aussi de **conflit** de méthodes `default`.)' },
       {
         k: 'cols',
         left: [{ k: 'code', small: true, code: `
@@ -1228,19 +1581,103 @@ class C2 extends C1 {
   },
   {
     kind: 'content', chapter: C, title: 'Chapitre 3 — À retenir',
-    blocks: [
-      {
-        k: 'list', items: [
-          '`class B extends A` : **une seule** mère ; `Object` est la mère de tout.',
-          'Constructeur fille : **`super(...)`** en 1ʳᵉ ligne (sinon `super()` implicite).',
-          '**Redéfinition** = même signature (+ `@Override`) ; **surcharge** = paramètres différents.',
-          '**Upcast** implicite, **downcast** explicite ; vérifier avec `instanceof`.',
-          '**Polymorphisme** : la méthode exécutée dépend du **type réel** de l\'objet.',
-          '**Type statique** (déclaré, connu à la compilation) ≠ **type dynamique** (réel, connu à l\'exécution).',
-          '**Classe abstraite** : non instanciable, méthodes sans corps à écrire dans les filles.',
-          '**Interface** = contrat ; une classe peut en **implémenter plusieurs**.',
-        ],
-      },
-    ],
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Notions', blocks: [{
+            k: 'list', items: [
+              '`class B extends A` : **une seule** mère ; `Object` est la mère de tout.',
+              'Constructeur fille : **`super(...)`** en 1ʳᵉ ligne (sinon `super()` implicite).',
+              '**Redéfinition** = même signature (+ `@Override`) ; **surcharge** = paramètres différents.',
+              '**Upcast** implicite, **downcast** explicite ; vérifier avec `instanceof`.',
+              '**Polymorphisme** : la méthode exécutée dépend du **type réel** de l\'objet.',
+              '**Type statique** (déclaré, connu à la compilation) ≠ **type dynamique** (réel, connu à l\'exécution).',
+              '**Classe abstraite** : non instanciable, méthodes sans corps à écrire dans les filles.',
+              '**Interface** = contrat ; une classe peut en **implémenter plusieurs**.',
+            ],
+          }],
+        },
+        {
+          label: 'Ne pas confondre', blocks: [{
+            k: 'table', small: true,
+            head: ['', 'Le premier…', '… le second'],
+            rows: [
+              ['**Redéfinition** / **surcharge**', 'même signature, dans la **fille**', 'même nom, **paramètres différents**'],
+              ['Type **statique** / **dynamique**', '**déclaré**, vérifié à la compilation', '**réel**, utilisé à l\'exécution'],
+              ['**Upcast** / **downcast**', '**implicite**, toujours sûr', '**explicite**, peut lever `ClassCastException`'],
+              ['`extends` / `implements`', 'hériter d\'**une** classe', 'implémenter **une ou plusieurs** interfaces'],
+              ['Classe **abstraite** / **interface**', 'famille « **est-un** », code commun', '**capacité** « sait faire », contrat'],
+            ],
+          }],
+        },
+        {
+          label: 'Erreurs fréquentes', blocks: [{
+            k: 'list', items: [
+              'Mère **sans** constructeur sans paramètre, et **pas** de `super(...)` dans la fille → erreur de compilation.',
+              '**Réduire** la visibilité en redéfinissant (`public` → *par défaut*).',
+              'Écrire `equals(Point p)` : c\'est une **surcharge**, pas une redéfinition.',
+              'Downcast **sans** `instanceof` → **`ClassCastException`** à l\'exécution.',
+              '`new` sur une classe **abstraite** ou une **interface**.',
+              'Oublier une méthode de l\'interface, ou son **`public`**, dans la classe.',
+            ],
+          }],
+        },
+        {
+          label: 'Exemple récapitulatif', blocks: [{
+            k: 'cols',
+            left: [{ k: 'code', small: true, file: 'Figures.java', code: `
+interface Mesurable { double aire(); }
+
+abstract class Figure implements Mesurable {
+    private final String nom;
+    Figure(String nom) { this.nom = nom; }
+
+    @Override
+    public String toString() {
+        return nom + " d'aire " + aire();
+    }
+}
+
+class Carre extends Figure {
+    private final double cote;
+    Carre(double c) { super("carré"); cote = c; }
+    @Override
+    public double aire() { return cote * cote; }
+}` }],
+            right: [{ k: 'code', small: true, code: `
+class Rectangle extends Figure {
+    private final double l, h;
+    Rectangle(double l, double h) {
+        super("rectangle");
+        this.l = l;
+        this.h = h;
+    }
+    @Override public double aire() { return l * h; }
+}
+
+// dans main :
+Figure[] fs = { new Carre(2), new Rectangle(2, 3) };
+for (Figure f : fs)
+    System.out.println(f);`, output: 'carré d\'aire 4.0\nrectangle d\'aire 6.0' }],
+          }],
+        },
+        {
+          label: 'Vérification', blocks: [
+            {
+              k: 'qa', items: [
+                { q: 'Dans l\'exemple, pourquoi `Figure` peut-elle ne pas écrire `aire()` ?', a: 'Elle est **abstraite** : ce sont ses filles **concrètes** (`Carre`, `Rectangle`) qui doivent l\'écrire.' },
+                { q: '`Figure f = new Carre(2);` : type statique ? type dynamique ?', a: 'Statique : **`Figure`** (déclaré). Dynamique : **`Carre`** (objet réel).' },
+                { q: 'Pourquoi `println(f)` affiche-t-il « carré d\'aire 4.0 » ?', a: '`println` appelle `toString()`, **redéfinie** dans `Figure` ; elle appelle `aire()`, choisie selon le **type réel**.' },
+                { q: '« Peut être comparé » : classe abstraite ou interface ?', a: '**Interface** (`Comparable`) : une **capacité** partagée par des classes **sans lien**.' },
+              ],
+            },
+            {
+              k: 'box', tone: 'info', title: 'Chapitre 4 : les exceptions',
+              text: 'Vous avez croisé `ClassCastException` : une erreur **à l\'exécution**. Comment les **signaler**, les **capturer** et les **traiter** ?',
+            },
+          ],
+        },
+      ],
+    }],
   },
 ]

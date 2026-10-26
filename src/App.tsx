@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { RefObject, TouchEvent } from 'react'
 import { SLIDES, CHAPTERS } from './course/slides'
-import { SlideView, Rich } from './course/ui'
+import { SlideView, Rich, stepCount } from './course/ui'
 import type { Slide } from './course/types'
 
 const STAGE_W = 1920
@@ -47,6 +47,7 @@ function NotesBody({ n }: { n: NonNullable<Slide['notes']> }) {
 
 export default function App() {
   const [current, setCurrent] = useState(readHash)
+  const [step, setStep] = useState(0)
   const [revealed, setRevealed] = useState<Set<number>>(() => new Set())
   const [overview, setOverview] = useState(false)
   const [notesOpen, setNotesOpen] = useState(false)
@@ -55,7 +56,20 @@ export default function App() {
   const scale = useStageScale(wrapRef)
   const total = SLIDES.length
 
-  const go = useCallback((i: number) => setCurrent(Math.max(0, Math.min(total - 1, i))), [total])
+  const go = useCallback((i: number, atLastStep = false) => {
+    const j = Math.max(0, Math.min(total - 1, i))
+    setCurrent(j)
+    setStep(atLastStep ? stepCount(SLIDES[j]) - 1 : 0)
+  }, [total])
+  // → / ← : d'abord les étapes de la diapo (panneaux progressifs), puis la diapo voisine
+  const next = useCallback(() => {
+    if (step < stepCount(SLIDES[current]) - 1) setStep(step + 1)
+    else if (current < total - 1) go(current + 1)
+  }, [current, step, total, go])
+  const prev = useCallback(() => {
+    if (step > 0) setStep(step - 1)
+    else if (current > 0) go(current - 1, true)
+  }, [current, step, go])
   const toggleReveal = useCallback((i: number) => {
     setRevealed(prev => {
       const next = new Set(prev)
@@ -71,7 +85,7 @@ export default function App() {
     if (window.location.hash !== target) window.history.replaceState(null, '', target)
   }, [current])
   useEffect(() => {
-    const onHash = () => setCurrent(readHash())
+    const onHash = () => { setCurrent(readHash()); setStep(0) }
     window.addEventListener('hashchange', onHash)
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
@@ -98,8 +112,8 @@ export default function App() {
         if (k === 'Escape' || k === 'o' || k === 'O') setOverview(false)
         return
       }
-      if (k === 'ArrowRight' || k === 'PageDown' || k === ' ') { e.preventDefault(); go(current + 1) }
-      else if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); go(current - 1) }
+      if (k === 'ArrowRight' || k === 'PageDown' || k === ' ') { e.preventDefault(); next() }
+      else if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); prev() }
       else if (k === 'Home') go(0)
       else if (k === 'End') go(total - 1)
       else if (k === 's' || k === 'S') toggleReveal(current)
@@ -109,7 +123,7 @@ export default function App() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [current, go, overview, toggleReveal, toggleFullscreen, total])
+  }, [current, go, next, prev, overview, toggleReveal, toggleFullscreen, total])
 
   // Balayage tactile
   const touchX = useRef<number | null>(null)
@@ -117,7 +131,7 @@ export default function App() {
   const onTouchEnd = (e: TouchEvent) => {
     if (touchX.current === null) return
     const dx = e.changedTouches[0].clientX - touchX.current
-    if (Math.abs(dx) > 60) go(current + (dx < 0 ? 1 : -1))
+    if (Math.abs(dx) > 60) { if (dx < 0) next(); else prev() }
     touchX.current = null
   }
 
@@ -133,20 +147,23 @@ export default function App() {
         <div className="stage-outer" style={{ width: STAGE_W * scale, height: STAGE_H * scale }}>
           <div className="stage" style={{ width: STAGE_W, height: STAGE_H, transform: `scale(${scale})` }}>
             <SlideView
+              key={current}
               slide={SLIDES[current]}
               index={current}
               total={total}
               revealed={revealed.has(current)}
               onReveal={() => toggleReveal(current)}
+              step={step}
+              onStep={setStep}
             />
           </div>
         </div>
       </div>
 
       <nav className="navbar">
-        <button className="nav-btn" onClick={() => go(current - 1)} disabled={current === 0} aria-label="Diapo précédente">←</button>
+        <button className="nav-btn" onClick={prev} disabled={current === 0 && step === 0} aria-label="Diapo précédente">←</button>
         <span className="nav-count">{current + 1} / {total}</span>
-        <button className="nav-btn" onClick={() => go(current + 1)} disabled={current === total - 1} aria-label="Diapo suivante">→</button>
+        <button className="nav-btn" onClick={next} disabled={current === total - 1 && step >= stepCount(SLIDES[current]) - 1} aria-label="Diapo suivante">→</button>
         <div className="nav-chapters">
           {chapterStarts.map(c => (
             <button
@@ -207,11 +224,11 @@ export default function App() {
 
       {printing && (
         <div className="print-root">
-          {SLIDES.map((s, i) => (
-            <div className="print-page" key={i}>
-              <SlideView slide={s} index={i} total={total} revealed onReveal={() => {}} />
+          {SLIDES.flatMap((s, i) => Array.from({ length: stepCount(s) }, (_, k) => (
+            <div className="print-page" key={`${i}-${k}`}>
+              <SlideView slide={s} index={i} total={total} revealed onReveal={() => {}} step={k} />
             </div>
-          ))}
+          )))}
         </div>
       )}
     </div>
