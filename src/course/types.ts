@@ -45,6 +45,28 @@ export type Block =
       classes: UmlClass[]
       links: { from: string; to: string; kind?: 'extends' | 'implements' }[]
     }
+  /** Grande question posée à l'amphi */
+  | { k: 'ask'; text: string }
+  /** Scène « compte bancaire » : un état par étape (pas d'animation, l'enseignante avance). */
+  | { k: 'scene'; state: 'compte' | 'app' | 'direct' | 'risque' | 'private' }
+  /** Objet encapsulé : zone privée, interface publique, chemins cliquables depuis des classes extérieures. */
+  | {
+      k: 'encap'; object: string; inner: string; methods: string[]
+      paths: { from: string; label: string; ok: boolean; text: string; port?: string }[]
+    }
+  /** Révélation un par un (bouton ou S = tout). `cols` : éléments côte à côte. */
+  | { k: 'progressive'; button: string; cols?: number; items: Block[][] }
+  /** Packages comme frontières : cadres de packages contenant des classes, avec verdict d'accès. */
+  | {
+      k: 'pkgs'
+      packages: { name: string; classes: { name: string; lines?: string[]; verdict?: { ok: boolean; text: string } }[] }[]
+    }
+  /** Matrice de visibilité : clic sur un modificateur → colonne surlignée, exemple, restriction. */
+  | {
+      k: 'vismatrix'
+      mods: { label: string; code: string; note: string }[]
+      rows: { label: string; cells: string[] }[]
+    }
   /** Explorateur de visibilité : modificateur × contexte → code + verdict du compilateur.
    *  `{MOD}` dans le code est remplacé par le mot-clé choisi ; `results[contexte][modificateur]`. */
   | {
@@ -63,7 +85,7 @@ export type Block =
   /** Quiz : options cliquables ; la bonne réponse et l'explication s'affichent au clic ou avec la touche S. */
   | { k: 'quiz'; question: string; code?: string; options: string[]; correct: number; explication: string
       /** Mode « prédiction » : on choisit, puis « Vérifier » ; boutons Correction / Réinitialiser. */
-      verify?: boolean; detail?: string; codeFile?: string; error?: string; errorLine?: number }
+      verify?: boolean; detail?: string; detailTitle?: string; codeFile?: string; error?: string; errorLine?: number }
   /** Exercice : la solution s'affiche au clic (ou touche S) */
   | { k: 'exercise'; prompt: string; code?: string; solution: Block[]; side?: boolean }
 

@@ -1344,41 +1344,87 @@ public class Main {
     blocks: [{
       k: 'steps', items: [
         {
-          label: 'Le problème', blocks: [{
-            k: 'cols',
-            left: [
-              {
-                k: 'code', file: 'Compte.java', code: `
-public class Compte {
-    public double solde = 100;
-}`,
-              },
-              {
-                k: 'code', file: 'Main.java (extrait)', bad: [2], output: '-5000.0', code: `
-Compte c = new Compte();
-c.solde = -5000;
-System.out.println(c.solde);`,
-              },
-            ],
-            right: [
-              { k: 'box', tone: 'question', text: 'Pourquoi est-ce **problématique** de laisser **toutes les classes** modifier directement le `solde` ?' },
-              { k: 'p', text: 'Le code **compile** : rien n\'empêche un solde **aberrant**.' },
-            ],
-          }],
+          label: 'Le compte', blocks: [
+            { k: 'ask', text: 'Pourquoi ne devons-nous **pas** autoriser **toutes** les classes à accéder à **toutes** les données ?' },
+            { k: 'scene', state: 'compte' },
+          ],
         },
         {
-          label: 'La solution', blocks: [{
-            k: 'cols', ratio: 1.35,
-            left: [{
-              k: 'code', small: true, file: 'Compte.java', highlight: [9],
-              notes: { 2: 'état interne caché', 4: 'consulter', 8: 'opération contrôlée' },
+          label: 'Autre classe', blocks: [
+            { k: 'ask', text: 'Pourquoi ne devons-nous **pas** autoriser **toutes** les classes à accéder à **toutes** les données ?' },
+            { k: 'scene', state: 'app' },
+          ],
+        },
+        {
+          label: 'Accès direct', blocks: [
+            { k: 'scene', state: 'direct' },
+            {
+              k: 'quiz', verify: true,
+              question: 'Java doit-il **autoriser** cette instruction ?',
+              codeFile: 'Application.java (extrait)',
               code: `
-public class Compte {
-    private double solde = 100;
-
-    public double getSolde() {
-        return solde;
-    }
+CompteBancaire compte = new CompteBancaire();
+compte.solde = -5000;`,
+              options: [
+                'Oui, car l\'attribut est `public`',
+                'Non, car un solde négatif est toujours interdit en Java',
+                'Non, car une autre classe ne peut jamais modifier un attribut',
+              ],
+              correct: 0,
+              explication: 'Java **autorise** cet accès si `solde` est **`public`** (et la classe `CompteBancaire` accessible). Java ne connaît **pas** les règles métier de notre application.',
+              detailTitle: 'Pourquoi pas B ni C ?',
+              detail: '**B** : Java n\'a **aucune** règle sur les soldes : `-5000` est un `double` valide.\n**C** : une autre classe **peut** modifier un attribut… s\'il est **accessible**.',
+            },
+          ],
+        },
+        {
+          label: 'Le risque', blocks: [
+            { k: 'p', text: '**Sans contrôle d\'accès** : `Application` modifie **directement** `CompteBancaire.solde`.' },
+            { k: 'scene', state: 'risque' },
+            {
+              k: 'box', tone: 'info',
+              text: 'Un solde négatif n\'est pas **intrinsèquement** interdit : **dans cet exemple**, notre **règle métier** interdit le découvert.',
+            },
+          ],
+        },
+        {
+          label: '`private`', blocks: [
+            {
+              k: 'cols',
+              left: [{
+                k: 'code', small: true, file: 'Avant', bad: [2], code: `
+public class CompteBancaire {
+    public double solde = 1000;
+}`,
+              }],
+              right: [{
+                k: 'code', small: true, file: 'Après', highlight: [2], code: `
+public class CompteBancaire {
+    private double solde = 1000;
+}`,
+              }],
+            },
+            { k: 'scene', state: 'private' },
+            {
+              k: 'code', small: true, file: 'Application.java (extrait)', status: 'ko', bad: [2], code: `
+CompteBancaire compte = new CompteBancaire();
+compte.solde = -5000;   // error: solde has private access in CompteBancaire`,
+            },
+          ],
+        },
+        {
+          label: 'Retirer ?', blocks: [
+            { k: 'ask', text: 'Maintenant que `solde` est **privé**, comment effectuer un **retrait autorisé** ?' },
+            {
+              k: 'reveal', tag: 'Question', prompt: 'Proposez une solution, puis révélez la réponse.',
+              answer: [{
+                k: 'cols', ratio: 1.15,
+                left: [{
+                  k: 'code', small: true, file: 'CompteBancaire.java', highlight: [5, 6],
+                  notes: { 4: 'méthode publique', 5: 'règle métier' },
+                  code: `
+public class CompteBancaire {
+    private double solde = 1000;
 
     public boolean retirer(double montant) {
         if (montant > 0 && montant <= solde) {
@@ -1388,25 +1434,44 @@ public class Compte {
         return false;
     }
 }`,
-            }],
-            right: [
-              {
-                k: 'list', items: [
-                  '`solde` est **`private`** : seul le code de `Compte` le modifie.',
-                  'Les autres classes passent par l\'**interface publique** : `getSolde()`, `retirer(...)`.',
-                  '`retirer` **vérifie** avant de modifier.',
+                }],
+                right: [
+                  {
+                    k: 'code', small: true, code: `
+compte.retirer(100);    // true  : 900 DT
+compte.retirer(5000);   // false : refusé`,
+                  },
+                  { k: 'p', text: 'Les règles métier sont **respectées** : toute modification de `solde` passe par une méthode **prévue** par la classe, qui **vérifie** avant de modifier.' },
                 ],
-              },
-              {
-                k: 'code', small: true, status: 'ko', bad: [2], code: `
-c.retirer(5000);   // false : refusé
-c.solde = -5000;   // erreur`,
-              },
-            ],
-          }],
+              }],
+            },
+          ],
         },
         {
-          label: 'Les idées clés', blocks: [
+          label: 'Interface', blocks: [
+            {
+              k: 'encap', object: 'compte : CompteBancaire', inner: 'private double solde',
+              methods: ['getSolde()', 'deposer(double montant)', 'retirer(double montant)'],
+              paths: [
+                {
+                  from: 'Application', label: 'compte.solde = -5000', ok: false,
+                  text: 'Accès **direct** à `solde` : refusé **à la compilation** (`solde has private access in CompteBancaire`).',
+                },
+                {
+                  from: 'Client', label: 'retirer(100)', ok: true, port: 'retirer(double montant)',
+                  text: 'Méthode **publique** : `retirer` vérifie `montant > 0` et `montant <= solde`, **puis** modifie `solde` (1000 → 900 DT).',
+                },
+                {
+                  from: 'Gestionnaire', label: 'getSolde()', ok: true, port: 'getSolde()',
+                  text: '**Consultation** : `getSolde()` renvoie la valeur **sans** permettre de la modifier.',
+                },
+              ],
+            },
+            { k: 'box', tone: 'retenir', text: '`private` ne bloque pas l\'**utilisation** de l\'objet : il oblige les autres classes à passer par son **interface publique**.' },
+          ],
+        },
+        {
+          label: 'Idées clés', blocks: [
             {
               k: 'flow', steps: [
                 { label: 'État interne', sub: 'attributs `private`' },
@@ -1553,20 +1618,116 @@ public boolean deposer(double montant) {
     blocks: [{
       k: 'steps', items: [
         {
-          label: 'Le tableau', blocks: [
+          label: 'Tout `private` ?', blocks: [
+            { k: 'ask', text: 'Faut-il alors déclarer **tous** les éléments `private` ?' },
             {
-              k: 'table', marks: true, small: true,
-              head: ['Accès depuis…', '`public`', '`protected`', '*défaut*', '`private`'],
-              rows: [
-                ['la **même classe**', 'Oui', 'Oui', 'Oui', 'Oui'],
-                ['le **même package**', 'Oui', 'Oui', 'Oui', 'Non'],
-                ['une **sous-classe**, autre package', 'Oui', 'Oui*', 'Non', 'Non'],
-                ['une **autre classe**, autre package', 'Oui', 'Non', 'Non', 'Non'],
+              k: 'progressive', button: 'Niveau suivant', cols: 4,
+              items: [
+                [
+                  { k: 'p', text: '`private` : les **détails internes**.' },
+                  { k: 'code', small: true, highlight: [2], bad: [3], code: 'private double solde;\n// ✓ dans la classe\n// ✗ partout ailleurs' },
+                ],
+                [
+                  { k: 'p', text: '*Aucun modificateur* : le **même package**.' },
+                  { k: 'code', small: true, highlight: [2], bad: [3], code: 'double taux;\n// ✓ même package\n// ✗ autre package' },
+                ],
+                [
+                  { k: 'p', text: '`protected` : package **+** accès liés à l\'**héritage**.' },
+                  { k: 'code', small: true, highlight: [2, 3], code: 'protected void log()\n// ✓ même package\n// ✓* sous-classes' },
+                ],
+                [
+                  { k: 'p', text: '`public` : l\'**extérieur**, si la **classe** est accessible.' },
+                  { k: 'code', small: true, highlight: [2], code: 'public double getSolde()\n// ✓ partout' },
+                ],
+                [{ k: 'box', tone: 'retenir', text: '**Non** : on choisit le niveau **le plus restrictif** qui permet l\'usage prévu. Base : attributs `private`, méthodes de l\'interface `public`.' }],
               ],
             },
-            { k: 'box', tone: 'attention', title: 'Oui* : protected hors du package', text: 'La sous-classe accède au membre **hérité** via `this`, **pas** via une référence `Compte` quelconque.\n`protected` ≠ « accessible partout dès qu\'il existe une sous-classe ».' },
-            { k: 'box', tone: 'retenir', text: 'Règle de base : attributs **`private`**, méthodes utiles **`public`**.' },
           ],
+        },
+        {
+          label: 'Le package', blocks: [
+            {
+              k: 'pkgs', packages: [
+                {
+                  name: 'universite', classes: [
+                    { name: 'Etudiant', lines: ['public class Etudiant {', '  String nom = "Amira";', '}'] },
+                    { name: 'Enseignant', lines: ['Etudiant e = new Etudiant();', 'System.out.println(e.nom);'], verdict: { ok: true, text: '✓ même package' } },
+                  ],
+                },
+                {
+                  name: 'application', classes: [
+                    { name: 'Main', lines: ['import universite.Etudiant;', 'System.out.println(e.nom);'], verdict: { ok: false, text: '✗ autre package : refusé' } },
+                  ],
+                },
+              ],
+            },
+            {
+              k: 'reveal', tag: 'Question', prompt: 'Pourquoi `Main` ne peut-il pas accéder à `nom`, **même avec un `import`** ?',
+              answer: [
+                { k: 'p', text: 'Parce qu\'un **`import` ne modifie pas la visibilité** : il donne seulement un **nom court**. Sans modificateur, l\'accès est limité au **package**.' },
+                { k: 'code', plain: true, small: true, code: 'error: nom is not public in Etudiant; cannot be accessed from outside package' },
+              ],
+            },
+            { k: 'box', tone: 'attention', text: '« *default* » (ou *package-private*) est un **terme pédagogique** : ce n\'est **pas** un modificateur à écrire. On n\'écrit **rien**.' },
+          ],
+        },
+        {
+          label: 'Matrice', blocks: [{
+            k: 'vismatrix',
+            mods: [
+              {
+                label: '`public`',
+                code: `
+public class CompteBancaire {
+    private double solde;
+    public double getSolde() { return solde; }
+}`,
+                note: 'Accessible **partout**… à condition que la **classe** soit elle-même accessible (`public class`).',
+              },
+              {
+                label: '`protected`',
+                code: `
+// banque/CompteBancaire.java
+package banque;
+public class CompteBancaire {
+    protected void journaliser() { }
+}
+// epargne/CompteEpargne.java
+package epargne;
+import banque.CompteBancaire;
+class CompteEpargne extends CompteBancaire {
+    void m() { journaliser(); }   // ✓ hérité
+}`,
+                note: '**✓\\*** : depuis une sous-classe d\'un **autre package**, accès au membre **hérité** (via `this` ou le type de la sous-classe), **pas** via une référence `CompteBancaire` quelconque.',
+              },
+              {
+                label: '*package-private*',
+                code: `
+package banque;
+public class CompteBancaire {
+    double taux = 0.02;   // aucun mot-clé
+}`,
+                note: '**Même package** seulement : une **sous-classe** d\'un autre package n\'y accède **pas**. On n\'écrit **aucun** mot-clé.',
+              },
+              {
+                label: '`private`',
+                code: `
+public class CompteBancaire {
+    private double solde;
+    void afficher() {
+        System.out.println(solde);   // ✓
+    }
+}`,
+                note: '**Seulement** dans la classe. Même package ou sous-classe : **refusé**.',
+              },
+            ],
+            rows: [
+              { label: 'Même **classe**', cells: ['✓', '✓', '✓', '✓'] },
+              { label: 'Même **package**', cells: ['✓', '✓', '✓', '✗'] },
+              { label: '**Sous-classe**, autre package', cells: ['✓', '✓*', '✗', '✗'] },
+              { label: '**Autre classe**, autre package', cells: ['✓', '✗', '✗', '✗'] },
+            ],
+          }],
         },
         {
           label: 'Tester : compile ou pas ?', blocks: [{
@@ -1676,6 +1837,43 @@ public class Main {
                 { ok: false, text: '`private` : **seulement dans `Compte`**.', error: 'solde has private access in Compte' },
               ],
             ],
+          }],
+        },
+        {
+          label: 'Visibilité ≠ encapsulation', blocks: [
+            { k: 'ask', text: 'Quelle différence entre **visibilité** et **encapsulation** ?' },
+            {
+              k: 'progressive', button: 'Révéler la suite',
+              items: [
+                [{ k: 'box', tone: 'info', title: 'Visibilité', text: 'Définit **depuis quelles parties** du programme un élément Java est **accessible**.' }],
+                [{ k: 'box', tone: 'info', title: 'Encapsulation', text: 'Principe de **conception** : **maîtriser** l\'exposition et les modifications de l\'**état** et de l\'**implémentation** d\'un objet.' }],
+                [{ k: 'box', tone: 'retenir', text: 'La visibilité est un **mécanisme Java** au service de l\'**encapsulation**.' }],
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Mini-quiz', blocks: [{
+            k: 'quiz', verify: true,
+            question: 'Un attribut `private` avec un **setter public** qui accepte **n\'importe quelle valeur** garantit-il **toujours** une bonne encapsulation ?',
+            codeFile: 'CompteBancaire.java', errorLine: 5,
+            code: `
+public class CompteBancaire {
+    private double solde;
+
+    public void setSolde(double valeur) {
+        solde = valeur;
+    }
+}`,
+            options: [
+              'Oui : l\'attribut est `private`',
+              'Non : il faut aussi **contrôler** les modifications',
+              'Oui, à condition d\'ajouter un getter',
+            ],
+            correct: 1,
+            explication: '`setSolde(-5000)` est **accepté** : l\'invariant `solde ≥ 0` n\'est pas protégé. Il faut **contrôler** les modifications et **préserver les invariants**.',
+            detailTitle: 'Visibilité et encapsulation',
+            detail: '`private` = la **visibilité** (mécanisme).\nLe **contrôle** dans les méthodes = l\'**encapsulation** (conception).',
           }],
         },
       ],

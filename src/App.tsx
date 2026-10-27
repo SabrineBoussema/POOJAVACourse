@@ -48,7 +48,7 @@ function NotesBody({ n }: { n: NonNullable<Slide['notes']> }) {
 export default function App() {
   const [current, setCurrent] = useState(readHash)
   const [step, setStep] = useState(0)
-  const [revealed, setRevealed] = useState<Set<number>>(() => new Set())
+  const [revealed, setRevealed] = useState<Set<string>>(() => new Set())
   const [overview, setOverview] = useState(false)
   const [notesOpen, setNotesOpen] = useState(false)
   const [printing, setPrinting] = useState(false)
@@ -70,7 +70,7 @@ export default function App() {
     if (step > 0) setStep(step - 1)
     else if (current > 0) go(current - 1, true)
   }, [current, step, go])
-  const toggleReveal = useCallback((i: number) => {
+  const toggleReveal = useCallback((i: string) => {
     setRevealed(prev => {
       const next = new Set(prev)
       if (next.has(i)) next.delete(i)
@@ -116,14 +116,14 @@ export default function App() {
       else if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); prev() }
       else if (k === 'Home') go(0)
       else if (k === 'End') go(total - 1)
-      else if (k === 's' || k === 'S') toggleReveal(current)
+      else if (k === 's' || k === 'S') toggleReveal(`${current}:${step}`)
       else if (k === 'o' || k === 'O') setOverview(true)
       else if (k === 'n' || k === 'N') setNotesOpen(v => !v)
       else if (k === 'f' || k === 'F') toggleFullscreen()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [current, go, next, prev, overview, toggleReveal, toggleFullscreen, total])
+  }, [current, step, go, next, prev, overview, toggleReveal, toggleFullscreen, total])
 
   // Balayage tactile
   const touchX = useRef<number | null>(null)
@@ -151,8 +151,8 @@ export default function App() {
               slide={SLIDES[current]}
               index={current}
               total={total}
-              revealed={revealed.has(current)}
-              onReveal={() => toggleReveal(current)}
+              revealed={revealed.has(`${current}:${step}`)}
+              onReveal={() => toggleReveal(`${current}:${step}`)}
               step={step}
               onStep={setStep}
             />

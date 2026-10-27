@@ -325,7 +325,7 @@ function QuizCheckView({ b, revealed, onReveal }: { b: Extract<Block, { k: 'quiz
           </div>
           {b.detail && (
             <div className="box box-info">
-              <div className="box-title">Compilation ou exécution ?</div>
+              <div className="box-title">{b.detailTitle ?? 'Compilation ou exécution ?'}</div>
               <div className="box-text"><Rich text={b.detail} /></div>
             </div>
           )}
@@ -355,7 +355,7 @@ function StepsView({ b, step, onStep, revealed, onReveal }: {
             <Rich text={it.label} />
           </button>
         ))}
-        {cur < b.items.length - 1 && <span className="steps-hint print-hide">→ étape suivante</span>}
+        {cur < b.items.length - 1 && b.items.length <= 5 && <span className="steps-hint print-hide">→ étape suivante</span>}
       </div>
       <div className="steps-panel" role="tabpanel" key={cur}>
         {b.items[cur].blocks.map((x, i) => <BlockView key={i} b={x} revealed={revealed} onReveal={onReveal} />)}
@@ -523,7 +523,7 @@ function RevealView({ b, revealed, onReveal }: { b: Extract<Block, { k: 'reveal'
         <span className="quiz-actions print-hide">
           {shown
             ? <button className="qbtn" onClick={hide}>Masquer</button>
-            : <button className="qbtn qbtn-main" aria-expanded={false} onClick={() => setOpen(true)}>Afficher la réponse <kbd>S</kbd></button>}
+            : <button className="qbtn qbtn-main" aria-expanded={false} onClick={() => setOpen(true)}>Révéler la réponse <kbd>S</kbd></button>}
         </span>
       </div>
       {b.blocks?.map((x, i) => <BlockView key={i} b={x} revealed={revealed} onReveal={onReveal} />)}
@@ -612,6 +612,212 @@ function UmlView({ b }: { b: Extract<Block, { k: 'uml' }> }) {
   )
 }
 
+/* ── Scène « compte bancaire » ────────────────────────────────────────── */
+function Lock() {
+  return (
+    <svg className="lock" viewBox="0 0 24 24" width="30" height="30" aria-label="cadenas">
+      <rect x="4" y="10" width="16" height="12" rx="2" />
+      <path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" />
+    </svg>
+  )
+}
+
+function SceneView({ state }: { state: Extract<Block, { k: 'scene' }>['state'] }) {
+  const app = state !== 'compte'
+  const arrow = state === 'direct' || state === 'risque' || state === 'private'
+  const priv = state === 'private'
+  const risk = state === 'risque'
+  return (
+    <figure className={`scene scene-${state}`}>
+      <div className="scene-row">
+        <div className={`scene-col ${app ? '' : 'off'}`}>
+          <div className="scene-tag">Classe utilisatrice</div>
+          <div className="scene-box scene-app">
+            <div className="scene-head">Application</div>
+            <code className="scene-code">{arrow ? 'compte.solde = -5000;' : 'main(...)'}</code>
+          </div>
+        </div>
+        <div className={`scene-arrow ${arrow ? '' : 'off'} ${priv ? 'blocked' : risk ? 'danger' : ''}`}>
+          <span className="scene-arrow-label">{priv ? 'accès direct : refusé' : 'accès direct'}</span>
+          <svg viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true">
+            <line x1="0" y1="20" x2={priv ? 230 : 382} y2="20" />
+            {!priv && <polygon points="400,20 378,8 378,32" />}
+          </svg>
+          {priv && <span className="scene-barrier" aria-label="bloqué">✗</span>}
+          {priv && <span className="scene-arrow-sub">erreur de compilation</span>}
+        </div>
+        <div className="scene-col">
+          <div className="scene-tag">Objet</div>
+          <div className={`scene-box scene-obj ${risk ? 'bad' : ''}`}>
+            <div className="scene-head">compte : CompteBancaire</div>
+            <div className={`scene-attr ${priv ? 'priv' : ''}`}>
+              <span className="scene-attr-tag">attribut</span>
+              <code>
+                <span className={priv ? 'kw-priv' : 'kw-pub'}>{priv ? 'private' : 'public'}</span> double solde
+              </code>
+              {priv && <Lock />}
+              <span className="scene-val">
+                {risk ? <><s>1000 DT</s> <b className="neg">−5000 DT</b></> : '1000 DT'}
+              </span>
+            </div>
+          </div>
+          <div className={`scene-inv ${risk ? 'broken' : ''} ${state === 'compte' || state === 'app' ? 'off' : ''}`}>
+            Règle métier : <b>solde ≥ 0</b> {risk ? '— violée' : ''}
+          </div>
+        </div>
+      </div>
+      {risk && (
+        <div className="scene-warn" role="alert">
+          <span className="scene-warn-ico">⚠</span>
+          L'état interne peut être modifié sans respecter les règles métier.
+        </div>
+      )}
+    </figure>
+  )
+}
+
+/* ── Objet encapsulé : frontière d'accès ──────────────────────────────── */
+function EncapView({ b }: { b: Extract<Block, { k: 'encap' }> }) {
+  const [sel, setSel] = useState<number | null>(null)
+  const used = new Set(b.paths.map(p => p.port).filter(Boolean))
+  const rows = [
+    ...b.paths.map((p, i) => ({ ...p, i })),
+    ...b.methods.filter(m => !used.has(m)).map(m => ({ port: m, i: -1 } as { port: string; i: number; from?: string; label?: string; ok?: boolean })),
+  ]
+  const cur = sel === null ? null : b.paths[sel]
+  return (
+    <div className="encap">
+      <div className="encap-grid" style={{ gridTemplateRows: `auto repeat(${rows.length}, 64px)` }}>
+        <div className="encap-h" style={{ gridColumn: 1 }}>Classes extérieures</div>
+        <div className="encap-frame" style={{ gridRow: `1 / ${rows.length + 2}` }} aria-hidden="true" />
+        <div className="encap-h encap-obj" style={{ gridColumn: '3 / 5' }}>{b.object} <span>· frontière d'accès</span></div>
+        {rows.map((r, k) => (
+          <React.Fragment key={k}>
+            <div className="encap-cls" style={{ gridRow: k + 2, gridColumn: 1, visibility: r.from ? undefined : 'hidden' }}>{r.from}</div>
+            {r.i >= 0 ? (
+              <button
+                className={`encap-path ${r.ok ? 'ok' : 'ko'} ${sel === r.i ? 'on' : ''}`}
+                style={{ gridRow: k + 2, gridColumn: 2 }}
+                aria-pressed={sel === r.i} onClick={() => setSel(sel === r.i ? null : r.i)}
+              >
+                <code>{r.label}</code><span className="encap-head" aria-hidden="true">{r.ok ? '▶' : '✗'}</span>
+              </button>
+            ) : <span style={{ gridRow: k + 2, gridColumn: 2 }} />}
+            <div className={`encap-port ${r.port ? '' : 'wall'}`} style={{ gridRow: k + 2, gridColumn: 3 }}>
+              {r.port ? <code>+ {r.port}</code> : <span>accès refusé</span>}
+            </div>
+          </React.Fragment>
+        ))}
+        <div className="encap-inner" style={{ gridRow: `2 / ${rows.length + 2}`, gridColumn: 4 }}>
+          <span className="encap-inner-tag">zone privée</span>
+          <code>{b.inner}</code>
+          <Lock />
+        </div>
+      </div>
+      <div className={`encap-expl ${cur ? (cur.ok ? 'ok' : 'ko') : ''}`} aria-live="polite">
+        {cur
+          ? <><b>{cur.ok ? '✓ Accepté' : '✗ Refusé'}</b><span><Rich text={cur.text} /></span></>
+          : <span className="encap-hint print-hide">Cliquez sur une flèche pour l'expliquer.</span>}
+      </div>
+    </div>
+  )
+}
+
+/* ── Révélation un par un ─────────────────────────────────────────────── */
+function ProgressiveView({ b, revealed, onReveal }: { b: Extract<Block, { k: 'progressive' }>; revealed: boolean; onReveal: () => void }) {
+  const [n, setN] = useState(0)
+  const shown = revealed ? b.items.length : n
+  const reset = () => {
+    setN(0)
+    if (revealed) onReveal()
+  }
+  return (
+    <div className="prog">
+      <div className="prog-grid" style={{ gridTemplateColumns: `repeat(${b.cols ?? 1}, minmax(0, 1fr))` }}>
+        {b.items.map((it, i) => (
+          <div key={i} className="prog-item" style={{ visibility: i < shown ? undefined : 'hidden' }} aria-hidden={i >= shown}>
+            {it.map((x, j) => <BlockView key={j} b={x} revealed={revealed} onReveal={onReveal} />)}
+          </div>
+        ))}
+      </div>
+      <div className="quiz-actions print-hide">
+        <button className="qbtn qbtn-main" disabled={shown >= b.items.length} onClick={() => setN(shown + 1)}>
+          {b.button} ({shown}/{b.items.length})
+        </button>
+        {shown < b.items.length && <button className="qbtn" onClick={onReveal}>Tout <kbd>S</kbd></button>}
+        <button className="qbtn" onClick={reset}>Réinitialiser</button>
+      </div>
+    </div>
+  )
+}
+
+/* ── Packages comme frontières ────────────────────────────────────────── */
+function PkgsView({ b }: { b: Extract<Block, { k: 'pkgs' }> }) {
+  return (
+    <div className="pkgs">
+      {b.packages.map((p, i) => (
+        <div key={i} className="pkg" style={{ flex: p.classes.length }}>
+          <div className="pkg-name">package <b>{p.name}</b></div>
+          <div className="pkg-classes">
+            {p.classes.map((c, j) => (
+              <div key={j} className="pkg-cls">
+                <div className="pkg-cls-name">{c.name}</div>
+                {c.lines?.map((l, k) => <code key={k} className="pkg-line">{l}</code>)}
+                {c.verdict && <div className={`pkg-verdict ${c.verdict.ok ? 'ok' : 'ko'}`}><Rich text={c.verdict.text} /></div>}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/* ── Matrice de visibilité interactive ────────────────────────────────── */
+function VisMatrixView({ b }: { b: Extract<Block, { k: 'vismatrix' }> }) {
+  const [sel, setSel] = useState<number | null>(null)
+  const mark = (c: string) => (c.startsWith('✓') ? 'yes' : 'no')
+  return (
+    <div className="vm">
+      <table className="tbl tbl-marks vm-tbl">
+        <thead>
+          <tr>
+            <th>Contexte</th>
+            {b.mods.map((m, i) => (
+              <th key={i} className={sel === i ? 'vm-on' : ''}>
+                <button className="vm-btn" aria-pressed={sel === i} onClick={() => setSel(sel === i ? null : i)}>
+                  <Rich text={m.label} />
+                </button>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {b.rows.map((r, i) => (
+            <tr key={i}>
+              <td><Rich text={r.label} /></td>
+              {r.cells.map((c, j) => (
+                <td key={j} className={`mk-${mark(c)} ${sel === j ? 'vm-on' : sel !== null ? 'vm-dim' : ''}`}>{c}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {sel === null ? (
+        <div className="vm-hint print-hide">Cliquez sur un modificateur pour surligner sa colonne.</div>
+      ) : (
+        <div className="vm-detail" aria-live="polite">
+          <CodeBlock code={b.mods[sel].code} small />
+          <div className="box box-info"><div className="box-text"><Rich text={b.mods[sel].note} /></div></div>
+        </div>
+      )}
+      <div className="quiz-actions print-hide">
+        <button className="qbtn" onClick={() => setSel(null)}>Réinitialiser</button>
+      </div>
+    </div>
+  )
+}
+
 const BOX_LABEL = { retenir: 'À retenir', attention: 'Attention', info: 'Remarque', question: 'Question' }
 
 const MARK: Record<string, string> = { Oui: 'yes', 'Oui*': 'yes', Non: 'no' }
@@ -683,6 +889,18 @@ export function BlockView({ b, revealed, onReveal, step = 0, onStep = () => {} }
       )
     case 'qa':
       return <QaView b={b} revealed={revealed} onReveal={onReveal} />
+    case 'ask':
+      return <p className="ask"><Rich text={b.text} /></p>
+    case 'scene':
+      return <SceneView state={b.state} />
+    case 'encap':
+      return <EncapView b={b} />
+    case 'progressive':
+      return <ProgressiveView b={b} revealed={revealed} onReveal={onReveal} />
+    case 'pkgs':
+      return <PkgsView b={b} />
+    case 'vismatrix':
+      return <VisMatrixView b={b} />
     case 'reveal':
       return <RevealView b={b} revealed={revealed} onReveal={onReveal} />
     case 'fill':
