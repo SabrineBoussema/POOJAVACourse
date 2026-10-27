@@ -39,12 +39,16 @@ export type Block =
   | { k: 'reveal'; tag: string; prompt: string; blocks?: Block[]; answer: Block[] }
   /** Compléter le code : chaque `[[mot]]` est masqué jusqu'à la correction. */
   | { k: 'fill'; prompt: string; code: string; file?: string; small?: boolean; explication: string }
-  /** Diagramme de classes UML (coordonnées en px). Flèche de l'enfant vers le parent. */
+  /** Diagramme de classes UML (coordonnées en px). Héritage : flèche de l'enfant vers le parent.
+   *  `assoc` : trait plein + flèche ouverte de la classe qui possède vers la classe possédée ;
+   *  `label` = nom de l'attribut, `mult` = multiplicité côté cible. */
   | {
       k: 'uml'; width: number; height: number; caption?: string
       classes: UmlClass[]
-      links: { from: string; to: string; kind?: 'extends' | 'implements' }[]
+      links: { from: string; to: string; kind?: 'extends' | 'implements' | 'assoc'; label?: string; mult?: string }[]
     }
+  /** Renvoi vers le fascicule de TP (activité correspondante exacte). */
+  | { k: 'tp'; text: string }
   /** Grande question posée à l'amphi */
   | { k: 'ask'; text: string }
   /** Scène « compte bancaire » : un état par étape (pas d'animation, l'enseignante avance). */
@@ -97,7 +101,7 @@ export type UmlClass = {
 
 /** Variable de la pile. `ref` = id d'un objet du tas (flèche) ; `value` = valeur primitive ; `frame` = cadre d'appel (ex. 'm(...)'). */
 export type MemVar = { name: string; ref?: string; value?: string; frame?: string }
-/** Objet du tas. `fields` = [nom, valeur] ; `changed` = champs modifiés (orange) ; `dead` = plus référencé ; `cls` = classe (variables static). */
+/** Objet du tas. `fields` = [nom, valeur] ; une valeur `ref:<id>` dessine une flèche vers un autre objet du tas ; `changed` = champs modifiés (orange) ; `dead` = plus référencé ; `cls` = classe (variables static). */
 export type MemObj = {
   id: string; type: string; addr?: string; fields: [string, string][]
   changed?: string[]; dead?: boolean; cls?: boolean; note?: string

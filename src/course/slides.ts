@@ -1,6 +1,7 @@
 import type { Chapter, Slide } from './types'
 import { INTRO, CH1 } from './ch1'
-import { CH2 } from './ch2'
+import { CH2, CH2_RECAP } from './ch2'
+import { TECHSTORE, TECHSTORE_TRANSITION } from './techstore'
 import { CH3 } from './ch3'
 import { CH4 } from './ch4'
 import { CH5 } from './ch5'
@@ -21,7 +22,7 @@ export const chapterLabel = (id: string) => LABEL[id] ?? id
 /** Titre sans mise en forme (**gras**, `code`) : sert de clé pour les notes. */
 export const plainTitle = (t: string) => t.replace(/\*\*|`/g, '')
 
-export const SLIDES: Slide[] = [...INTRO, ...CH1, ...CH2, ...CH3, ...CH4, ...CH5].map(s => {
+export const SLIDES: Slide[] = [...INTRO, ...CH1, ...CH2, ...TECHSTORE, ...CH2_RECAP, ...TECHSTORE_TRANSITION, ...CH3, ...CH4, ...CH5].map(s => {
   const notes = NOTES[`${s.chapter}|${plainTitle(s.title)}`]
   return notes ? { ...s, notes } : s
 })

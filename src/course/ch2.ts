@@ -2043,6 +2043,9 @@ public class Main {
       ],
     }],
   },
+]
+
+export const CH2_RECAP: Slide[] = [
   {
     kind: 'content', chapter: C, title: 'Chapitre 2 — À retenir',
     blocks: [
@@ -2063,7 +2066,7 @@ public class Main {
           { q: 'Différence entre `protected` et *défaut* ?', a: 'Les deux : **même package**. `protected` ajoute les **sous-classes** des autres packages, via l\'**héritage**.' },
         ],
       },
-      { k: 'p', text: '**Chapitre 3** : l\'**héritage** — réutiliser une classe avec `extends`… et voir `protected` en action.' },
+      { k: 'p', text: '**Exercices TechStore** : visibilité, paquetages, composition, surcharge, puis le **grand défi**.' },
     ],
   },
 ]

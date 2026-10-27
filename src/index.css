@@ -414,6 +414,9 @@ button { font-family: inherit; cursor: pointer; }
 .tbl-marks th:not(:first-child) { text-align: center; }
 .tbl-marks td.mk-yes { color: var(--green); background: var(--green-bg) !important; }
 .tbl-marks td.mk-no { color: var(--red); background: var(--red-bg) !important; }
+.tbl-marks td.mk-na { color: var(--muted); font-weight: 600; }
+.tp-ref { align-self: flex-end; display: flex; align-items: center; gap: 12px; font-size: 22px; color: var(--ink-2); }
+.tp-tag { font: 800 18px var(--sans); text-transform: uppercase; letter-spacing: .05em; color: #fff; background: var(--blue); border-radius: 6px; padding: 3px 10px; }
 
 /* Panneaux progressifs */
 .steps { display: flex; flex-direction: column; gap: 24px; min-height: 0; }
@@ -646,6 +649,7 @@ button { font-family: inherit; cursor: pointer; }
 .uml-link path { fill: none; stroke: var(--ink-2); stroke-width: 3; }
 .uml-link polygon { fill: #fff; stroke: var(--ink-2); stroke-width: 3; stroke-linejoin: round; }
 .uml-link.impl path { stroke-dasharray: 10 7; }
+.uml-lbl { font: 600 24px var(--mono); fill: var(--blue); }
 .uml-cls {
   position: absolute; box-sizing: border-box; overflow: hidden;
   border: 2px solid var(--ink-2); border-radius: 6px; background: #fff;

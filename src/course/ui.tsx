@@ -150,8 +150,12 @@ export function MemoryView({ stack, heap, title, caption, compact }: {
   })
   const heapH = hy
   const H = Math.max(stackH, heapH)
-  const W = D.stackW + D.gap + D.heapW
   const heapX = D.stackW + D.gap
+  const heapRefs = objs.flatMap((o, i) => o.fields.flatMap(([n, v], k) => {
+    const t = v.startsWith('ref:') ? objs.findIndex(x => x.id === v.slice(4)) : -1
+    return t < 0 ? [] : [{ key: o.id + n, y1: pobjs[i].y + D.hdrH + k * D.fieldH + D.fieldH / 2, y2: pobjs[t].y + D.hdrH / 2, t }]
+  }))
+  const W = heapX + D.heapW + (heapRefs.length ? 110 : 0)
 
   const colorOf = (id: string) => {
     const i = objs.findIndex(o => o.id === id)
@@ -205,7 +209,9 @@ export function MemoryView({ stack, heap, title, caption, compact }: {
             {o.fields.map(([n, v]) => (
               <div key={n} className={`mem-field ${o.changed?.includes(n) ? 'changed' : ''}`} style={{ height: D.fieldH }}>
                 <span className="mem-field-n">{o.cls ? `static ${n}` : n}</span>
-                <span className="mem-field-v">{v}</span>
+                {v.startsWith('ref:')
+                  ? <span className="mem-dot" style={{ background: colorOf(v.slice(4)) }} />
+                  : <span className="mem-field-v">{v}</span>}
               </div>
             ))}
             {o.note && <div className="mem-note" style={{ height: NOTE_H }}>{o.note}</div>}
@@ -222,6 +228,18 @@ export function MemoryView({ stack, heap, title, caption, compact }: {
               <polygon points={`${a.x2},${a.y2} ${a.x2 - 24},${a.y2 - 13} ${a.x2 - 24},${a.y2 + 13}`} fill={a.c} />
             </g>
           ))}
+          {heapRefs.map(r => {
+            const x1 = heapX + D.heapW - 26, x2 = heapX + D.heapW, c = colorOf(objs[r.t].id)
+            return (
+              <g key={r.key}>
+                <path
+                  d={`M ${x1} ${r.y1} C ${x2 + 110} ${r.y1}, ${x2 + 110} ${r.y2}, ${x2 + 22} ${r.y2}`}
+                  fill="none" stroke={c} strokeWidth={5} strokeLinecap="round"
+                />
+                <polygon points={`${x2},${r.y2} ${x2 + 24},${r.y2 - 13} ${x2 + 24},${r.y2 + 13}`} fill={c} />
+              </g>
+            )
+          })}
         </svg>
       </div>
       {caption && <div className="mem-caption"><Rich text={caption} /></div>}
@@ -581,6 +599,22 @@ function UmlView({ b }: { b: Extract<Block, { k: 'uml' }> }) {
             const from = byId.get(l.from)
             const to = byId.get(l.to)
             if (!from || !to) return null
+            if (l.kind === 'assoc') {
+              const fw = from.w ?? 300
+              const right = from.x + fw <= to.x
+              const y = Math.max(from.y, to.y) + 26
+              const x1 = right ? from.x + fw : from.x
+              const x2 = right ? to.x : to.x + (to.w ?? 300)
+              const d = right ? -1 : 1
+              return (
+                <g key={i} className="uml-link assoc">
+                  <path d={`M ${x1} ${y} H ${x2}`} />
+                  <path d={`M ${x2 + 20 * d} ${y - 12} L ${x2} ${y} L ${x2 + 20 * d} ${y + 12}`} />
+                  {l.label && <text className="uml-lbl" x={(x1 + x2) / 2} y={y - 14} textAnchor="middle">{l.label}</text>}
+                  {l.mult && <text className="uml-lbl" x={x2 + 14 * d} y={y + 38} textAnchor={right ? 'end' : 'start'}>{l.mult}</text>}
+                </g>
+              )
+            }
             const f = box(from)
             const t = box(to)
             const tip = t.bottom + 22
@@ -781,7 +815,7 @@ function PkgsView({ b }: { b: Extract<Block, { k: 'pkgs' }> }) {
 /* ── Matrice de visibilité interactive ────────────────────────────────── */
 function VisMatrixView({ b }: { b: Extract<Block, { k: 'vismatrix' }> }) {
   const [sel, setSel] = useState<number | null>(null)
-  const mark = (c: string) => (c.startsWith('✓') ? 'yes' : 'no')
+  const mark = (c: string) => (c.startsWith('✓') ? 'yes' : c.startsWith('✗') ? 'no' : 'na')
   return (
     <div className="vm">
       <table className="tbl tbl-marks vm-tbl">
@@ -896,6 +930,8 @@ export function BlockView({ b, revealed, onReveal, step = 0, onStep = () => {} }
       return <QaView b={b} revealed={revealed} onReveal={onReveal} />
     case 'ask':
       return <p className="ask"><Rich text={b.text} /></p>
+    case 'tp':
+      return <div className="tp-ref"><span className="tp-tag">Fascicule de TP</span><Rich text={b.text} /></div>
     case 'scene':
       return <SceneView state={b.state} />
     case 'encap':

@@ -341,7 +341,7 @@ export const NOTES: Record<string, SlideNotes> = {
     "question": "Les 4 questions de la diapo (Q1 à Q4).",
     "reponse": "Corrections au clic sur chaque question ou toutes avec S.",
     "conseil": "Poser chaque question à l’oral avant d’afficher la correction. Rappel du reste du chapitre : classe/objet, références, constructeurs, String, static, passage par valeur.",
-    "transition": "Chapitre 3 : l’héritage (extends), où protected prend tout son sens.",
+    "transition": "Diapo suivante : ce qu’un objet possède (has-a), puis le chapitre 3 et l’héritage (is-a), où protected prend tout son sens.",
     "duree": 4
   },
   "ch3|Le problème : adapter une classe existante": {
