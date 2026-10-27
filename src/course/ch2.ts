@@ -1350,14 +1350,13 @@ public class Main {
           ],
         },
         {
-          label: 'Autre classe', blocks: [
+          label: 'Accès direct', blocks: [
             { k: 'ask', text: 'Pourquoi ne devons-nous **pas** autoriser **toutes** les classes à accéder à **toutes** les données ?' },
-            { k: 'scene', state: 'app' },
+            { k: 'scene', state: 'direct' },
           ],
         },
         {
-          label: 'Accès direct', blocks: [
-            { k: 'scene', state: 'direct' },
+          label: 'Java accepte ?', blocks: [
             {
               k: 'quiz', verify: true,
               question: 'Java doit-il **autoriser** cette instruction ?',
@@ -1418,7 +1417,7 @@ compte.solde = -5000;   // error: solde has private access in CompteBancaire`,
             {
               k: 'reveal', tag: 'Question', prompt: 'Proposez une solution, puis révélez la réponse.',
               answer: [{
-                k: 'cols', ratio: 1.15,
+                k: 'cols', ratio: 1.45,
                 left: [{
                   k: 'code', small: true, file: 'CompteBancaire.java', highlight: [5, 6],
                   notes: { 4: 'méthode publique', 5: 'règle métier' },
@@ -1459,7 +1458,7 @@ compte.retirer(5000);   // false : refusé`,
                 },
                 {
                   from: 'Client', label: 'retirer(100)', ok: true, port: 'retirer(double montant)',
-                  text: 'Méthode **publique** : `retirer` vérifie `montant > 0` et `montant <= solde`, **puis** modifie `solde` (1000 → 900 DT).',
+                  text: 'Méthode **publique** : `retirer` **vérifie** le montant, **puis** modifie `solde` (1000 → 900 DT).',
                 },
                 {
                   from: 'Gestionnaire', label: 'getSolde()', ok: true, port: 'getSolde()',
@@ -1633,11 +1632,11 @@ public boolean deposer(double montant) {
                 ],
                 [
                   { k: 'p', text: '`protected` : package **+** accès liés à l\'**héritage**.' },
-                  { k: 'code', small: true, highlight: [2, 3], code: 'protected void log()\n// ✓ même package\n// ✓* sous-classes' },
+                  { k: 'code', small: true, highlight: [2, 3], code: 'protected void log() { }\n// ✓ même package\n// ✓* sous-classes' },
                 ],
                 [
                   { k: 'p', text: '`public` : l\'**extérieur**, si la **classe** est accessible.' },
-                  { k: 'code', small: true, highlight: [2], code: 'public double getSolde()\n// ✓ partout' },
+                  { k: 'code', small: true, highlight: [2], code: 'public void ouvrir() { }\n// ✓ partout' },
                 ],
                 [{ k: 'box', tone: 'retenir', text: '**Non** : on choisit le niveau **le plus restrictif** qui permet l\'usage prévu. Base : attributs `private`, méthodes de l\'interface `public`.' }],
               ],
@@ -1664,11 +1663,11 @@ public boolean deposer(double montant) {
             {
               k: 'reveal', tag: 'Question', prompt: 'Pourquoi `Main` ne peut-il pas accéder à `nom`, **même avec un `import`** ?',
               answer: [
-                { k: 'p', text: 'Parce qu\'un **`import` ne modifie pas la visibilité** : il donne seulement un **nom court**. Sans modificateur, l\'accès est limité au **package**.' },
+                { k: 'p', text: 'L\'**`import` ne change pas la visibilité** : il donne un **nom court**. `nom` reste limité au **package**.' },
                 { k: 'code', plain: true, small: true, code: 'error: nom is not public in Etudiant; cannot be accessed from outside package' },
               ],
             },
-            { k: 'box', tone: 'attention', text: '« *default* » (ou *package-private*) est un **terme pédagogique** : ce n\'est **pas** un modificateur à écrire. On n\'écrit **rien**.' },
+            { k: 'box', tone: 'attention', text: '« *default* » est un **terme pédagogique**, **pas** un mot-clé : on n\'écrit **rien**.' },
           ],
         },
         {
@@ -1687,18 +1686,12 @@ public class CompteBancaire {
               {
                 label: '`protected`',
                 code: `
-// banque/CompteBancaire.java
-package banque;
-public class CompteBancaire {
-    protected void journaliser() { }
-}
-// epargne/CompteEpargne.java
 package epargne;
 import banque.CompteBancaire;
 class CompteEpargne extends CompteBancaire {
     void m() { journaliser(); }   // ✓ hérité
 }`,
-                note: '**✓\\*** : depuis une sous-classe d\'un **autre package**, accès au membre **hérité** (via `this` ou le type de la sous-classe), **pas** via une référence `CompteBancaire` quelconque.',
+                note: '`journaliser()` est `protected` dans `banque`. **Sous condition** : accès par **héritage** (`this`), **pas** via une référence `CompteBancaire` quelconque.',
               },
               {
                 label: '*package-private*',

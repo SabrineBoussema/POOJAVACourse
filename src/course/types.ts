@@ -48,7 +48,7 @@ export type Block =
   /** Grande question posée à l'amphi */
   | { k: 'ask'; text: string }
   /** Scène « compte bancaire » : un état par étape (pas d'animation, l'enseignante avance). */
-  | { k: 'scene'; state: 'compte' | 'app' | 'direct' | 'risque' | 'private' }
+  | { k: 'scene'; state: 'compte' | 'direct' | 'risque' | 'private' }
   /** Objet encapsulé : zone privée, interface publique, chemins cliquables depuis des classes extérieures. */
   | {
       k: 'encap'; object: string; inner: string; methods: string[]

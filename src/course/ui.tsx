@@ -331,7 +331,7 @@ function QuizCheckView({ b, revealed, onReveal }: { b: Extract<Block, { k: 'quiz
           )}
         </div>
       ) : (
-        <div className="quiz-hint print-hide">Votez à main levée (A, B, C ou D), puis choisissez une réponse et cliquez sur « Vérifier ».</div>
+        <div className="quiz-hint print-hide">Votez à main levée ({'ABCDEF'.slice(0, b.options.length).split('').join(', ').replace(/, (\w)$/, ' ou $1')}), puis choisissez une réponse et cliquez sur « Vérifier ».</div>
       )}
     </div>
   )
@@ -624,7 +624,6 @@ function Lock() {
 
 function SceneView({ state }: { state: Extract<Block, { k: 'scene' }>['state'] }) {
   const app = state !== 'compte'
-  const arrow = state === 'direct' || state === 'risque' || state === 'private'
   const priv = state === 'private'
   const risk = state === 'risque'
   return (
@@ -634,10 +633,10 @@ function SceneView({ state }: { state: Extract<Block, { k: 'scene' }>['state'] }
           <div className="scene-tag">Classe utilisatrice</div>
           <div className="scene-box scene-app">
             <div className="scene-head">Application</div>
-            <code className="scene-code">{arrow ? 'compte.solde = -5000;' : 'main(...)'}</code>
+            <code className="scene-code">compte.solde = -5000;</code>
           </div>
         </div>
-        <div className={`scene-arrow ${arrow ? '' : 'off'} ${priv ? 'blocked' : risk ? 'danger' : ''}`}>
+        <div className={`scene-arrow ${app ? '' : 'off'} ${priv ? 'blocked' : risk ? 'danger' : ''}`}>
           <span className="scene-arrow-label">{priv ? 'accès direct : refusé' : 'accès direct'}</span>
           <svg viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true">
             <line x1="0" y1="20" x2={priv ? 230 : 382} y2="20" />
@@ -661,7 +660,7 @@ function SceneView({ state }: { state: Extract<Block, { k: 'scene' }>['state'] }
               </span>
             </div>
           </div>
-          <div className={`scene-inv ${risk ? 'broken' : ''} ${state === 'compte' || state === 'app' ? 'off' : ''}`}>
+          <div className={`scene-inv ${risk ? 'broken' : ''} ${state === 'compte' ? 'off' : ''}`}>
             Règle métier : <b>solde ≥ 0</b> {risk ? '— violée' : ''}
           </div>
         </div>
@@ -687,7 +686,7 @@ function EncapView({ b }: { b: Extract<Block, { k: 'encap' }> }) {
   const cur = sel === null ? null : b.paths[sel]
   return (
     <div className="encap">
-      <div className="encap-grid" style={{ gridTemplateRows: `auto repeat(${rows.length}, 64px)` }}>
+      <div className="encap-grid" style={{ gridTemplateRows: `auto repeat(${rows.length}, 58px)` }}>
         <div className="encap-h" style={{ gridColumn: 1 }}>Classes extérieures</div>
         <div className="encap-frame" style={{ gridRow: `1 / ${rows.length + 2}` }} aria-hidden="true" />
         <div className="encap-h encap-obj" style={{ gridColumn: '3 / 5' }}>{b.object} <span>· frontière d'accès</span></div>
@@ -703,7 +702,7 @@ function EncapView({ b }: { b: Extract<Block, { k: 'encap' }> }) {
                 <code>{r.label}</code><span className="encap-head" aria-hidden="true">{r.ok ? '▶' : '✗'}</span>
               </button>
             ) : <span style={{ gridRow: k + 2, gridColumn: 2 }} />}
-            <div className={`encap-port ${r.port ? '' : 'wall'}`} style={{ gridRow: k + 2, gridColumn: 3 }}>
+            <div className={`encap-port ${r.port ? '' : 'wall'} ${r.i >= 0 && sel === r.i ? 'on' : ''}`} style={{ gridRow: k + 2, gridColumn: 3 }}>
               {r.port ? <code>+ {r.port}</code> : <span>accès refusé</span>}
             </div>
           </React.Fragment>
@@ -735,7 +734,13 @@ function ProgressiveView({ b, revealed, onReveal }: { b: Extract<Block, { k: 'pr
     <div className="prog">
       <div className="prog-grid" style={{ gridTemplateColumns: `repeat(${b.cols ?? 1}, minmax(0, 1fr))` }}>
         {b.items.map((it, i) => (
-          <div key={i} className="prog-item" style={{ visibility: i < shown ? undefined : 'hidden' }} aria-hidden={i >= shown}>
+          <div
+            key={i} className="prog-item" aria-hidden={i >= shown}
+            style={{
+              visibility: i < shown ? undefined : 'hidden',
+              gridColumn: i === b.items.length - 1 && b.items.length % (b.cols ?? 1) === 1 ? '1 / -1' : undefined,
+            }}
+          >
             {it.map((x, j) => <BlockView key={j} b={x} revealed={revealed} onReveal={onReveal} />)}
           </div>
         ))}

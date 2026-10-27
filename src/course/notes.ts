@@ -286,11 +286,11 @@ export const NOTES: Record<string, SlideNotes> = {
   },
   "ch2|L'encapsulation : cacher les données": {
     "objectif": "Encapsuler = protéger les invariants métier, pas seulement « mettre private ».",
-    "question": "Pourquoi est-ce problématique de laisser toutes les classes modifier directement le solde ?",
-    "reponse": "N’importe quel code peut mettre le compte dans un état invalide (solde = -5000) ; aucune règle n’est vérifiée et l’erreur est difficile à localiser.",
-    "conseil": "Étape 1 : faire remarquer que le code COMPILE. Étape 2 : suivre retirer(5000) → false. Étape 3 : définir « invariant ».",
+    "question": "Pourquoi ne devons-nous pas autoriser toutes les classes à accéder à toutes les données ?",
+    "reponse": "N’importe quelle classe pourrait mettre le compte dans un état invalide (solde = -5000) sans qu’aucune règle métier soit vérifiée. Quiz étape 3 : A (Java l’autorise car solde est public).",
+    "conseil": "Étapes 1–2 : poser la question, laisser répondre avant → . Étape 3 : vote A/B/C, puis Vérifier ou S. Étape 4 : préciser que c’est NOTRE règle métier, pas Java. Étape 5 : public → private, l’accès direct ne compile plus. Étape 6 : faire proposer une solution avant S (retirer). Étape 7 : cliquer chaque flèche (rouge refusée, vertes acceptées).",
     "transition": "Vérifions : que dit le compilateur face à un attribut private ?",
-    "duree": 4
+    "duree": 8
   },
   "ch2|Quiz : attribut private": {
     "objectif": "Distinguer erreur de compilation et erreur à l’exécution.",
@@ -309,10 +309,10 @@ export const NOTES: Record<string, SlideNotes> = {
   },
   "ch2|Les niveaux de visibilité": {
     "objectif": "Maîtriser public / protected / défaut / private, et la nuance de protected hors package.",
-    "question": "Une sous-classe d’un autre package peut-elle lire autre.solde (protected) via une référence Compte ?",
-    "reponse": "Non : solde has protected access in Compte. Elle n’y accède que via l’héritage (this.solde).",
-    "conseil": "Étape 2 : faire prédire « compile / ne compile pas » avant chaque clic. Combinaisons utiles : private + même package, défaut + sous-classe, protected + sous-classe (this puis réf. Compte).",
-    "duree": 5
+    "question": "Faut-il déclarer tous les éléments private ?",
+    "reponse": "Non : on choisit le niveau le plus restrictif qui permet l’usage prévu. Étape 2 : import ne change pas la visibilité. Mini-quiz : B (un setter public sans contrôle casse l’encapsulation).",
+    "conseil": "Étape 1 : « Niveau suivant » un par un (S = tout). Étape 3 : cliquer chaque colonne de la matrice. Étape 4 : faire prédire « compile / ne compile pas » avant chaque clic. Étape 5 : visibilité = mécanisme, encapsulation = principe.",
+    "duree": 8
   },
   "ch2|La visibilité d'une classe": {
     "objectif": "Séparer visibilité de la classe et visibilité des membres.",
