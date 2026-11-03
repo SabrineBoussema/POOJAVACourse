@@ -632,6 +632,17 @@ button { font-family: inherit; cursor: pointer; }
 .pkg-verdict { margin-top: auto; font-size: 22px; font-weight: 700; padding: 6px 12px; }
 .pkg-verdict.ok { background: var(--green-bg); color: var(--green); }
 .pkg-verdict.ko { background: var(--red-bg); color: var(--red); }
+.pkg-verdict.wait { background: var(--soft); color: var(--muted); }
+.pkgs-wrap { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+.goto { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+.goto-kicker { font: 800 28px var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+.goto-heading { margin: 0; font: 800 64px/1.1 var(--sans); }
+.goto-sub { margin: 0; font-size: 32px; color: var(--ink-2); }
+.goto-btn {
+  font: 800 32px var(--sans); height: 64px; padding: 0 36px; border-radius: 12px;
+  border: 3px solid var(--blue); background: var(--blue); color: #fff;
+}
 
 /* Matrice de visibilité */
 .vm { display: flex; flex-direction: column; gap: 14px; }

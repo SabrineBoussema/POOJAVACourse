@@ -1,4 +1,5 @@
 import type { Slide } from './types'
+import { H3_WHY, H3_UMLCODE, H3_MEM, H3_ISA } from './heritage'
 
 /* ════════════════════════════════════════════════════════════════════
    CHAPITRE 3 — Héritage, classes abstraites et interfaces
@@ -20,11 +21,13 @@ export const CH3: Slide[] = [
     ],
   },
 
+  ...H3_WHY,
+
   /* ── 1. Héritage ────────────────────────────────────────────────── */
   {
     kind: 'content', chapter: C, section: '1. Héritage', title: 'Le problème : adapter une classe existante',
     blocks: [
-      { k: 'p', text: 'Une classe `A` nous convient **presque** : on veut changer **quelques détails** ou **ajouter** une fonctionnalité.' },
+      { k: 'p', text: 'Autre besoin : une classe `A` nous convient **presque** — **spécialiser** une classe **déjà écrite**.' },
       { k: 'p', text: '**Exemple** : on a déjà une classe `Point` (`x`, `y`, `dessineToi()`). On veut un **point coloré** : la même chose, **plus une couleur**.' },
       {
         k: 'cols',
@@ -119,6 +122,103 @@ A a = new B();   // OK : un B "est-un" A` },
         }],
       },
     ],
+  },
+  {
+    kind: 'content', chapter: C, section: '1. Héritage', title: '**Protected** : maintenant, tout devient clair !',
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Deux paquetages', blocks: [
+            {
+              k: 'pkgs',
+              packages: [
+                {
+                  name: 'animaux', classes: [
+                    { name: 'Animal', lines: ['protected int age = 3;'] },
+                  ],
+                },
+                {
+                  name: 'application', classes: [
+                    { name: 'Chien extends Animal', lines: ['public void afficher() { … }'] },
+                  ],
+                },
+              ],
+            },
+            { k: 'p', text: '`Chien` est une **sous-classe**, dans un **autre paquetage**. Trois accès à tester dans `afficher()`.' },
+          ],
+        },
+        {
+          label: '`age`', blocks: [
+            { k: 'p', text: 'Dans `Chien.afficher()`, paquetage **`application`** :' },
+            { k: 'code', small: true, file: 'Chien.afficher()', status: 'ok', highlight: [1], code: 'System.out.println(age);       // OK' },
+            { k: 'box', tone: 'info', text: '`age` est le **membre hérité** : équivalent à `this.age`.' },
+          ],
+        },
+        {
+          label: '`this.age`', blocks: [
+            { k: 'code', small: true, file: 'Chien.afficher()', status: 'ok', highlight: [2], code: `
+System.out.println(age);       // OK
+System.out.println(this.age);  // OK`,
+            },
+            { k: 'box', tone: 'retenir', text: 'Hors paquetage, `protected` passe par l\'**héritage** (`this`).' },
+          ],
+        },
+        {
+          label: '`a.age`', blocks: [
+            {
+              k: 'code', small: true, file: 'Chien.afficher()', status: 'ko', highlight: [1, 2], bad: [5], code: `
+System.out.println(age);       // OK
+System.out.println(this.age);  // OK
+
+Animal a = new Animal();
+System.out.println(a.age);     // ERREUR`,
+            },
+            { k: 'code', plain: true, small: true, code: 'error: age has protected access in Animal' },
+            { k: 'box', tone: 'attention', text: '**Pas** n\'importe quel `Animal` : `a.age` est un accès **client**, refusé hors paquetage.' },
+          ],
+        },
+        {
+          label: 'Les 4 niveaux', blocks: [{
+            k: 'vismatrix',
+            mods: [
+              {
+                label: '`public`',
+                code: 'public int age;',
+                note: 'Accessible **partout**, si la classe l\'est aussi.',
+              },
+              {
+                label: '`protected`',
+                code: 'protected int age;\n// ✓ this.age dans la fille\n// ✗ a.age si a est un Animal',
+                note: '**Même paquetage**, et membres **hérités** (`this`) dans une sous-classe d\'un autre paquetage. **Pas** tout objet de la mère.',
+              },
+              {
+                label: '*défaut*',
+                code: 'int age;   // aucun mot-clé',
+                note: '**Même paquetage** seulement. L\'héritage **n\'ouvre pas** un autre paquetage.',
+              },
+              {
+                label: '`private`',
+                code: 'private int age;',
+                note: '**Seulement** dans la classe. La fille **ne lit pas** `age` directement.',
+              },
+            ],
+            rows: [
+              { label: 'Même **classe**', cells: ['✓', '✓', '✓', '✓'] },
+              { label: 'Même **paquetage**', cells: ['✓', '✓', '✓', '✗'] },
+              { label: '**Sous-classe**, autre paquetage', cells: ['✓', '✓*', '✗', '✗'] },
+              { label: '**Autre classe**, autre paquetage', cells: ['✓', '✗', '✗', '✗'] },
+            ],
+          }],
+        },
+      ],
+    }],
+    notes: {
+      objectif: 'Après extends, distinguer membre hérité (this.age) et accès client (a.age) hors paquetage.',
+      question: 'Les trois instructions compilent-elles dans Chien.afficher() ?',
+      reponse: 'age et this.age : oui. a.age : non (error: age has protected access in Animal).',
+      conseil: 'Faire prédire chaque ligne. La matrice reprend le chapitre 2 : ✓* = héritage, pas n’importe quel objet de la mère.',
+      duree: 5,
+    },
   },
   {
     kind: 'content', chapter: C, section: '1. Héritage', title: 'La classe **`Object`** : mère de toutes les classes',
@@ -291,6 +391,9 @@ class B extends A {
       explication: 'Le constructeur de `B` commence par un **`super();` implicite** : `A()` s\'exécute **d\'abord** (lui-même après `Object()`), **puis** la suite de `B()`.',
     }],
   },
+
+  ...H3_UMLCODE,
+  ...H3_MEM,
 
   /* ── 3. Redéfinition ────────────────────────────────────────────── */
   {
@@ -1559,6 +1662,7 @@ class C2 extends C1 {
       },
     ],
   },
+  ...H3_ISA,
   {
     kind: 'content', chapter: C, section: '9. Bonnes pratiques', title: 'Le bon réflexe',
     blocks: [

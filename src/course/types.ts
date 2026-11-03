@@ -60,11 +60,15 @@ export type Block =
     }
   /** Révélation un par un (bouton ou S = tout). `cols` : éléments côte à côte. */
   | { k: 'progressive'; button: string; cols?: number; items: Block[][] }
-  /** Packages comme frontières : cadres de packages contenant des classes, avec verdict d'accès. */
+  /** Packages comme frontières : cadres de packages contenant des classes, avec verdict d'accès.
+   *  `interactive` : les verdicts restent masqués jusqu'à « Tester l'accès » (ou S / PDF). */
   | {
       k: 'pkgs'
+      interactive?: boolean
       packages: { name: string; classes: { name: string; lines?: string[]; verdict?: { ok: boolean; text: string } }[] }[]
     }
+  /** Bouton vers une diapo : `chapter` = ouverture de chapitre ; `title` = titre brut (sans ** ni `). */
+  | { k: 'goto'; label: string; chapter?: string; title?: string; kicker?: string; heading?: string; sub?: string }
   /** Matrice de visibilité : clic sur un modificateur → colonne surlignée, exemple, restriction. */
   | {
       k: 'vismatrix'

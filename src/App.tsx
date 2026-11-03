@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { RefObject, TouchEvent } from 'react'
-import { SLIDES, CHAPTERS } from './course/slides'
+import { SLIDES, CHAPTERS, plainTitle } from './course/slides'
 import { SlideView, Rich, stepCount } from './course/ui'
 import type { Slide } from './course/types'
 
@@ -89,6 +89,17 @@ export default function App() {
     window.addEventListener('hashchange', onHash)
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
+  useEffect(() => {
+    const onGoto = (e: Event) => {
+      const d = (e as CustomEvent<{ chapter?: string; title?: string }>).detail ?? {}
+      const i = d.title
+        ? SLIDES.findIndex(s => plainTitle(s.title) === d.title)
+        : SLIDES.findIndex(s => s.kind === 'chapter' && s.chapter === d.chapter)
+      if (i >= 0) go(i)
+    }
+    window.addEventListener('slide-goto', onGoto)
+    return () => window.removeEventListener('slide-goto', onGoto)
+  }, [go])
 
   const toggleFullscreen = useCallback(() => {
     if (document.fullscreenElement) document.exitFullscreen?.()

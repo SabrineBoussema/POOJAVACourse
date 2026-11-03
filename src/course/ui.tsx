@@ -791,23 +791,55 @@ function ProgressiveView({ b, revealed, onReveal }: { b: Extract<Block, { k: 'pr
 }
 
 /* ── Packages comme frontières ────────────────────────────────────────── */
-function PkgsView({ b }: { b: Extract<Block, { k: 'pkgs' }> }) {
+function PkgsView({ b, revealed, onReveal }: { b: Extract<Block, { k: 'pkgs' }>; revealed: boolean; onReveal: () => void }) {
+  const [tested, setTested] = useState(false)
+  const show = !b.interactive || revealed || tested
+  const reset = () => {
+    setTested(false)
+    if (revealed) onReveal()
+  }
   return (
-    <div className="pkgs">
-      {b.packages.map((p, i) => (
-        <div key={i} className="pkg" style={{ flex: p.classes.length }}>
-          <div className="pkg-name">package <b>{p.name}</b></div>
-          <div className="pkg-classes">
-            {p.classes.map((c, j) => (
-              <div key={j} className="pkg-cls">
-                <div className="pkg-cls-name">{c.name}</div>
-                {c.lines?.map((l, k) => <code key={k} className="pkg-line">{l}</code>)}
-                {c.verdict && <div className={`pkg-verdict ${c.verdict.ok ? 'ok' : 'ko'}`}><Rich text={c.verdict.text} /></div>}
-              </div>
-            ))}
+    <div className="pkgs-wrap">
+      <div className="pkgs">
+        {b.packages.map((p, i) => (
+          <div key={i} className="pkg" style={{ flex: p.classes.length }}>
+            <div className="pkg-name">package <b>{p.name}</b></div>
+            <div className="pkg-classes">
+              {p.classes.map((c, j) => (
+                <div key={j} className="pkg-cls">
+                  <div className="pkg-cls-name">{c.name}</div>
+                  {c.lines?.map((l, k) => <code key={k} className="pkg-line">{l}</code>)}
+                  {c.verdict && (
+                    <div className={`pkg-verdict ${show ? (c.verdict.ok ? 'ok' : 'ko') : 'wait'}`}>
+                      {show ? <Rich text={c.verdict.text} /> : 'Accès ?'}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
+        ))}
+      </div>
+      {b.interactive && (
+        <div className="quiz-actions print-hide">
+          <button className="qbtn qbtn-main" disabled={show} onClick={() => setTested(true)}>Tester l'accès</button>
+          <button className="qbtn" onClick={reset}>Réinitialiser</button>
         </div>
-      ))}
+      )}
+    </div>
+  )
+}
+
+function GotoView({ b }: { b: Extract<Block, { k: 'goto' }> }) {
+  const go = () => {
+    window.dispatchEvent(new CustomEvent('slide-goto', { detail: { chapter: b.chapter, title: b.title } }))
+  }
+  return (
+    <div className="goto">
+      {b.kicker && <div className="goto-kicker">{b.kicker}</div>}
+      {b.heading && <h3 className="goto-heading"><Rich text={b.heading} /></h3>}
+      {b.sub && <p className="goto-sub"><Rich text={b.sub} /></p>}
+      <button className="goto-btn print-hide" onClick={go}>{b.label}</button>
     </div>
   )
 }
@@ -939,7 +971,9 @@ export function BlockView({ b, revealed, onReveal, step = 0, onStep = () => {} }
     case 'progressive':
       return <ProgressiveView b={b} revealed={revealed} onReveal={onReveal} />
     case 'pkgs':
-      return <PkgsView b={b} />
+      return <PkgsView b={b} revealed={revealed} onReveal={onReveal} />
+    case 'goto':
+      return <GotoView b={b} />
     case 'vismatrix':
       return <VisMatrixView b={b} />
     case 'reveal':

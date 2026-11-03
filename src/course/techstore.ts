@@ -1282,7 +1282,7 @@ export const TECHSTORE_TRANSITION: Slide[] = [
       objectif: 'Passer de « possède » (has-a) à « est un » (is-a).',
       question: 'Comment représenter plusieurs types d’objets partageant des caractéristiques communes ?',
       reponse: 'Par l’héritage : une classe mère (Article) et des classes filles (Mobile, Ordinateur…), comme dans le TP 4.',
-      transition: 'Chapitre 3 : l’héritage.',
+      transition: 'Séquence suivante : particularité de protected, puis le chapitre 3 (héritage).',
       duree: 3,
     },
   },
