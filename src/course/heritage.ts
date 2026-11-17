@@ -19,23 +19,25 @@ export const H3_WHY: Slide[] = [
             {
               k: 'cols',
               left: [{
-                k: 'code', small: true, file: 'Etudiant.java', highlight: [2, 3], code: `
+                k: 'code', small: true, file: 'Etudiant.java', highlight: [2, 3, 4, 5], code: `
 class Etudiant {
     String nom;
+    String prenom;
     int age;
-    void afficher() { /* … */ }
+    void afficherInformations() { /* … */ }
 }`,
               }],
               right: [{
-                k: 'code', small: true, file: 'Enseignant.java', highlight: [2, 3], code: `
+                k: 'code', small: true, file: 'Enseignant.java', highlight: [2, 3, 4, 5], code: `
 class Enseignant {
     String nom;
+    String prenom;
     int age;
-    void afficher() { /* … */ }
+    void afficherInformations() { /* … */ }
 }`,
               }],
             },
-            { k: 'box', tone: 'attention', text: '`nom`, `age`, `afficher()` : le **même** code, **deux** fois.' },
+            { k: 'box', tone: 'attention', text: '`nom`, `prenom`, `age`, `afficherInformations()` : le **même** code, **deux** fois.' },
           ],
         },
         {
@@ -45,6 +47,7 @@ class Enseignant {
               [{ k: 'ask', text: 'Pourquoi avons-nous **répété** ces attributs ?' }],
               [{ k: 'ask', text: 'Que se passe-t-il avec **20** classes ?' }],
               [{ k: 'ask', text: 'Si nous modifions une **règle commune**, combien de classes devons-nous modifier ?' }],
+              [{ k: 'ask', text: 'Si plusieurs classes possèdent les **mêmes caractéristiques**, faut-il **répéter** le code dans chacune ?' }],
             ],
           }],
         },
@@ -58,8 +61,8 @@ class Enseignant {
     }],
     notes: {
       objectif: 'Faire sentir le coût de la duplication avant toute syntaxe.',
-      question: 'Pourquoi répéter nom, age, afficher ? Avec 20 classes ? Une règle commune ?',
-      reponse: 'Même concept (une personne). 20 copies. 20 modifications. Besoin de factoriser.',
+      question: 'Si plusieurs classes ont les mêmes caractéristiques, faut-il répéter le code ?',
+      reponse: 'Non : factoriser dans Personne (est-un), pas recopier. 20 classes = 20 copies à maintenir.',
       conseil: 'Faire voter avant chaque question. Ne pas dire « extends » ici. La duplication seule ne justifie pas l’héritage : il faudra un vrai « est-un ».',
       duree: 4,
     },
@@ -74,8 +77,8 @@ class Enseignant {
               k: 'uml', width: 1100, height: 280,
               caption: 'Les membres **communs** sont recopiés dans chaque classe.',
               classes: [
-                { id: 'e', name: 'Etudiant', x: 40, y: 20, w: 460, attrs: ['nom : String', 'age : int', 'matricule : String'], ops: ['afficher()', 'etudier()'] },
-                { id: 'n', name: 'Enseignant', x: 600, y: 20, w: 460, attrs: ['nom : String', 'age : int', 'specialite : String'], ops: ['afficher()', 'enseigner()'] },
+                { id: 'e', name: 'Etudiant', x: 40, y: 20, w: 460, attrs: ['nom, prenom : String', 'age : int', 'matricule : String'], ops: ['afficherInformations()', 'etudier()'] },
+                { id: 'n', name: 'Enseignant', x: 600, y: 20, w: 460, attrs: ['nom, prenom : String', 'age : int', 'specialite : String'], ops: ['afficherInformations()', 'enseigner()'] },
               ],
               links: [],
             },
@@ -87,7 +90,7 @@ class Enseignant {
               k: 'uml', width: 1100, height: 430,
               caption: 'Triangle **vide** vers la mère : généralisation UML (« **est-un** »).',
               classes: [
-                { id: 'p', name: 'Personne', x: 330, y: 0, w: 440, attrs: ['nom : String', 'age : int'], ops: ['afficher()'] },
+                { id: 'p', name: 'Personne', x: 330, y: 0, w: 440, attrs: ['nom, prenom : String', 'age : int'], ops: ['afficherInformations()'] },
                 { id: 'e', name: 'Etudiant', x: 40, y: 250, w: 400, attrs: ['matricule : String'], ops: ['etudier()'] },
                 { id: 'n', name: 'Enseignant', x: 660, y: 250, w: 400, attrs: ['specialite : String'], ops: ['enseigner()'] },
               ],
@@ -345,6 +348,48 @@ System.out.println(e2.getAge());`,
     },
   },
   {
+    kind: 'content', chapter: C, section: '2. Constructeur de sous-classe', title: 'Référence **mère**, objet **fille**',
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: '`Personne p`', blocks: [
+            { k: 'code', small: true, highlight: [1], code: 'Personne p = new Etudiant("Ali", 20, "E001");' },
+            {
+              k: 'memory', compact: true,
+              stack: [{ name: 'p : Personne', ref: 'E' }],
+              heap: [{
+                id: 'E', type: 'Etudiant',
+                fields: [['nom', '"Ali"'], ['age', '20'], ['matricule', '"E001"']],
+              }],
+              caption: 'Type **déclaré** : `Personne`. Objet **réel** : `Etudiant` (champs hérités **et** `matricule`).',
+            },
+          ],
+        },
+        {
+          label: '`p = null`', blocks: [
+            { k: 'code', small: true, highlight: [2], code: 'Personne p = new Etudiant("Ali", 20, "E001");\np = null;' },
+            {
+              k: 'memory', compact: true,
+              stack: [{ name: 'p : Personne', value: 'null' }],
+              heap: [{
+                id: 'E', type: 'Etudiant',
+                fields: [['nom', '"Ali"'], ['age', '20'], ['matricule', '"E001"']],
+                dead: true, note: 'plus aucune référence → éligible au GC',
+              }],
+            },
+            { k: 'box', tone: 'attention', text: '`p = null` **n\'efface pas** l\'objet tout de suite. Le GC le reprend **s\'il** n\'est plus joignable, **plus tard**.' },
+          ],
+        },
+      ],
+    }],
+    notes: {
+      objectif: 'Upcast en mémoire : la variable est Personne, l’objet est Etudiant ; puis p = null.',
+      question: 'Après p = null, l’Etudiant est-il détruit ?',
+      reponse: 'Non : injoignable, donc éligible. Collecte non immédiate.',
+      duree: 3,
+    },
+  },
+  {
     kind: 'content', chapter: C, section: '2. Constructeur de sous-classe', title: 'Héritage = **moins** de mémoire ?',
     blocks: [
       {
@@ -461,6 +506,249 @@ export const H3_ISA: Slide[] = [
       objectif: 'Réinvestir est-un / a-un après polymorphisme et délégation.',
       reponse: '1 héritage, 2 composition, 3 héritage, 4 composition.',
       conseil: 'Vote à main levée. Rappeler Stack / Vector : héritage sans vrai est-un.',
+      duree: 4,
+    },
+  },
+]
+
+/** Après extends : mère / fille / exécution, membres accessibles. */
+export const H3_SYNTAX: Slide[] = [
+  {
+    kind: 'content', chapter: C, section: '1. Héritage', title: '`extends` : de la **mère** à l\'**exécution**',
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Mère', blocks: [{
+            k: 'code', small: true, file: 'Personne.java', code: `
+class Personne {
+    private String nom;
+    Personne(String nom) { this.nom = nom; }
+    public String getNom() { return nom; }
+}`,
+          }],
+        },
+        {
+          label: 'Fille', blocks: [{
+            k: 'code', small: true, file: 'Etudiant.java', highlight: [1, 5], code: `
+class Etudiant extends Personne {
+    private String matricule;
+    Etudiant(String nom, String matricule) {
+        super(nom);
+        this.matricule = matricule;
+    }
+}`,
+          }],
+        },
+        {
+          label: 'Exécution', blocks: [
+            {
+              k: 'code', small: true, file: 'Main.java', output: 'Ali', code: `
+Etudiant e = new Etudiant("Ali", "E001");
+System.out.println(e.getNom());`,
+            },
+            { k: 'box', tone: 'retenir', text: '`getNom()` est **déclaré** dans `Personne`, **accessible** dans `Etudiant` (méthode **`public`** héritée).' },
+          ],
+        },
+      ],
+    }],
+    notes: {
+      objectif: 'Lire mère, fille, puis un main qui compile et affiche.',
+      question: 'Pourquoi e.getNom() compile-t-il ?',
+      reponse: 'getNom() est public dans Personne, donc hérité.',
+      duree: 3,
+    },
+  },
+  {
+    kind: 'content', chapter: C, section: '1. Héritage', title: 'Quels membres la **fille** peut-elle utiliser ?',
+    blocks: [
+      {
+        k: 'table', small: true, marks: true,
+        head: ['Membre', 'Déclaré dans', 'Accessible dans `Etudiant` ?'],
+        rows: [
+          ['`nom` (`private`)', '`Personne`', 'Non'],
+          ['`getNom()` (`public`)', '`Personne`', 'Oui'],
+          ['constructeur `Personne(...)`', '`Personne`', 'Non : via `super(...)`'],
+          ['`matricule`', '`Etudiant`', 'Oui'],
+        ],
+      },
+      { k: 'box', tone: 'retenir', text: 'Les **constructeurs ne s\'héritent pas**. Les attributs `private` **existent** dans l\'objet, mais la fille **n\'y accède pas** directement.' },
+      { k: 'box', tone: 'info', text: 'Java : **une seule** classe mère (`extends`). Plusieurs **interfaces** : `implements` — **plus loin** dans ce chapitre.' },
+    ],
+    notes: {
+      objectif: 'Distinguer déclaré / hérité / accessible. Constructeurs non hérités.',
+      question: 'Etudiant peut-il écrire this.nom ?',
+      reponse: 'Non si nom est private. super(nom) dans le constructeur, puis getNom().',
+      duree: 3,
+    },
+  },
+  {
+    kind: 'content', chapter: C, section: '1. Héritage', title: 'Exercice : ce code **compile-t-il** ?',
+    blocks: [{
+      k: 'quiz', verify: true,
+      question: 'Quels extraits **ne compilent pas** ?',
+      code: `
+(1) class B extends A, C { }
+(2) class B extends A { }
+(3) e.nom  // nom private dans Personne
+(4) e.getNom()`,
+      options: ['(1) et (3)', '(1) seulement', '(3) seulement', 'Les quatre'],
+      correct: 0,
+      explication: '(1) **héritage simple** : une seule mère. (3) `private` : inaccessible dans la fille.',
+      detailTitle: 'Les autres',
+      detail: '(2) forme normale. (4) `getNom()` **public** hérité.',
+    }],
+    notes: {
+      objectif: 'Vérifier héritage simple et private vs getter.',
+      reponse: 'A : (1) et (3).',
+      duree: 3,
+    },
+  },
+]
+
+/** Après le quiz constructeurs existant : traces + 2 prédictions. */
+export const H3_CTOR: Slide[] = [
+  {
+    kind: 'content', chapter: C, section: '2. Constructeur de sous-classe', title: '`new Etudiant()` : **qui** s\'exécute d\'abord ?',
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Question', blocks: [
+            { k: 'ask', text: 'Lorsqu\'on écrit `new Etudiant()`, **quel constructeur** s\'exécute **en premier** ?' },
+            {
+              k: 'code', small: true, file: 'Personne.java et Etudiant.java', code: `
+class Personne {
+    Personne() { System.out.println("Personne"); }
+}
+class Etudiant extends Personne {
+    Etudiant() { System.out.println("Etudiant"); }
+}`,
+            },
+          ],
+        },
+        {
+          label: 'Trace', blocks: [
+            {
+              k: 'code', small: true, file: 'Main.java', output: 'Personne\nEtudiant', code: 'new Etudiant();',
+            },
+            {
+              k: 'flow', steps: [
+                { label: '`new Etudiant()`', sub: 'entre dans le constructeur fille' },
+                { label: '`super()` implicite', sub: 'constructeur **Personne**' },
+                { label: 'affiche Personne', sub: 'partie héritée prête' },
+                { label: 'affiche Etudiant', sub: 'objet **complet**' },
+              ],
+            },
+            { k: 'box', tone: 'retenir', text: 'La **mère d\'abord**, la **fille ensuite**. Toujours.' },
+          ],
+        },
+      ],
+    }],
+    notes: {
+      objectif: 'Faire prédire l’ordre des println avant d’afficher la trace.',
+      question: 'new Etudiant() affiche quoi ?',
+      reponse: 'Personne puis Etudiant.',
+      conseil: 'Vote avant l’étape Trace. Relier à PointColore / super déjà vu.',
+      duree: 3,
+    },
+  },
+  {
+    kind: 'content', chapter: C, section: '2. Constructeur de sous-classe', title: 'Prédiction 2 : **chaîne** de constructeurs',
+    blocks: [{
+      k: 'quiz', verify: true,
+      question: 'Que s\'affiche avec `new C();` ?',
+      code: `
+class A { A() { System.out.println("A"); } }
+class B extends A { B() { System.out.println("B"); } }
+class C extends B { C() { System.out.println("C"); } }`,
+      options: ['`C`', '`C` puis `B` puis `A`', '`A` puis `B` puis `C`', 'Erreur de compilation'],
+      correct: 2,
+      explication: 'Chaque constructeur commence par `super()` : on **remonte** jusqu\'à `A` (puis `Object`), puis on **redescend** : A, B, C.',
+    }],
+    notes: {
+      objectif: 'Généraliser l’ordre à trois niveaux.',
+      reponse: 'A puis B puis C.',
+      duree: 2,
+    },
+  },
+  {
+    kind: 'content', chapter: C, section: '2. Constructeur de sous-classe', title: 'Prédiction 3 : `this(...)` **et** `super()`',
+    blocks: [{
+      k: 'quiz', verify: true,
+      question: 'Que s\'affiche avec `new B();` ?',
+      code: `
+class A { A() { System.out.println("A"); } }
+class B extends A {
+    B() { this(1); System.out.println("B0"); }
+    B(int x) { System.out.println("B1"); }
+}`,
+      options: ['`B0` puis `B1`', '`A` puis `B1` puis `B0`', '`B1` puis `B0`', '`A` puis `B0`'],
+      correct: 1,
+      explication: '`B()` appelle `this(1)` : **pas** de `super()` dans `B()`. C\'est `B(int)` qui fait `super()` → `A()`, puis `B1`, puis `B0`.',
+    }],
+    notes: {
+      objectif: 'this(...) remplace super() dans ce constructeur ; super() est dans l’autre.',
+      reponse: 'A puis B1 puis B0.',
+      duree: 3,
+    },
+  },
+]
+
+/** Transition vers le polymorphisme : Animal / Chat / Chien. */
+export const H3_POLY: Slide[] = [
+  {
+    kind: 'content', chapter: C, section: '5. Polymorphisme', title: 'Un **même appel**, plusieurs **réponses** ?',
+    blocks: [{
+      k: 'steps', items: [
+        {
+          label: 'Question', blocks: [
+            { k: 'ask', text: 'Deux objets de **classes différentes** peuvent-ils répondre **différemment** au **même** appel de méthode ?' },
+            {
+              k: 'code', small: true, code: `
+class Animal {
+    void crier() { System.out.println("..."); }
+}
+class Chien extends Animal {
+    @Override void crier() { System.out.println("Ouaf"); }
+}
+class Chat extends Animal {
+    @Override void crier() { System.out.println("Miaou"); }
+}`,
+            },
+          ],
+        },
+        {
+          label: 'Liaison tardive', blocks: [
+            {
+              k: 'code', small: true, output: 'Ouaf', code: `
+Animal a = new Chien();
+a.crier();`,
+            },
+            {
+              k: 'flow', steps: [
+                { label: 'Compilation', sub: '`Animal` a-t-il `crier()` ? **Oui**' },
+                { label: 'Exécution', sub: 'objet réel **`Chien`** → `Ouaf`' },
+              ],
+            },
+            { k: 'box', tone: 'retenir', text: 'Type **déclaré** : `Animal` (ce qu\'on **peut** appeler). Type **réel** : `Chien` (quelle **version**).' },
+          ],
+        },
+        {
+          label: 'Ne compile pas', blocks: [
+            {
+              k: 'code', small: true, status: 'ko', bad: [2], code: `
+Animal a = new Chien();
+a.aboyer();   // ERREUR : pas dans Animal`,
+            },
+            { k: 'code', plain: true, small: true, code: 'error: cannot find symbol\n  symbol: method aboyer()' },
+            { k: 'box', tone: 'attention', text: 'On ne peut appeler que ce que le **type déclaré** connaît — même si l\'objet **sait** le faire.' },
+          ],
+        },
+      ],
+    }],
+    notes: {
+      objectif: 'Motiver le polymorphisme avec Animal / Chien avant Figure / Cercle.',
+      question: 'a.crier() affiche quoi ? a.aboyer() compile-t-il ?',
+      reponse: 'Ouaf. Non : aboyer n’est pas dans Animal.',
       duree: 4,
     },
   },

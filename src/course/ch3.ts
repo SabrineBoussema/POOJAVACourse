@@ -1,5 +1,5 @@
 import type { Slide } from './types'
-import { H3_WHY, H3_UMLCODE, H3_MEM, H3_ISA } from './heritage'
+import { H3_WHY, H3_SYNTAX, H3_UMLCODE, H3_CTOR, H3_MEM, H3_POLY, H3_ISA } from './heritage'
 
 /* ════════════════════════════════════════════════════════════════════
    CHAPITRE 3 — Héritage, classes abstraites et interfaces
@@ -123,6 +123,7 @@ A a = new B();   // OK : un B "est-un" A` },
       },
     ],
   },
+  ...H3_SYNTAX,
   {
     kind: 'content', chapter: C, section: '1. Héritage', title: '**Protected** : maintenant, tout devient clair !',
     blocks: [{
@@ -254,12 +255,9 @@ System.out.println(p);      // Point@1b6d3586  (le nombre change d'une exécutio
                 k: 'code', small: true, code: `
 class Point {
     private int x, y;
-
     public Point(int x, int y) {
-        this.x = x;
-        this.y = y;
+        this.x = x; this.y = y;
     }
-
     public void dessineToi() {
         System.out.println("Point");
     }
@@ -268,24 +266,21 @@ class Point {
               right: [{
                 k: 'code', small: true, code: `
 import java.awt.Color;
-
 class PointColore extends Point {
     private Color couleur;
-
     PointColore(int xx, int yy, Color c) {
-        super(xx, yy);      // constructeur de Point
+        super(xx, yy);  // constructeur de Point
         couleur = c;
     }
-
     PointColore(int x, int y) {
-        this(x, y, Color.BLACK); // autre constructeur
+        this(x, y, Color.BLACK);
     }
 }`,
               }],
             },
             {
               k: 'box', tone: 'attention',
-              text: '**Première instruction** d\'un constructeur : `this(...)` (même classe) **ou** `super(...)` (classe mère).',
+              text: '**1ʳᵉ instruction** : `this(...)` ou `super(...)`. Java 22+ : lignes **avant** `super` **sans** `this` (hors programme).',
             },
           ],
         },
@@ -391,7 +386,7 @@ class B extends A {
       explication: 'Le constructeur de `B` commence par un **`super();` implicite** : `A()` s\'exécute **d\'abord** (lui-même après `Object()`), **puis** la suite de `B()`.',
     }],
   },
-
+  ...H3_CTOR,
   ...H3_UMLCODE,
   ...H3_MEM,
 
@@ -807,6 +802,7 @@ f = new Poire();  f.quiEstTu();`,
   },
 
   /* ── 5. Polymorphisme ───────────────────────────────────────────── */
+  ...H3_POLY,
   {
     kind: 'content', chapter: C, section: '5. Polymorphisme', title: 'Le **polymorphisme**',
     blocks: [
